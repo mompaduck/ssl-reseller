@@ -1,0 +1,48 @@
+<footer class="bg-gray-900 text-white py-12">
+  <div class="container mx-auto px-4 max-w-7xl">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- 브랜드 -->
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <span class="text-2xl">🔒</span>
+          <span class="text-xl font-bold">CertGate</span>
+        </div>
+        <p class="text-gray-400">신뢰할 수 있는 SSL 인증서 발급 플랫폼</p>
+      </div>
+
+      <!-- 제품 -->
+      <div>
+        <h3 class="font-semibold mb-4">제품</h3>
+        <ul class="space-y-2 text-gray-400">
+          <li><%= link_to "SSL 인증서", products_path, class: "hover:text-white" %></li>
+          <li><a href="#pricing" class="hover:text-white">요금제</a></li>
+        </ul>
+      </div>
+
+      <!-- 지원 -->
+      <div>
+        <h3 class="font-semibold mb-4">지원</h3>
+        <ul class="space-y-2 text-gray-400">
+          <li><%= link_to "문서", "#", class: "hover:text-white" %></li>
+          <li><%= link_to "고객지원", contact_path, class: "hover:text-white" %></li>
+        </ul>
+      </div>
+
+      <!-- 회사 -->
+      <div>
+        <h3 class="font-semibold mb-4">회사</h3>
+        <ul class="space-y-2 text-gray-400">
+          <li><%= link_to "회사소개", "#", class: "hover:text-white" %></li>
+          <li><%= link_to "연락처", contact_path, class: "hover:text-white" %></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ 여기서 border는 container 밖으로 이동 -->
+  <div class="border-t border-gray-800 mt-8"></div>
+
+  <div class="pt-8 text-center text-gray-400 text-sm">
+    <p>&copy; <%= Time.current.year %> CertGate. All rights reserved.</p>
+  </div>
+</footer>

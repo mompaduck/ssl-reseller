@@ -1,0 +1,292 @@
+
+<% # app/views/home/index.html.erb (또는 원하는 컨트롤러의 뷰 파일) %>
+
+<% # Tailwind CSS가 반드시 설정되어 있어야 합니다. %>
+
+<div class="homepage">
+  <%# ---------------------------------------------------- %>
+  <%# 1. Hero Section %>
+  <%# ---------------------------------------------------- %>
+  <section class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-24 relative overflow-hidden">
+    <%# 배경 애니메이션 %>
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+        안전한 웹사이트의 시작
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-indigo-100 max-w-3xl mx-auto">
+        신뢰할 수 있는 SSL 인증서로 고객의 정보를 보호하고<br />
+        검색 엔진 순위를 향상시키세요
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%# link_to "지금 시작하기 →", order_path, class: "bg-white text-indigo-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition shadow-2xl inline-block" %>
+<a href="#pricing" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-indigo-600 transition inline-block">
+  요금제 보기
+</a>
+      </div>
+      
+
+    </div>
+  </section>
+
+  <%# ---------------------------------------------------- %>
+  <%# 2. Features Section %>
+  <%# ---------------------------------------------------- %>
+  <section class="py-20 bg-white text-gray-500" id="features">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">왜 CertGate를 선택해야 할까요?</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          업계 최고 수준의 SSL 인증서를 제공합니다
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <% features = [
+            { icon: '⚡', title: '빠른 발급', description: 'DV 인증서는 몇 분 내, OV/EV 인증서도 24시간 내 발급 완료' },
+            { icon: '🛡️', title: '강력한 보안', description: '최신 2048비트 RSA 및 ECC 암호화로 최고 수준의 보안 제공' },
+            { icon: '💰', title: '합리적 가격', description: '경쟁력 있는 가격으로 고품질 SSL 인증서를 제공합니다' },
+            { icon: '📈', title: 'SEO 향상', description: 'HTTPS로 검색 엔진 순위를 개선하고 신뢰도를 높입니다' }
+        ] %>
+
+        <% features.each do |feature| %>
+          <div class="bg-white p-8 rounded-2xl border-2 border-gray-200 hover:border-indigo-500 hover:shadow-2xl transition-all duration-300 cursor-pointer group">
+            <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">
+              <%= feature[:icon] %>
+            </div>
+            <h3 class="text-xl font-bold mb-3"><%= feature[:title] %></h3>
+            <p class="text-gray-600"><%= feature[:description] %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---------------------------------------------------- %>
+  <%# 3. Pricing Section %>
+  <%# ---------------------------------------------------- %>
+  <section class="py-20 bg-gradient-to-br from-gray-50 to-gray-100 text-gray-500" id="pricing">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">투명한 요금제</h2>
+        <p class="text-lg text-gray-600">필요에 맞는 SSL 인증서를 선택하세요</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <%# DV %>
+        <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+          <h3 class="text-2xl font-bold mb-2">Domain Validation</h3>
+          <div class="text-4xl font-bold text-indigo-600 mb-1">₩15,000</div>
+          <div class="text-gray-500 mb-6">연간</div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">도메인 소유권 확인</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">10분 내 발급</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">256비트 암호화</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">브라우저 호환성 99.9%</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">모바일 기기 지원</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">30일 환불 보장</span>
+            </li>
+          </ul>
+         <%= link_to "선택하기", new_order_path(certificate_type: 'dv'), class: "block text-center bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200 transition" %>
+        </div>
+
+        <%# OV - Popular %>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 border-4 border-indigo-600 relative transform md:scale-105">
+          <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-1 rounded-full text-sm font-bold">
+            인기
+          </div>
+          <h3 class="text-2xl font-bold mb-2">Organization Validation</h3>
+          <div class="text-4xl font-bold text-indigo-600 mb-1">₩89,000</div>
+          <div class="text-gray-500 mb-6">연간</div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">조직 신원 확인</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">1-3일 내 발급</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">256비트 암호화</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">브라우저 호환성 99.9%</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">조직 정보 표시</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">$250만 보상 보장</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">무료 재발급</span>
+            </li>
+          </ul>
+          <%# link_to "선택하기", order_path, class: "block text-center bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg" %>
+        </div>
+
+        <%# EV %>
+        <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300">
+          <h3 class="text-2xl font-bold mb-2">Extended Validation</h3>
+          <div class="text-4xl font-bold text-indigo-600 mb-1">₩189,000</div>
+          <div class="text-gray-500 mb-6">연간</div>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">확장 검증</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">3-7일 내 발급</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">256비트 암호화</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">브라우저 주소창 표시</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">최고 신뢰도</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">$1,500만 보상 보장</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2 mt-1 text-xl">✓</span>
+              <span class="text-gray-700">전용 계정 관리자</span>
+            </li>
+          </ul>
+          <%# link_to "선택하기", order_path, class: "block text-center bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200 transition" %>
+        <%= link_to "선택하기", new_order_path, class: "block text-center bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200 transition" %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%# ---------------------------------------------------- %>
+  <%# 4. How It Works Section %>
+  <%# ---------------------------------------------------- %>
+  <section class="py-20 bg-white text-gray-500">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl font-bold mb-4">간단한 3단계 프로세스</h2>
+        <p class="text-lg text-gray-600">몇 분 만에 SSL 인증서를 발급받으세요</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <% steps = [
+            { num: 1, title: '인증서 선택', description: '필요에 맞는 인증서 종류를 선택하세요. DV, OV, EV 중 선택 가능합니다.' },
+            { num: 2, title: '도메인 검증', description: '도메인 소유권을 확인합니다. 이메일, DNS, HTTP 방식 중 선택하세요.' },
+            { num: 3, title: '인증서 발급', description: '검증 완료 후 즉시 인증서가 발급됩니다. 설치 가이드도 제공됩니다.' }
+        ] %>
+        
+        <% steps.each do |step| %>
+          <div class="text-center">
+            <div class="w-20 h-20 bg-indigo-600 text-white rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-6 shadow-lg">
+              <%= step[:num] %>
+            </div>
+            <h3 class="text-xl font-bold mb-3"><%= step[:title] %></h3>
+            <p class="text-gray-600"><%= step[:description] %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---------------------------------------------------- %>
+  <%# 5. CTA Section %>
+  <%# ---------------------------------------------------- %>
+  <section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-4">지금 바로 시작하세요</h2>
+      <p class="text-xl mb-8 text-indigo-100">
+        몇 분 만에 SSL 인증서를 발급받고 고객의 신뢰를 얻으세요
+      </p>
+      <%= link_to "인증서 주문하기 →", new_order_path, class: "bg-white text-indigo-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition shadow-2xl inline-block" %>
+    </div>
+  </section>
+</div>
+
+<!-- 
+
+<div class="bg-gray-50 min-h-screen">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-700">CertGate-rails</h1>
+      <nav class="space-x-6">
+        <%= link_to "Home", root_path, class: "text-gray-700 hover:text-blue-600" %>
+        <%= link_to "Products", products_path, class: "text-gray-700 hover:text-blue-600" %>
+        <%= link_to "Contact", contact_path, class: "text-gray-700 hover:text-blue-600" %>
+        <% if user_signed_in? %>
+          <%= link_to "Dashboard", "/my", class: "text-blue-700 font-semibold" %>
+          <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "text-red-500" %>
+        <% else %>
+          <%= link_to "Login", new_user_session_path, class: "text-blue-600 font-semibold" %>
+        <% end %>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-6 py-16 text-center">
+    <h2 class="text-4xl font-bold text-gray-800 mb-4">신뢰할 수 있는 SSL 인증서, 지금 바로 발급하세요</h2>
+    <p class="text-lg text-gray-600 mb-8">
+      글로벌 인증기관 Sectigo / DigiCert의 공식 리셀러 CertGate에서 손쉽게 인증서를 신청하세요.
+    </p>
+    <div class="flex justify-center space-x-4">
+      <%= link_to "상품 보러가기", products_path, class: "bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700" %>
+      <%= link_to "문의하기", contact_path, class: "bg-gray-200 text-gray-800 px-6 py-3 rounded-xl hover:bg-gray-300" %>
+    </div>
+  </main>
+
+  <section class="bg-white py-16">
+    <div class="container mx-auto text-center">
+      <h3 class="text-2xl font-bold mb-6 text-gray-800">우리가 제공하는 SSL 인증서</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <% Product.limit(3).each do |p| %>
+          <div class="p-6 bg-gray-50 rounded-2xl shadow hover:shadow-md transition">
+            <h4 class="text-xl font-semibold mb-2"><%= p.name %></h4>
+            <p class="text-gray-600 mb-4"><%= p.description.truncate(80) %></p>
+            <%= link_to "자세히 보기", product_path(p), class: "text-blue-600 font-semibold hover:underline" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-gray-100 mt-16 py-8 text-center text-gray-600">
+    <p>© <%= Time.current.year %> CertGate SSL. All rights reserved.</p>
+  </footer>
+</div>
+
+-->

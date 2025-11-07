@@ -1,0 +1,8 @@
+/* app/assets/stylesheets/application.tailwind.css */
+/* app/assets/stylesheets/application.tailwind.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 커스텀 CSS는 이 아래에 작성해야 합니다. */

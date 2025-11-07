@@ -1,0 +1,78 @@
+<%# app/views/layouts/_header.html.erb %>
+<nav data-controller="menu"
+     class="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+  <div class="container mx-auto px-4 max-w-7xl flex items-center justify-between h-16">
+
+    <!-- 로고 -->
+    <%= link_to root_path, class: "flex items-center space-x-2 h-16" do %>
+      <span class="text-2xl">🔒</span>
+      <span class="text-xl font-bold">CertGate</span>
+    <% end %>
+
+    <!-- 데스크톱 메뉴 (md 이상에서 표시) -->
+    <div class="hidden md:flex space-x-8 items-center">
+      <% nav_items = [
+        { href: root_path, label: '홈' },
+        { href: new_order_path, label: '인증서 주문' },
+        { href: '#pricing', label: '요금제' }
+      ] %>
+
+      <% nav_items.each do |item| %>
+        <% if item[:href].starts_with?('#') %>
+          <a href="<%= item[:href] %>" class="hover:text-indigo-200 transition"><%= item[:label] %></a>
+        <% else %>
+          <%= link_to item[:label], item[:href], class: "hover:text-indigo-200 transition" %>
+        <% end %>
+      <% end %>
+
+      <%# 로그인 상태에 따라 다르게 표시 %>
+      <% if user_signed_in? %>
+        <%= link_to "마이페이지", edit_user_registration_path, class: "hover:text-indigo-200 transition" %>
+        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "hover:text-indigo-200 transition" %>
+      <% else %>
+        <%= link_to "로그인", new_user_session_path, class: "hover:text-indigo-200 transition" %>
+        <%= link_to "회원가입", new_user_registration_path, class: "hover:text-indigo-200 transition" %>
+      <% end %>
+    </div>
+
+    <!-- 모바일 햄버거 버튼 (md 미만에서 표시) -->
+    <div class="md:hidden">
+      <button
+        data-action="click->menu#toggle"
+        class="p-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+        aria-label="Toggle Menu">
+        <svg data-menu-target="openIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg data-menu-target="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 모바일 메뉴 (md 미만에서만 표시) -->
+  <div
+    data-menu-target="menu"
+    class="md:hidden overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0 bg-gradient-to-r from-indigo-600 to-purple-600">
+    <div class="flex flex-col space-y-2 p-4 border-t border-indigo-700">
+      <% nav_items.each do |item| %>
+        <% if item[:href].starts_with?('#') %>
+          <a href="<%= item[:href] %>" class="py-2 px-3 rounded-md hover:bg-indigo-700 transition"><%= item[:label] %></a>
+        <% else %>
+          <%= link_to item[:label], item[:href], class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <% end %>
+      <% end %>
+
+      <% if user_signed_in? %>
+        <%= link_to "마이페이지", edit_user_registration_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+      <% else %>
+        <%= link_to "로그인", new_user_session_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <%= link_to "회원가입", new_user_registration_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+      <% end %>
+    </div>
+  </div>
+</nav>

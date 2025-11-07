@@ -1,0 +1,61 @@
+source "https://rubygems.org"
+ruby "3.3.1"
+
+# Core Framework
+gem "rails", "~> 8.1.1"
+gem "mysql2", ">= 0.5"
+gem "puma"
+gem "turbo-rails"
+gem "stimulus-rails"
+gem "tailwindcss-rails"
+gem "propshaft"
+gem "bootsnap", require: false
+
+# Authentication
+gem "devise"
+
+# Background Jobs
+gem "sidekiq"
+gem "redis", "~> 5.2"
+
+# Task Scheduler (CRON)
+gem "whenever", require: false
+
+# Payment Integration
+gem "stripe"
+gem "httparty"
+
+# Notification / Monitoring
+gem "slack-notifier"
+
+# Reporting / Analytics
+gem "chartkick"
+gem "groupdate"
+
+# PDF generation (for settlement reports)
+gem "prawn"
+
+# Environment Variables
+gem "dotenv-rails"
+
+# Security / Encryption
+gem "attr_encrypted"
+gem "active_record_encryption"
+
+# Utility
+gem "kaminari" # pagination
+gem "simple_form"
+gem "friendly_id"
+
+group :development, :test do
+  gem "byebug"
+  gem "rspec-rails"
+end
+
+group :development do
+  gem "web-console"
+  gem "listen"
+end
+
+group :production do
+  gem "pg" # optional if you plan future PostgreSQL
