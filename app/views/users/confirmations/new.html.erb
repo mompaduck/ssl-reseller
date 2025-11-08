@@ -1,20 +1,39 @@
-<h2>Resend confirmation instructions</h2>
+<div class="min-h-screen bg-gradient-to-b from-indigo-100 to-indigo-50 flex justify-center items-center py-12">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
 
-<%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= f.error_notification %>
-  <%= f.full_error :confirmation_token %>
+    <!-- 상단 타이틀 -->
+    <div class="bg-gradient-to-r from-indigo-600 to-green-500 px-8 py-6 text-center">
+      <h2 class="text-2xl font-bold text-white">이메일 인증</h2>
+      <p class="text-blue-100 text-sm mt-1">계정 활성화를 위해 이메일을 확인하세요</p>
+    </div>
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email),
-                input_html: { autocomplete: "email" } %>
+    <div class="px-8 py-8">
+      <% if flash[:alert] %>
+        <div class="bg-red-50 text-red-700 px-4 py-2 rounded mb-4"><%= flash[:alert] %></div>
+      <% elsif flash[:notice] %>
+        <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded mb-4"><%= flash[:notice] %></div>
+      <% end %>
+
+      <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+        <div>
+          <%= f.label :email, "이메일 주소", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "가입 시 입력한 이메일",
+              class: "block w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+        </div>
+
+        <p class="text-sm text-gray-600">
+          이메일 인증 링크를 다시 받으려면 주소를 입력해주세요.
+        </p>
+
+        <%= f.submit "인증 메일 다시 보내기", class: "w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-green-500 text-white font-medium rounded-lg hover:opacity-90 transition cursor-pointer" %>
+      <% end %>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+          인증 메일을 이미 받으셨나요?
+          <%= link_to "로그인", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
+        </p>
+      </div>
+    </div>
   </div>
-
-  <div class="form-actions">
-    <%= f.button :submit, "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "users/shared/links" %>
+</div>

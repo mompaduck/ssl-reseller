@@ -1,80 +1,56 @@
-<%# app/views/users/registrations/new.html.erb %>
-
-<div class="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-
-    <!-- Header -->
+<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white py-20 px-4">
+  <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
     <div class="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-6">
       <h2 class="text-2xl font-bold text-white text-center">회원가입</h2>
-      <p class="text-blue-100 text-center mt-2 text-sm">
-        새로운 SSL 인증서 계정을 생성하세요
-      </p>
+      <p class="text-blue-100 text-center mt-2 text-sm">SSL 인증서 계정을 생성하세요</p>
     </div>
 
-    <!-- Flash Messages -->
-    <% if notice %>
-      <div class="mx-8 mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p class="text-sm text-blue-800"><%= notice %></p>
-      </div>
-    <% end %>
-
-    <% if alert %>
-      <div class="mx-8 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-sm text-red-800"><%= alert %></p>
-      </div>
-    <% end %>
-
-    <!-- Form -->
     <div class="px-8 py-8">
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-6" }) do |f| %>
-        <%# 이름 입력 %>
+        <!-- 이름 -->
         <div>
           <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.text_field :name, autofocus: true, class: "w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" %>
+          <%= f.text_field :name, autofocus: true, placeholder: "홍길동",
+                class: "block w-full border border-gray-300 rounded-lg py-3 px-3 transition" %>
         </div>
 
-        <%# 이메일 입력 %>
+        <!-- 이메일 -->
         <div>
           <%= f.label :email, "이메일", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.email_field :email, autocomplete: "email", class: "w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" %>
+          <%= f.email_field :email, placeholder: "you@example.com",
+                class: "block w-full border border-gray-300 rounded-lg py-3 px-3 transition" %>
         </div>
 
-        <%# 비밀번호 입력 %>
+        <!-- 비밀번호 -->
         <div>
           <%= f.label :password, "비밀번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <% if @minimum_password_length %>
-            <p class="text-xs text-gray-500 mb-1">
-              (<%= @minimum_password_length %>자 이상 입력)
-            </p>
-          <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", class: "w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" %>
+          <%= f.password_field :password, autocomplete: "new-password", placeholder: "8자 이상 입력",
+                class: "block w-full border border-gray-300 rounded-lg py-3 px-3 transition" %>
         </div>
 
-        <%# 비밀번호 확인 %>
+        <!-- 비밀번호 확인 -->
         <div>
           <%= f.label :password_confirmation, "비밀번호 확인", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "w-full border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "비밀번호 재입력",
+                class: "block w-full border border-gray-300 rounded-lg py-3 px-3 transition" %>
         </div>
 
-        <%# 회원가입 버튼 %>
-        <div>
-          <%= f.submit "회원가입", class: "w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-green-600 text-white font-medium rounded-lg hover:opacity-90 transition cursor-pointer" %>
+        <!-- 약관 동의 -->
+        <div class="flex items-center">
+          <%= f.check_box :terms, required: true, class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" %>
+          <label class="ml-2 text-sm text-gray-700">
+            <%= link_to "이용약관", "#", class: "text-blue-600 hover:underline" %> 및
+            <%= link_to "개인정보처리방침", "#", class: "text-blue-600 hover:underline" %>에 동의합니다.
+          </label>
+        </div>
+
+        <!-- 회원가입 버튼 -->
+        <div class="mt-6">
+          <%= f.submit "회원가입",
+                class: "w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer" %>
         </div>
       <% end %>
 
-      <%# Divider %>
-      <div class="mt-6">
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300"></div>
-          </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-gray-500">또는</span>
-          </div>
-        </div>
-      </div>
-
-      <%# 로그인 링크 %>
       <div class="mt-6 text-center">
         <p class="text-sm text-gray-600">
           이미 계정이 있으신가요?
@@ -83,34 +59,4 @@
       </div>
     </div>
   </div>
-</div>
-
-<!--
-
-<h2>Sign up</h2>
-
-<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= f.error_notification %>
-
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" }%>
-    <%= f.input :password,
-                required: true,
-                hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
-                required: true,
-                input_html: { autocomplete: "new-password" } %>
-  </div>
-
-  <div class="form-actions">
-    <%= f.button :submit, "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "users/shared/links" %>
-
--->
+</main>

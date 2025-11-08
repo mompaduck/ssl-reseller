@@ -6,3 +6,26 @@
 @tailwind utilities;
 
 /* 커스텀 CSS는 이 아래에 작성해야 합니다. */
+@layer base {
+  input,
+  textarea,
+  select {
+    @apply text-gray-900 bg-white placeholder-gray-400 focus:ring-indigo-600 focus:border-transparent;
+  }
+
+  body.dark input,
+  body.dark textarea,
+  body.dark select {
+    @apply text-gray-200 bg-gray-800 placeholder-gray-500 focus:ring-indigo-400;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
+  }
+
+  body.dark input::placeholder,
+  body.dark textarea::placeholder {
+    @apply text-gray-500;
+  }
+}

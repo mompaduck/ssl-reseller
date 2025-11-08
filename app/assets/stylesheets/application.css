@@ -8,6 +8,8 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+
 html, body {
   overscroll-behavior: none;
   background-color: #111827; /* Tailwind gray-900 */

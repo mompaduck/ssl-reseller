@@ -1,0 +1,21 @@
+<main class="min-h-screen bg-gray-50 py-20 px-4">
+  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+    <h1 class="text-3xl font-bold text-indigo-700 mb-6">주문 상세 정보</h1>
+
+    <div class="space-y-4 text-gray-700">
+      <p><strong>주문 번호:</strong> <%= @order.id %></p>
+      <p><strong>도메인:</strong> <%= @order.domain %></p>
+      <p><strong>인증서 종류:</strong> <%= @order.certificate_type.upcase %></p>
+      <p><strong>상태:</strong> <%= @order.status %></p>
+      <p><strong>주문일:</strong> <%= @order.created_at.strftime("%Y-%m-%d") %></p>
+      <% if @order.issued_at.present? %>
+        <p><strong>발급일:</strong> <%= @order.issued_at.strftime("%Y-%m-%d") %></p>
+        <p><strong>만료일:</strong> <%= @order.expires_at.strftime("%Y-%m-%d") %></p>
+      <% end %>
+    </div>
+
+    <div class="mt-8">
+      <%= link_to "내 주문으로 돌아가기", my_orders_path, class: "inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition" %>
+    </div>
+  </div>
+</main>

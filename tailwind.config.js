@@ -1,13 +1,15 @@
 // tailwind.config.js
 module.exports = {
+  darkMode: 'class', // 또는 'media'
   content: [
     './app/views/**/*.{erb,haml,html,slim}',
     './app/helpers/**/*.rb',
-    './app/javascript/**/*.js',
-    './app/assets/stylesheets/**/*.css',
+    './app/javascript/**/*.js'
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+   plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

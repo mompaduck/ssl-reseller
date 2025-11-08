@@ -28,6 +28,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_07_043148) do
   end
 
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "certificate_type"
+    t.string "company_address"
+    t.string "company_name"
     t.datetime "created_at", null: false
     t.text "csr"
     t.string "domain"
@@ -35,13 +38,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_07_043148) do
     t.string "internal_order_id"
     t.datetime "issued_at"
     t.string "partner_order_number"
+    t.string "phone"
     t.bigint "product_id", null: false
     t.string "status"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "validation_method"
-    t.index ["internal_order_id"], name: "index_orders_on_internal_order_id"
-    t.index ["partner_order_number"], name: "index_orders_on_partner_order_number"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
@@ -135,14 +137,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_07_043148) do
     t.datetime "confirmed_at"
     t.string "country"
     t.datetime "created_at", null: false
-    t.string "email"
-    t.string "encrypted_password"
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
     t.string "name"
     t.string "phone"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.string "role"
+    t.boolean "terms"
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["api_token"], name: "index_users_on_api_token"
