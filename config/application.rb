@@ -38,5 +38,8 @@ module SslReseller
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+     config.i18n.default_locale = :ko
+     config.i18n.available_locales = [:ko, :en]
   end
 end

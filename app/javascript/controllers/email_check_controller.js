@@ -1,103 +1,93 @@
+// app/javascript/controllers/email_check_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [
-    "email",
-    "emailMessage",
-    "password",
-    "passwordConfirmation",
-    "passwordMessage"
-  ]
+  static targets = ["email", "message", "checkButton"]
+  
+  emailChecked = false
 
   connect() {
-    this.emailChecked = false
+    console.log("✅ email-check controller connected")
   }
 
-  emailChanged() {
-    // 이메일을 바꾸면 다시 중복확인 해야 함
-    this.emailChecked = false
-    this.emailMessageTarget.textContent = "이메일 변경됨 — 다시 중복확인을 해주세요."
-    this.emailMessageTarget.className = "text-sm mt-1 text-orange-600"
-  }
-
-  async checkEmail() {
-    const email = this.emailTarget.value.trim()
+  checkEmail(event) {
+    event.preventDefault()
+    const email = this.emailTarget.value
 
     if (!email) {
-      this.showEmailMessage("이메일을 입력해주세요.", "text-red-600")
-      this.emailChecked = false
+      this.showMessage("이메일을 입력하세요", "error")
       return
     }
 
-    try {
-      const response = await fetch(`/users/check_email?email=${encodeURIComponent(email)}`)
-      const data = await response.json()
+    // 이메일 형식 체크
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      this.showMessage("올바른 이메일 형식이 아닙니다", "error")
+      return
+    }
 
-      if (data.exists) {
-        this.showEmailMessage("⚠️ 이미 사용 중인 이메일입니다.", "text-red-600")
-        this.emailChecked = false
-      } else {
-        this.showEmailMessage("✅ 사용 가능한 이메일입니다.", "text-green-600")
-        this.emailChecked = true
-      }
-    } catch (error) {
-      console.error(error)
-      this.showEmailMessage("이메일 확인 중 오류가 발생했습니다.", "text-red-600")
-      this.emailChecked = false
+    // 버튼 비활성화
+    this.checkButtonTarget.disabled = true
+    this.checkButtonTarget.textContent = "확인중..."
+
+    fetch(`/users/check_email?email=${encodeURIComponent(email)}`)
+      .then(response => {
+        console.log("Response status:", response.status)
+        return response.json()
+      })
+      .then(data => {
+        console.log("Response data:", data)
+        
+        // exists 값으로 체크 (서버에서 exists: true/false 반환)
+        if (data.exists === false) {
+          this.emailChecked = true
+          this.showMessage("✓ 사용 가능한 이메일입니다", "success")
+          this.checkButtonTarget.classList.add("opacity-50", "cursor-not-allowed")
+          this.checkButtonTarget.textContent = "확인완료"
+        } else {
+          this.emailChecked = false
+          this.showMessage("이미 사용 중인 이메일입니다", "error")
+          this.checkButtonTarget.disabled = false
+          this.checkButtonTarget.textContent = "중복확인"
+        }
+      })
+      .catch(error => {
+        console.error("Email check error:", error)
+        this.showMessage("이메일 확인 중 오류가 발생했습니다", "error")
+        this.checkButtonTarget.disabled = false
+        this.checkButtonTarget.textContent = "중복확인"
+      })
+  }
+
+  resetChecked() {
+    this.emailChecked = false
+    this.hideMessage()
+    if (this.hasCheckButtonTarget) {
+      this.checkButtonTarget.classList.remove("opacity-50", "cursor-not-allowed")
+      this.checkButtonTarget.disabled = false
+      this.checkButtonTarget.textContent = "중복확인"
     }
   }
 
   validateBeforeSubmit(event) {
-    let valid = true
-
-    // 1) 이메일 중복확인 안했으면 막기
     if (!this.emailChecked) {
-      this.showEmailMessage("⚠️ 이메일 중복 확인을 해주세요.", "text-red-600")
-      valid = false
-    }
-
-    // 2) 비밀번호 검사
-    const pwd  = this.passwordTarget.value.trim()
-    const pwd2 = this.passwordConfirmationTarget.value.trim()
-    let pwdMsg = ""
-    let pwdClass = "text-sm mb-2 "
-
-    if (!pwd) {
-      pwdMsg = "비밀번호를 입력해주세요."
-      pwdClass += "text-red-600"
-      valid = false
-    } else if (pwd.length < 8) {
-      pwdMsg = "비밀번호는 8자 이상이어야 합니다."
-      pwdClass += "text-red-600"
-      valid = false
-    } else if (!pwd2) {
-      pwdMsg = "비밀번호 확인을 입력해주세요."
-      pwdClass += "text-red-600"
-      valid = false
-    } else if (pwd !== pwd2) {
-      pwdMsg = "비밀번호와 비밀번호 확인이 일치하지 않습니다."
-      pwdClass += "text-red-600"
-      valid = false
-    } else {
-      pwdMsg = "✅ 비밀번호가 확인되었습니다."
-      pwdClass += "text-green-600"
-    }
-
-    this.passwordMessageTarget.textContent = pwdMsg
-    this.passwordMessageTarget.className = pwdClass
-
-    if (!valid) {
       event.preventDefault()
-      // 첫 문제 위치로 스크롤
-      window.scrollTo({
-        top: this.emailTarget.offsetTop - 120,
-        behavior: "smooth"
-      })
+      event.stopPropagation()
+      this.showMessage("⚠️ 이메일 중복확인을 해주세요", "error")
+      return false
     }
+    return true
   }
 
-  showEmailMessage(text, colorClass) {
-    this.emailMessageTarget.textContent = text
-    this.emailMessageTarget.className = `text-sm mt-1 ${colorClass}`
+  showMessage(text, type) {
+    this.messageTarget.textContent = text
+    this.messageTarget.className = `text-sm mt-1 ${type === 'success' ? 'text-green-600' : 'text-red-600'}`
+    this.messageTarget.classList.remove("hidden")
+  }
+
+  hideMessage() {
+    if (this.hasMessageTarget) {
+      this.messageTarget.classList.add("hidden")
+    }
   }
 }

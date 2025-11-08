@@ -1,0 +1,15 @@
+<!-- app/views/shared/_form_wrapper.html.erb -->
+<%= form_with model: form_model, url: form_url, builder: TailwindFormBuilder, html: { class: "space-y-6" }.merge(form_html || {}) do |f| %>
+  <% if form_model.errors.any? %>
+    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+      <h3 class="text-red-600 font-semibold mb-2">입력 오류가 있습니다:</h3>
+      <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+        <% form_model.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield f %>
+<% end %>
