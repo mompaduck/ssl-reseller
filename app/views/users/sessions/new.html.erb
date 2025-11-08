@@ -1,9 +1,4 @@
-
-
-
-
-
-  <%# Main Content %>
+<%# Main Content %>
 <main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-20 px-4">
   <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
    
@@ -106,18 +101,17 @@
               계정이 없으신가요?
               <%= link_to "회원가입", new_registration_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
             </p>
+          <%# Security Badge %>
+          <div class="mt-4 text-center">
+            <div class="inline-flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200">
+              <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              <span class="text-sm text-gray-600">256비트 SSL 암호화로 보호됨</span>
+            </div>
           </div>
         </div>
       </div>
-
-      <%# Security Badge %>
-      <div class="mt-8 text-center">
-        <div class="inline-flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200">
-          <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
-          <span class="text-sm text-gray-600">256비트 SSL 암호화로 보호됨</span>
-        </div>
-      </div>
     </div>
- </main>
+  </div>
+</main>

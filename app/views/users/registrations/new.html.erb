@@ -1,17 +1,26 @@
-<%# app/views/devise/registrations/new.html.erb %>
-
-<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center items-center py-20 px-4">
+<%# Main Content %>
+<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-20 px-4">
   <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-    <div class="px-8 py-8">
-      <h2 class="text-3xl font-bold text-indigo-700 mb-4 text-center">회원가입</h2>
-      <p class="text-sm text-gray-600 text-center mb-6">SSL 인증서 계정을 생성하세요</p>
-
-      <!-- Flash Messages -->
-      <% if notice %>
-        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p class="text-sm text-blue-800 font-medium"><%= notice %></p>
+   
+      <%# Login Card %>
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        
+        <%# Card Header %>
+        <div class="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-6">
+          <h2 class="text-2xl font-bold text-white text-center">
+            회원가입
+          </h2>
+          <p class="text-blue-100 text-center mt-2 text-sm">
+            안전한 SSL 인증서 관리 시스템
+          </p>
         </div>
-      <% end %>
+        
+        <%# Flash Messages %>
+        <% if notice %>
+          <div class="mx-8 mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-800"><%= notice %></p>
+          </div>
+        <% end %>
       
       <% if alert %>
         <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
