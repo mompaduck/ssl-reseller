@@ -5,6 +5,7 @@ export default class extends Controller {
   static targets = ["checkbox", "submitButton"]
 
   connect() {
+     console.log("✅ terms_enable controller connected")
     this.checkFields()
   }
 

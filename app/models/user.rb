@@ -5,6 +5,9 @@ class User < ApplicationRecord
 
   validates :name, presence: true
   validates :terms, acceptance: true
-
+  validates :phone,
+          allow_blank: true,
+          format: { with: /\A(01[016789])\d{7,8}\z/, message: "올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)" }
+          
   has_many :orders, dependent: :destroy
 end

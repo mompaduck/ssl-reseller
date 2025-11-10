@@ -14,6 +14,12 @@
           안전한 SSL 인증서 관리 시스템
         </p>
       </div>
+
+
+
+
+
+
       
       <%# Form Content %>
       <div class="px-8 py-8">
@@ -38,16 +44,14 @@
 
         <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
               html: {
-                data: {
-                  controller: "email-check password-confirm",
-                  action: "submit->email-check#validateBeforeSubmit submit->password-confirm#validateBeforeSubmit"
-                },
-                class: "space-y-6"
-              }) do |f| %>
+        data: {
+          controller: "email-check password-confirm field-validate",
+          action: "submit->email-check#validateBeforeSubmit submit->password-confirm#validateBeforeSubmit"
+          },
+          class: "space-y-6"
+           }) do |f| %>
 
-          <%# 에러 메시지 표시 %>
-          <%= render "devise/shared/error_messages", resource: resource %>
-
+    
           <%# 이름 %>
           <div>
             <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
@@ -80,7 +84,7 @@
           <%# 비밀번호 %>
           <div>
             <%= f.label :password, "비밀번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
-            <%= f.password_field :password, autocomplete: "new-password", placeholder: "8자 이상 입력",
+            <%= f.password_field :password, autocomplete: "new-password", placeholder: "6자 이상 입력",
                   data: {
                     "password-confirm-target": "password",
                     action: "input->password-confirm#checkMatch"
@@ -104,6 +108,7 @@
               비밀번호가 일치하지 않습니다.
             </p>
           </div>
+
 
           <%# 약관 동의 %>
           <div class="flex items-start pt-2">

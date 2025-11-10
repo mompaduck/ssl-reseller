@@ -1,3 +1,4 @@
+# config/routes.rb
 Rails.application.routes.draw do
   # 기본 헬스체크
   get "up" => "rails/health#show", as: :rails_health_check
@@ -19,19 +20,18 @@ Rails.application.routes.draw do
   }
 
   devise_scope :user do
+    # 이메일 중복 확인 API (POST → GET 변경)
+    get 'users/check_email', to: 'users/registrations#check_email', as: :check_email_user_registration
+    
+    # 계정 삭제 페이지
+    get 'users/delete', to: 'users/registrations#delete', as: :delete_user_registration
+    
     # 회원탈퇴 완료 페이지
     get 'users/deleted', to: 'users/registrations#deleted', as: :deleted_user_registration
-    # 이메일 중복 확인 API
-    get 'users/check_email', to: 'users/registrations#check_email'
   end
 
-  # 기타 리소스 라우트들…
- # 리소스 라우팅 (필요 시 주석 해제) 
-   resources :orders,   only: [:new, :create, :show]
-   resources :products, only: [:index, :show]
-   resources :certificates, only: [:index]
-
+  # 리소스 라우팅
+  resources :orders, only: [:new, :create, :show]
+  resources :products, only: [:index, :show]
+  resources :certificates, only: [:index]
 end
-
-
- 

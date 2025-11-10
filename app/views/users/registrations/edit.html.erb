@@ -1,68 +1,153 @@
 <!-- app/views/users/registrations/edit.html.erb -->
-<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white py-20 px-4">
-  <div class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-    <div class="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-6">
-      <h2 class="text-2xl font-bold text-white text-center">회원정보 수정</h2>
-      <p class="text-blue-100 text-center mt-2 text-sm">계정 정보를 업데이트하세요</p>
-    </div>
 
-    <div class="px-8 py-8">
-      <%= render 'shared/form_wrapper',
-          form_model: resource,
-          form_url: registration_path(resource_name),
-          form_html: { method: :put, class: "space-y-6" } do |f| %>
-
-        <div class="mb-4">
-          <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.text_field :name, placeholder: "홍길동" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :company_name, "회사명", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.text_field :company_name, placeholder: "회사명 입력" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.telephone_field :phone, placeholder: "010-1234-5678" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :country, "국가/지역", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.text_field :country, placeholder: "대한민국" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :email, "이메일 (변경 불가)", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.email_field :email, disabled: true, class: "#{f.object.class.name.downcase}_email disabled:bg-gray-100" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password, "새 비밀번호 (입력 시 변경)", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.password_field :password, autocomplete: "new-password", placeholder: "새 비밀번호 입력" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :password_confirmation, "새 비밀번호 확인", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "새 비밀번호 재입력" %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :current_password, "현재 비밀번호 (확인을 위해 필수)", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "현재 비밀번호 입력", required: true %>
-        </div>
-
-        <div class="mt-6">
-          <%= f.submit "정보 수정" %>
-        </div>
-
-      <% end %>
-
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600">
-          계정 삭제를 원하시면
-          <%= link_to "여기", registration_path(resource_name), method: :delete, data: { confirm: "정말 계정을 삭제하시겠습니까?" }, class: "font-medium text-red-600 hover:text-red-500" %>
+<%# Main Content %>
+<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-20 px-4">
+  <div class="w-full max-w-md">
+   
+    <%# Login Card %>
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+      
+      <%# Card Header %>
+      <div class="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-6">
+        <h2 class="text-2xl font-bold text-white text-center">
+          회원정보 수정
+        </h2>
+        <p class="text-blue-100 text-center mt-2 text-sm">
+          계정 정보를 업데이트하세요
         </p>
+      </div>
+
+
+
+
+      <%# Form Content %>
+      <div class="px-8 py-8">
+
+
+        <%# Flash Messages %>
+        <% if notice %>
+          <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-800"><%= notice %></p>
+          </div>
+        <% end %>
+      
+        <% if alert %>
+          <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <p class="text-sm text-red-800 font-semibold"><%= alert %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+              html: {
+                data: {
+                  controller: "phone-validate",
+                  action: "submit->phone-validate#validateBeforeSubmit"
+                },
+                class: "space-y-6"
+              }) do |f| %>
+
+
+     
+
+          <%# 이름 %>
+          <div>
+            <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :name, placeholder: "홍길동",
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+          </div>
+
+          <%# 회사명 %>
+          <div>
+            <%= f.label :company_name, "회사명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :company_name, placeholder: "회사명 입력",
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+          </div>
+
+        <%# 전화번호 %>
+        
+  <div>
+    <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= f.telephone_field :phone,
+          placeholder: "010-1234-5678",
+          inputmode: "numeric",
+          data: {
+            "phone-validate-target": "input",
+            action: "input->phone-validate#format blur->phone-validate#validate"
+          },
+          class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+    <p data-phone-validate-target="message" class="text-xs mt-2 hidden"></p>
+  </div>
+
+
+
+
+          <%# 이메일 (변경 불가) %>
+          <div>
+            <%= f.label :email, "이메일 (변경 불가)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.email_field :email, disabled: true,
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500 cursor-not-allowed py-3 px-4" %>
+            <p class="text-xs text-gray-500 mt-2">이메일은 보안상 변경할 수 없습니다</p>
+          </div>
+
+          <%# 구분선 %>
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-sm font-medium text-gray-900 mb-4">비밀번호 변경 (선택)</h3>
+            
+            <%# 새 비밀번호 %>
+            <div class="mb-6">
+              <%= f.label :password, "새 비밀번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= f.password_field :password, autocomplete: "new-password", placeholder: "새 비밀번호 입력 (변경 시에만)",
+                    class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+              <p class="text-xs text-gray-500 mt-2">비밀번호를 변경하지 않으려면 비워두세요</p>
+            </div>
+
+            <%# 새 비밀번호 확인 %>
+            <div>
+              <%= f.label :password_confirmation, "새 비밀번호 확인", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "새 비밀번호 재입력",
+                    class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+            </div>
+          </div>
+
+          <%# 현재 비밀번호 (필수) %>
+          <div class="border-t border-gray-200 pt-6">
+            <%= f.label :current_password, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+              현재 비밀번호 <span class="text-red-500">*</span>
+            <% end %>
+            <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "현재 비밀번호 입력", required: true,
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+            <p class="text-xs text-gray-500 mt-2">정보 수정을 위해 현재 비밀번호를 입력해주세요</p>
+          </div>
+
+          <%# 수정 버튼 %>
+          <div class="pt-2">
+            <%= f.submit "정보 수정",
+                  class: "w-full py-3 bg-gradient-to-r from-indigo-600 to-green-500 text-white text-base font-semibold rounded-lg hover:opacity-90 transition shadow-md cursor-pointer" %>
+          </div>
+
+        <% end %>
+
+        <%# 계정 삭제 링크 %>
+        <div class="mt-6 text-center pt-4 border-t border-gray-200">
+          <p class="text-sm text-gray-600">
+            계정 삭제를 원하시면
+            <%= link_to "여기를 클릭하세요", 
+                  delete_user_registration_path, 
+                  class: "font-medium text-red-600 hover:text-red-500" %>
+          </p>
+        </div>
+
+
+        <%# 뒤로가기 %>
+        <div class="mt-4 text-center">
+          <%= link_to "← 돌아가기", :back, class: "text-sm text-gray-600 hover:text-gray-900" %>
+        </div>
+
       </div>
     </div>
   </div>

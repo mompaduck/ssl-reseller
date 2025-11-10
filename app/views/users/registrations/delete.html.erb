@@ -7,23 +7,82 @@
     </div>
 
     <div class="px-8 py-8 space-y-6">
-      <p class="text-gray-700">
-        계정을 삭제하면 다음 정보가 삭제되거나 더 이상 접근할 수 없게 됩니다:
-      </p>
-      <ul class="list-disc list-inside text-gray-600 text-sm space-y-1">
+      <%# Flash Messages %>
+      <% if notice %>
+        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800"><%= notice %></p>
+        </div>
+      <% end %>
+
+      <% if alert %>
+        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+            <p class="text-sm text-red-800 font-semibold"><%= alert %></p>
+          </div>
+        </div>
+      <% end %>
+
+      <%# 경고 메시지 %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-start">
+          <svg class="w-6 h-6 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div>
+            <h3 class="text-sm font-semibold text-red-800 mb-1">⚠️ 중요한 안내</h3>
+            <p class="text-sm text-red-700">
+              계정을 삭제하면 다음 정보가 영구적으로 삭제됩니다:
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="list-disc list-inside text-gray-600 text-sm space-y-2 ml-4">
         <li>저장된 주문 정보 및 인증서 내역</li>
         <li>발급된 인증서 관리 및 재발급 권한</li>
         <li>계정 관련 알림 및 설정</li>
+        <li>모든 개인정보 및 회원 데이터</li>
       </ul>
 
-      <div class="mt-6">
-        <%= button_to "정말 삭제합니다", registration_path(resource_name), method: :delete,
-            data: { confirm: "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다." },
-            class: "w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition cursor-pointer" %>
-      </div>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), 
+                   html: { method: :delete, 
+                          class: "space-y-6",
+                          data: { 
+                            controller: "delete-confirm",
+                            action: "submit->delete-confirm#validateBeforeSubmit"
+                          } }) do |f| %>
+        
+        <%# 현재 비밀번호 (필수) %>
+        <div class="border-t border-gray-200 pt-6">
+          <%= f.label :current_password, class: "block text-sm font-medium text-gray-700 mb-2" do %>
+            현재 비밀번호 <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.password_field :current_password, 
+                autocomplete: "current-password", 
+                placeholder: "계정 삭제를 위해 비밀번호 입력", 
+                required: true,
+                data: { 
+                  delete_confirm_target: "password",
+                  action: "input->delete-confirm#checkPassword"
+                },
+                class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+          <p class="text-xs text-gray-500 mt-2">계정 삭제를 위해 현재 비밀번호를 입력해주세요</p>
+        </div>
+
+        <div class="mt-6">
+          <%= f.submit "계정 영구 삭제", 
+              disabled: true,
+              data: { delete_confirm_target: "submitButton" },
+              class: "w-full bg-red-600 text-white py-3 rounded-lg font-semibold transition opacity-50 cursor-not-allowed" %>
+        </div>
+      <% end %>
 
       <div class="mt-4 text-center">
-        <%= link_to "돌아가기", edit_registration_path(resource_name), class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+        <%= link_to "← 돌아가기", edit_registration_path(resource_name), 
+              class: "text-sm text-indigo-600 hover:text-indigo-500 font-medium" %>
       </div>
     </div>
   </div>
