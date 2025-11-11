@@ -1,26 +1,26 @@
-
 <%# app/views/shared/_toast.html.erb %>
-<% if notice.present? %>
-  <div data-controller="toast" class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 max-w-md animate-slide-in">
-    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    <p class="font-medium flex-1"><%= notice %></p>
-    <button data-action="click->toast#dismiss" class="ml-2 hover:bg-green-600 rounded p-1 transition flex-shrink-0">
-      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-      </svg>
-    </button>
-  </div>
-<% end %>
+<%# flash 해시를 순회하며 모든 메시지를 처리 %>
+<% flash.each do |type, message| %>
+  <%
+    # 헬퍼를 사용해 메시지 타입에 맞는 스타일과 아이콘 정보를 가져옴
+    details = toast_details(type)
+  %>
+  <%# 각 토스트에 고유 ID를 부여하고, 접근성을 위한 role 속성 추가 %>
+  <div id="toast-<%= type %>-<%= message.object_id %>"
+       data-controller="toast"
+       class="fixed top-4 right-4 z-50 <%= details[:bg_class] %> text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 max-w-md animate-slide-in"
+       role="alert">
 
-<% if alert.present? %>
-  <div data-controller="toast" class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 max-w-md animate-slide-in">
-    <svg class="w-6 h-6 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+    <%# 아이콘 %>
+    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= details[:icon] %>"/>
     </svg>
-    <p class="font-medium flex-1"><%= alert %></p>
-    <button data-action="click->toast#dismiss" class="ml-2 hover:bg-red-600 rounded p-1 transition flex-shrink-0">
+
+    <%# 메시지 %>
+    <p class="font-medium flex-1"><%= message %></p>
+
+    <%# 닫기 버튼 %>
+    <button data-action="click->toast#dismiss" class="ml-2 <%= details[:hover_bg_class] %> rounded p-1 transition flex-shrink-0">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
       </svg>

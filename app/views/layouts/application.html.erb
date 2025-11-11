@@ -13,7 +13,11 @@
 
 <body class="bg-gray-900 text-gray-100 font-sans">
   <%= render "layouts/header" %>
+  
+  <%# 토스트 메시지 컨테이너 %>
+  <div id="toast-container" class="fixed top-4 right-4 z-50 w-full max-w-sm space-y-3">
     <%= render "shared/toast" %>
+  </div>
   
   <main class="pt-16 min-h-screen">
     <%= yield %>
