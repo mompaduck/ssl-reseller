@@ -1,4 +1,5 @@
 module ApplicationHelper
+  
   def toast_details(type)
     case type.to_s
     when 'notice'

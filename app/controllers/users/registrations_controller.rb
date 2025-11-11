@@ -63,13 +63,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def configure_account_update_params
     devise_parameter_sanitizer.permit(:account_update, keys: [
       :name, :company_name, :phone, :country,
-      :email, :password, :password_confirmation, :current_password
-    ])
-  end
-
-  private
-
-  def log_deletion_reason(user, params)
-    Rails.logger.info "[Account Deletion] User: #{user.email}, Reason: #{params[:deletion_reason]}, Comment: #{params[:deletion_comment]}"
-  end
-end
+            :email, :password, :password_confirmation, :current_password
+          ])
+        end
+      end
+      
