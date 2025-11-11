@@ -1,19 +1,287 @@
-puts "Seeding database..."
+# db/seeds.rb
 
-require 'bcrypt' unless defined?(BCrypt)
+puts "== Seeding Products =="
 
-admin = User.create!(name: "Admin User", email: "admin@certgate.local", encrypted_password: BCrypt::Password.create("admin1234"), role: "admin")
-reseller = User.create!(name: "CertGate Reseller", email: "reseller@certgate.local", encrypted_password: BCrypt::Password.create("reseller1234"), role: "reseller", company_name: "CertGate", phone: "+82-10-1234-5678", country: "Korea")
-user = User.create!(name: "Test User", email: "user@certgate.local", encrypted_password: BCrypt::Password.create("user1234"), role: "user")
+products = [
+  {
+    provider: "GoGetSSL",
+    name: "Domain SSL",
+    product_code: "GGDV",
+    description: "GoGetSSL의 도메인 검증형(DV) SSL 인증서입니다. 빠른 발급과 안정적인 인증 품질을 제공합니다.",
+    duration_months: 12,
+    price: 7_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 50_000,
+    discount: 0,
+    multi_year_support: true,
+    logo_url: "/images/logos/gogetssl.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://gogetssl.com",
+    features: "- 도메인 인증 (DV)\n- 빠른 발급\n- 최대 50,000달러 배상\n- 무료 재발급 지원",
+    is_active: true
+  },
+  {
+    provider: "Sectigo",
+    name: "PositiveSSL",
+    product_code: "POSDV",
+    description: "Sectigo의 개인 및 소규모 비즈니스용 DV SSL 인증서입니다. 높은 호환성과 안정성을 제공합니다.",
+    duration_months: 12,
+    price: 9_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 50_000,
+    discount: 0,
+    multi_year_support: true,
+    logo_url: "/images/logos/sectigo.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://sectigo.com",
+    features: "- 빠른 자동 발급 (도메인 검증)\n- 무료 재발급\n- 99.9% 브라우저 호환\n- HTTPS 자물쇠 표시",
+    is_active: true
+  },
+  {
+    provider: "GlobalSign",
+    name: "AlphaSSL",
+    product_code: "GSDV",
+    description: "GlobalSign의 도메인 검증형 SSL 인증서로, 빠른 발급과 안정적인 인증 품질을 제공합니다.",
+    duration_months: 12,
+    price: 14_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 10_000,
+    discount: 65,
+    multi_year_support: true,
+    logo_url: "/images/logos/globalsign.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://www.globalsign.com",
+    features: "- 도메인 검증(DV)\n- 빠른 발급 및 설치 지원\n- 무료 재발급 지원\n- 최대 10,000달러 배상",
+    is_active: true
+  },
+  {
+    provider: "Sectigo",
+    name: "EssentialSSL",
+    product_code: "ESDV",
+    description: "Sectigo의 EssentialSSL 인증서로, 빠르고 합리적인 가격의 SSL인증서를 찾는 분들께 적합합니다.",
+    duration_months: 12,
+    price: 19_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 50_000,
+    discount: 0,
+    multi_year_support: true,
+    logo_url: "/images/logos/sectigo.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://sectigo.com",
+    features: "- 빠른 도메인 검증\n- 신뢰성 있는 CA 발급\n- 합리적 가격\n- 무료 재발급 지원",
+    is_active: true
+  },
+  {
+    provider: "RapidSSL",
+    name: "Standard",
+    product_code: "RPSTD",
+    description: "RapidSSL의 Standard 인증서로, 저가형 도메인 검증(DV) 인증서를 제공합니다.",
+    duration_months: 12,
+    price: 22_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 10_000,
+    discount: 0,
+    multi_year_support: true,
+    logo_url: "/images/logos/rapidssl.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://rapidssl.com",
+    features: "- 기본형 DV SSL\n- 빠른 도메인 검증\n- 최대 10,000달러 배상\n- 가성비 높은 인증서",
+    is_active: true
+  },
+  {
+    provider: "Thawte",
+    name: "SSL 123",
+    product_code: "TH123",
+    description: "Thawte의 SSL 123 인증서로, 글로벌 기업 수준의 브랜드 신뢰도를 제공합니다.",
+    duration_months: 12,
+    price: 76_000,
+    domain_count: 1,
+    cert_type: "single",
+    validation_type: "DV",
+    liability_usd: 500_000,
+    discount: 0,
+    multi_year_support: true,
+    logo_url: "/images/logos/thawte.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://thawte.com",
+    features: "- 글로벌 브랜드 신뢰\n- 빠른 검증 및 발급\n- 최대 500,000달러 배상\n- 기업/개인 모두 적합",
+    is_active: true
+  },
+  # Multi Domain / OV 인증 항목
+  {
+    provider: "Sectigo",
+    name: "PositiveSSL Multi-Domain",
+    product_code: "POSMD",
+    description: "여러 도메인을 하나의 인증서로 보호할 수 있는 Multi-Domain(SAN) 인증서입니다. 빠른 발급과 관리 효율을 제공합니다.",
+    duration_months: 12,
+    price: 45_000,
+    domain_count: 5,
+    cert_type: "multi_domain",
+    validation_type: "DV",
+    liability_usd: 50_000,
+    discount: 20,
+    multi_year_support: true,
+    logo_url: "/images/logos/sectigo.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://sectigo.com",
+    features: "- 최대 5개 도메인 지원 (추가 가능)\n- 도메인 검증 (DV)\n- 무료 재발급 지원\n- 브라우저 99% 호환",
+    is_active: true
+  },
+  {
+    provider: "DigiCert",
+    name: "Secure Site OV Multi-Domain",
+    product_code: "DGOVMD",
+    description: "기업 검증(OV) 방식으로 여러 도메인을 하나의 인증서로 보호하는 고신뢰 Multi-Domain 인증서입니다.",
+    duration_months: 12,
+    price: 420_000,
+    domain_count: 10,
+    cert_type: "multi_domain",
+    validation_type: "OV",
+    liability_usd: 1_500_000,
+    discount: 10,
+    multi_year_support: true,
+    logo_url: "/images/logos/digicert.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://www.digicert.com",
+    features: "- 기업 검증(OV)\n- 여러 도메인·서브도메인 지원\n- 고신뢰 CA 발급\n- 150만 달러 보상",
+    is_active: true
+  },
+  {
+    provider: "GeoTrust",
+    name: "True BusinessID OV Wildcard",
+    product_code: "GTOVW",
+    description: "기업 검증(OV)된 Wildcard 인증서로, 하나의 도메인 + 모든 서브도메인을 보호합니다.",
+    duration_months: 12,
+    price: 190_000,
+    domain_count: 1,
+    cert_type: "wildcard",
+    validation_type: "OV",
+    liability_usd: 1_250_000,
+    discount: 8,
+    multi_year_support: true,
+    logo_url: "/images/logos/geotrust.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://www.geotrust.com",
+    features: "- 기업 인증(OV)\n- 기본 도메인 + 모든 서브도메인\n- 125만 달러 보상\n- 글로벌 CA 기준",
+    is_active: true
+  },
+  {
+    provider: "Thawte",
+    name: "SSL Web Server OV Multi-Domain",
+    product_code: "THOVMD",
+    description: "Thawte의 기업 검증 OV 방식 Multi-Domain 인증서로 대형 기업환경에 적합합니다.",
+    duration_months: 12,
+    price: 350_000,
+    domain_count: 8,
+    cert_type: "multi_domain",
+    validation_type: "OV",
+    liability_usd: 1_200_000,
+    discount: 12,
+    multi_year_support: true,
+    logo_url: "/images/logos/thawte.png",
+    warranty_url: "/guides/warranty",
+    brand_site_url: "https://www.thawte.com",
+    features: "- 대형 기업용 OV Multi-Domain\n- 최대 8개 도메인 지원\n- 글로벌 브랜드 신뢰\n- 120만 달러 보상",
+    is_active: true
+  }
+]
 
-sectigo = Product.create!(provider: "Sectigo", name: "PositiveSSL DV", description: "Quick domain validation SSL certificate from Sectigo.", ssl_type: "DV", price: 15000, validity_months: 12)
-digicert = Product.create!(provider: "DigiCert", name: "DigiCert Secure Site OV", description: "Organization validated SSL certificate from DigiCert.", ssl_type: "OV", price: 89000, validity_months: 12)
-digicert_ev = Product.create!(provider: "DigiCert", name: "DigiCert Secure Site EV", description: "Extended validation SSL with green bar.", ssl_type: "EV", price: 199000, validity_months: 12)
+products.each do |attrs|
+  Product.find_or_create_by!(product_code: attrs[:product_code]) do |p|
+    p.assign_attributes(attrs)
+  end
+end
 
-order = Order.create!(user: user, product: sectigo, reseller_id: reseller.id, domain_name: "example.com", csr: "-----BEGIN CERTIFICATE REQUEST----- ...", status: "issued", partner_order_id: "TEST123456", issued_at: Time.current, expires_at: 1.year.from_now)
+puts "== Finished seeding #{Product.count} products =="
 
-Payment.create!(order: order, gateway: "stripe", transaction_id: "TXN123456789", amount: 15000, status: "paid", paid_at: Time.current)
+puts "🧪 Seeding test products for cert_type enum check"
 
-Settlement.create!(reseller_id: reseller.id, total_amount: 15000, commission_rate: 15.0, status: "approved", paid_at: Time.current)
+Product.create!(
+  name:            "Test Single Domain SSL",
+  provider:        "Sectigo",
+  product_code:    "TEST-SINGLE-001",
+  description:     "테스트용 싱글 도메인 SSL",
+  duration_months: 12,
+  price:           10000,
+  domain_count:    1,
+  cert_type:       "single_domain",
+  validation_type: "DV",
+  liability_usd:   50000,
+  discount:        0,
+  multi_year_support: false,
+  logo_url:        nil,
+  warranty_url:     nil,
+  brand_site_url:   nil,
+  features:         "테스트 기능 포함",
+  is_active:        true
+)
 
-puts "✅ Seeding complete!"
+Product.create!(
+  name:            "Test Wildcard SSL",
+  provider:        "Sectigo",
+  product_code:    "TEST-WILDCARD-001",
+  description:     "테스트용 와일드카드 SSL",
+  duration_months: 12,
+  price:           25000,
+  domain_count:    1,  # 와일드카드이므로 실 적용시 도메인수는 의미가 다르지만 테스트용
+  cert_type:       "wildcard",
+  validation_type: "DV",
+  liability_usd:   50000,
+  discount:        0,
+  multi_year_support: false,
+  logo_url:        nil,
+  warranty_url:     nil,
+  brand_site_url:   nil,
+  features:         "와일드카드 테스트 기능 포함",
+  is_active:        true
+)
+
+Product.create!(
+  name:            "Test Multi Domain SSL",
+  provider:        "Sectigo",
+  product_code:    "TEST-MULTI-001",
+  description:     "테스트용 멀티도메인 SSL",
+  duration_months: 12,
+  price:           30000,
+  domain_count:    5,  # 예: 최대 5 도메인 포함
+  cert_type:       "multi_domain",
+  validation_type: "DV",
+  liability_usd:   50000,
+  discount:        0,
+  multi_year_support: false,
+  logo_url:        nil,
+  warranty_url:     nil,
+  brand_site_url:   nil,
+  features:         "멀티도메인 테스트 기능 포함",
+  is_active:        true
+)
+
+Product.create!(
+  name:            "Test EV SSL",
+  provider:        "DigiCert",
+  product_code:    "TEST-EV-001",
+  description:     "테스트용 EV 인증서",
+  duration_months: 12,
+  price:           150000,
+  domain_count:    1,
+  cert_type:       "ev_certificate",
+  validation_type: "EV",
+  liability_usd:   1000000,
+  discount:        0,
+  multi_year_support: false,
+  logo_url:        nil,
+  warranty_url:     nil,
+  brand_site_url:   nil,
+  features:         "EV 인증서 테스트",
+  is_active:        true
+)

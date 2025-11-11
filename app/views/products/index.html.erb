@@ -1,0 +1,113 @@
+<%# app/views/products/index.html.erb %>
+<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white py-16">
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- 헤더 -->
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-extrabold text-gray-900">
+        SSL 인증서 상품
+      </h1>
+      <p class="mt-3 text-gray-600 text-base">
+        글로벌 인증기관의 다양한 SSL 인증서를 CertGate를 통해 손쉽게 신청하세요.
+      </p>
+    </header>
+
+    <% active_products = @products.respond_to?(:where) ? @products.where(is_active: true) : @products %>
+
+    <% if active_products.blank? %>
+      <div class="bg-white border border-gray-200 rounded-2xl p-10 text-center text-gray-500 shadow-sm">
+        등록된 인증서 상품이 없습니다.
+      </div>
+    <% else %>
+      <!-- 반응형 그리드: 모바일 1개, 태블릿 2개, 데스크톱 3개 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% active_products.each do |product| %>
+          <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition border border-gray-100 flex flex-col">
+            <%# 할인 배지가 있다면 %>
+            <% if product.respond_to?(:discount) && product.discount.to_i > 0 %>
+              <span class="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-600 to-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                <%= product.discount.to_i %>% 할인
+              </span>
+            <% end %>
+
+            <!-- 카드 본문 -->
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="mb-3">
+                <p class="text-xs font-semibold text-green-600 uppercase tracking-wider">
+                  <%= product.provider.presence || "SSL Certificate" %>
+                </p>
+                <h3 class="text-xl font-bold text-gray-900 mt-1">
+                  <%= product.name %>
+                </h3>
+                <% if product.product_code.present? %>
+                  <p class="text-xs text-gray-400 mt-1">코드: <%= product.product_code %></p>
+                <% end %>
+              </div>
+
+             
+
+              <dl class="space-y-2 text-sm text-gray-700 mt-auto">
+                <% if product.duration_months.present? %>
+                  <div class="flex justify-between">
+                    <dt class="text-gray-500">기간</dt>
+                    <dd class="font-semibold text-gray-900">
+                      <% years = product.duration_months.to_i / 12.0 %>
+                      <% if years >= 1 && (years % 1).zero? %>
+                        <%= years.to_i %>년
+                      <% else %>
+                        <%= product.duration_months %>개월
+                      <% end %>
+                    </dd>
+                  </div>
+                <% end %>
+
+                <% if product.respond_to?(:domain_count) && product.domain_count.present? %>
+                  <div class="flex justify-between">
+                    <dt class="text-gray-500">도메인 수</dt>
+                    <dd class="font-semibold text-gray-900">
+                      <% if product.domain_count == 1 %>
+                        단일 도메인
+                      <% elsif product.domain_count.to_i > 1 %>
+                        최대 <%= product.domain_count %>개
+                      <% else %>
+                        제한 없음
+                      <% end %>
+                    </dd>
+                  </div>
+                <% end %>
+
+                <% if product.liability_usd.present? %>
+                  <div class="flex justify-between">
+                    <dt class="text-gray-500">배상 책임</dt>
+                    <dd class="font-semibold text-gray-900">최대 <%= number_with_delimiter(product.liability_usd) %> USD</dd>
+                  </div>
+                <% end %>
+              </dl>
+            </div>
+
+            <!-- 하단 가격 / 버튼 -->
+            <div class="border-t border-gray-100 px-6 py-4 bg-gradient-to-r from-indigo-50 to-green-50 rounded-b-2xl flex items-center justify-between">
+              <div>
+                <% if product.price.present? %>
+                  <p class="text-xs text-gray-500 mb-1">시작가 (VAT 별도)</p>
+                  <p class="text-xl font-extrabold text-indigo-700">
+                    <%= number_to_currency(product.price, unit: "₩", precision: 0, format: "%u%n") %>
+                  </p>
+                <% else %>
+                  <p class="text-xs text-gray-500 mb-1">가격 문의</p>
+                  <p class="text-lg font-extrabold text-gray-700">견적 요청</p>
+                <% end %>
+              </div>
+
+              <div class="flex gap-2">
+                <%= link_to "상세보기", product_path(product),
+                            class: "px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition" %>
+                <%= link_to "주문하기", new_order_path(product_id: product.id),
+                            class: "px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-indigo-600 to-green-500 text-white hover:opacity-90 shadow-sm transition" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</main>

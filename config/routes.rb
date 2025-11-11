@@ -1,5 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  get "products/index"
+  get "products/show"
   # 기본 헬스체크
   get "up" => "rails/health#show", as: :rails_health_check
 

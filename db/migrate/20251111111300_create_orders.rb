@@ -15,6 +15,9 @@ class CreateOrders < ActiveRecord::Migration[8.1]
       t.string :partner_order_number
       t.datetime :issued_at
       t.datetime :expires_at
+      t.integer :quantity
+      t.integer :total_price
+      t.string :payment_method
 
       t.timestamps
     end
