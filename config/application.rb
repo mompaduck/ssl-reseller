@@ -39,7 +39,11 @@ module SslReseller
     # Don't generate system test files.
     config.generators.system_tests = nil
 
-     config.i18n.default_locale = :ko
-     config.i18n.available_locales = [:ko, :en]
+    # config/locales/devise.ko.yml 파일은 Rails의 국제화(i18n) 시스템을 통해 작동합니다.
+    # Rails는 다국어 지원을 위해 i18n (internationalization) 기능을 제공합니다.
+    config.i18n.default_locale = :ko  # 기본 언어를 한국어로 설정
+    config.i18n.available_locales = [:ko, :en]  # 사용 가능한 언어
+
+
   end
 end

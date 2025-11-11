@@ -18,11 +18,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource.save
     if resource.persisted?
       if resource.active_for_authentication?
-        flash[:notice] = "회원가입이 완료되었습니다."
+        #flash[:notice] = "회원가입이 완료되었습니다."
+        flash[:notice] = I18n.t("devise.registrations.signed_up")
         sign_up(resource_name, resource)
         redirect_to after_sign_up_path_for(resource)
       else
-        flash[:notice] = "회원가입이 완료되었지만, 활성화가 필요합니다."
+        #flash[:notice] = "회원가입이 완료되었지만, 활성화가 필요합니다."
+        flash[:notice] = I18n.t("devise.registrations.signed_up")
         expire_data_after_sign_in!
         redirect_to after_inactive_sign_up_path_for(resource)
       end

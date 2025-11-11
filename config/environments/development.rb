@@ -52,10 +52,6 @@ Rails.application.configure do
     enable_starttls_auto: true
   }
 
-
-
-
-
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -97,4 +93,9 @@ Rails.application.configure do
 
   config.web_console.permissions = '172.30.1.0/24' 
 
+  # i18n 파일 변경 시 자동 리로드
+  config.i18n.fallbacks = false
+  
+  # 번역 누락 시 에러 발생 (디버깅용)
+  config.i18n.raise_on_missing_translations = true
 end

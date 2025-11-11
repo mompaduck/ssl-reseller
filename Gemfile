@@ -24,6 +24,7 @@ gem "devise"                  # 사용자 인증
 gem "dotenv-rails"            # .env 환경변수 로드
 gem "attr_encrypted"          # 데이터 암호화
 gem "active_record_encryption" # Rails 내장 암호화
+gem "devise-i18n"             # 한글 번역
 
 # ==========================================================
 # ⚙️ 백그라운드 / 스케줄링

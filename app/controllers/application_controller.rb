@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+
   # 1️⃣ 모든 요청에 로그인 필터 적용 (로그인 안하면 /users/sign_in 으로 이동)
   before_action :authenticate_user!
 
