@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get "docs", to: "home#docs", as: :docs
   get "support", to: "home#support", as: :support
   get "contact", to: "home#contact", as: :contact
+  get "pricing", to: "pricing#index", as: :pricing
 
   # 인증 시스템 (Devise 사용)
   devise_for :users, controllers: {
