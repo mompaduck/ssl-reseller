@@ -18,13 +18,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource.save
     if resource.persisted?
       if resource.active_for_authentication?
-        #flash[:notice] = "회원가입이 완료되었습니다."
-        flash[:notice] = I18n.t("devise.registrations.signed_up")
+        flash[:notice] = "회원가입이 완료되었습니다."
+        #flash[:notice] = I18n.t("devise.registrations.signed_up") # I18n.locale 작동 안함. 나중에 다시해야함
         sign_up(resource_name, resource)
         redirect_to after_sign_up_path_for(resource)
       else
-        #flash[:notice] = "회원가입이 완료되었지만, 활성화가 필요합니다."
-        flash[:notice] = I18n.t("devise.registrations.signed_up")
+        flash[:notice] = "회원가입이 완료되었지만, 활성화가 필요합니다."
+        #flash[:notice] = I18n.t("devise.registrations.signed_up")
         expire_data_after_sign_in!
         redirect_to after_inactive_sign_up_path_for(resource)
       end
@@ -38,18 +38,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   protected
 
-  # 수정 처리 방식 오버라이드
+  # 수정 처리 방식 오버라이드 (Devise 공식 레시피 적용)
   def update_resource(resource, params)
-    if params[:password].present? || params[:password_confirmation].present?
-      # 비밀번호 변경 + current_password 확인 필요
-      resource.update_with_password(params)
-    else
-      # 비밀번호 변경 없음 → current_password 제거 후 정보만 업데이트
-      params.delete(:current_password)
-      params.delete(:password) if params[:password].blank?
-      params.delete(:password_confirmation) if params[:password_confirmation].blank?
-      resource.update_without_password(params)
-    end
+    # 비밀번호 변경을 시도하는 경우, Devise의 기본 로직(super)을 따름
+    # 이 경우, current_password가 필요함
+    return super if params["password"].present?
+
+    # 비밀번호 변경 없이 개인정보만 수정하는 경우
+    # current_password 없이 업데이트를 허용
+    resource.update_without_password(params.except(:current_password))
   end
 
   # 수정 완료 후 경로

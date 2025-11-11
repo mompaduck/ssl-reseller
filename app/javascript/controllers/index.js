@@ -11,11 +11,13 @@ import PasswordConfirmController from "./password_confirm_controller"
 import DeleteConfirmController from "./delete_confirm_controller"
 import PhoneValidateController from "./phone_validate_controller"
 import ToastController from "./toast_controller"
+import PasswordFormController from "./password_form_controller"
 
 
 application.register("menu", MenuController)
 application.register("email-check", EmailCheckController)
 application.register("phone-validate", PhoneValidateController)
+application.register("password-form", PasswordFormController)
 
 application.register("delete-confirm", DeleteConfirmController)
 application.register("password-confirm", PasswordConfirmController)

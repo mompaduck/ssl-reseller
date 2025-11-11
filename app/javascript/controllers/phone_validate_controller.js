@@ -5,51 +5,45 @@ export default class extends Controller {
   static targets = ["input", "message"]
 
   connect() {
-    console.log("✅ phone-validate controller connected")
-    /*
-    console.log("📞 phone-validate controller connected",
-                "hasInputTarget =", this.hasInputTarget,
-                "hasMessageTarget =", this.hasMessageTarget)
-    // 연결 확인
+    console.log("✅ phone-validate controller connected");
+    // 컨트롤러가 연결될 때 (페이지 로드 시) 현재 입력 필드의 값을 포맷팅
     if (this.hasInputTarget) {
-      console.log("✅ input target found")
-    } else {
-      console.error("❌ input target NOT found")
+      this.inputTarget.value = this._formatNumber(this.inputTarget.value);
     }
-      */
   }
 
-  
-
+  // 사용자가 입력할 때마다 호출되는 액션
   format(event) {
-    let value = event.target.value
+    event.target.value = this._formatNumber(event.target.value);
+  }
+
+  // 전화번호 포맷팅을 처리하는 내부 메소드
+  _formatNumber(value) {
+    if (!value) return "";
     
     // 숫자만 추출
-    let numbers = value.replace(/[^\d]/g, '')
+    let numbers = value.replace(/[^\d]/g, '');
     
     // 최대 11자리로 제한
     if (numbers.length > 11) {
-      numbers = numbers.slice(0, 11)
+      numbers = numbers.slice(0, 11);
     }
     
     // 하이픈 자동 삽입
-    let formatted = ''
+    let formatted = '';
     if (numbers.length <= 3) {
-      formatted = numbers
+      formatted = numbers;
     } else if (numbers.length <= 7) {
-      formatted = numbers.slice(0, 3) + '-' + numbers.slice(3)
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
     } else if (numbers.length <= 10) {
       // 010-123-4567 형식 (10자리)
-      formatted = numbers.slice(0, 3) + '-' + numbers.slice(3, 6) + '-' + numbers.slice(6)
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3, 6)}-${numbers.slice(6)}`;
     } else {
       // 010-1234-5678 형식 (11자리)
-      formatted = numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7)
+      formatted = `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7)}`;
     }
     
-    // 포맷된 값을 입력 필드에 설정
-    event.target.value = formatted
-    
- // console.log("Formatted:", formatted)
+    return formatted;
   }
 
   validate(event) {
