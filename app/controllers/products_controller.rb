@@ -1,13 +1,25 @@
 class ProductsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show] # 로그인 없이 접근 가능
+  skip_before_action :authenticate_user!, only: [:index, :show]
 
   def index
-    # 활성화된 상품만 정렬 (이름순 or 가격순)
-    @products = Product.where(is_active: true)
-                       .order(provider: :asc, price: :asc, name: :asc)
+    # 기본: 활성 상품만 불러오기
+    @products = Product.active.order(provider: :asc, price: :asc, name: :asc)
 
-    # 로그 확인용
-    Rails.logger.debug "🧩 Loaded #{@products.size} products for display"
+    Rails.logger.debug "🧩 Loaded #{@products.size} active products"
+
+    # Provider 필터
+    if params[:provider].present?
+      @products = @products.where(provider: params[:provider])
+      Rails.logger.debug "🔎 Filter applied: provider=#{params[:provider]}"
+    end
+
+    # Category 필터
+    if params[:category].present?
+      @products = @products.where(category: params[:category])
+      Rails.logger.debug "🔎 Filter applied: category=#{params[:category]}"
+    end
+
+    Rails.logger.debug "📦 Final filtered products count = #{@products.size}"
   end
 
   def show

@@ -9,6 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+@import "application.tailwind";
 
 html, body {
   overscroll-behavior: none;

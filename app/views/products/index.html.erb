@@ -18,12 +18,45 @@
         등록된 인증서 상품이 없습니다.
       </div>
     <% else %>
+
+
+<!-- 🔎 Active Filter Badges -->
+<% if params[:provider].present? || params[:category].present? %>
+  <div class="mb-6 flex flex-wrap items-center gap-3">
+
+    <!-- Provider Badge -->
+    <% if params[:provider].present? %>
+      <span class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">
+        Provider: <%= params[:provider] %>
+        <%= link_to "✕",
+                    products_path(params.permit(:category)),
+                    class: "ml-2 text-indigo-500 hover:text-indigo-700 font-bold" %>
+      </span>
+    <% end %>
+
+    <!-- Category Badge -->
+    <% if params[:category].present? %>
+      <span class="inline-flex items-center px-4 py-2 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+        Category: <%= params[:category] %>
+        <%= link_to "✕",
+                    products_path(params.permit(:provider)),
+                    class: "ml-2 text-green-500 hover:text-green-700 font-bold" %>
+      </span>
+    <% end %>
+
+    <!-- Clear All -->
+    <%= link_to "전체 필터 초기화", products_path,
+                class: "inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-full hover:bg-gray-300 ml-2" %>
+
+  </div>
+<% end %>
+
       <!-- 반응형 그리드: 모바일 1개, 태블릿 2개, 데스크톱 3개 -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
   <% active_products.each do |product| %>
     <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition 
                 border border-gray-100 flex flex-col 
-                w-full max-w-[260px] mx-auto">
+                w-full max-w-[60px] mx-auto">
             <%# 할인 배지가 있다면 %>
             <% if product.respond_to?(:discount) && product.discount.to_i > 0 %>
               <span class="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-600 to-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
