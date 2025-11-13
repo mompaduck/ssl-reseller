@@ -1,11 +1,11 @@
 class Product < ApplicationRecord
   # 문자열 기반 enum 방식 (cert_type)
-  enum :cert_type, {
-    single_domain:  "single_domain",
-    wildcard:       "wildcard",
-    multi_domain:   "multi_domain",
-    ev_certificate: "ev_certificate"
-  }, suffix: true
+enum :cert_type, {
+  single:     "single",
+  wildcard:   "wildcard",
+  multi:      "multi",
+  ev:         "ev"
+}, prefix: true
 
   # 문자열 기반 enum 방식 (validation_type)
   enum :validation_type, {

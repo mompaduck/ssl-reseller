@@ -1,185 +1,74 @@
-puts "== Seeding Products =="
+puts "=== Auto Generating SSL Products (approx 30) ==="
 
 Product.destroy_all
 
-products = [
-  # =========================
-  # Single Domain SSL
-  # =========================
-  {
-    category: "single_domain",
-    name: "GoGetSSL Domain SSL",
-    provider: "gogetssl",
-    product_code: "GG-DV-001",
-    description: "빠른 발급과 합리적인 가격의 도메인 검증(DV) SSL 인증서",
-    duration_months: 12,
-    price: 7000,
-    domain_count: 1,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 0,
-    cert_type: "single_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/gogetssl.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://gogetssl.com",
-    features: "- 빠른 발급\n- 99% 브라우저 호환\n- 무료 재발급 제공",
-    is_active: true
-  },
-  {
-    category: "single_domain",
-    name: "Sectigo PositiveSSL",
-    provider: "sectigo",
-    product_code: "SECT-POS-001",
-    description: "가성비 최고의 Sectigo PositiveSSL 도메인 인증서",
-    duration_months: 12,
-    price: 9000,
-    domain_count: 1,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 0,
-    cert_type: "single_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/sectigo.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://sectigo.com",
-    features: "- 즉시 발급\n- 256비트 암호화\n- 사이트 신뢰도 향상",
-    is_active: true
-  },
+providers = {
+  sectigo:   0,
+  comodo:    1,
+  digicert:  2,
+  rapidssl:  3,
+  certum:    4,
+  thawte:    5,
+  geotrust:  6
+}
 
-  # =========================
-  # Wildcard SSL
-  # =========================
-  {
-    category: "wildcard",
-    name: "GoGetSSL Wildcard SSL",
-    provider: "gogetssl",
-    product_code: "GG-WC-001",
-    description: "모든 서브도메인을 보호하는 Wildcard SSL 인증서",
-    duration_months: 12,
-    price: 49000,
-    domain_count: 999,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 10,
-    cert_type: "wildcard",
-    multi_year_support: true,
-    logo_url: "/images/logos/gogetssl.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://gogetssl.com",
-    features: "- Wildcard 보호\n- 서브도메인 무제한\n- 빠른 발급",
-    is_active: true
-  },
-  {
-    category: "wildcard",
-    name: "Sectigo PositiveSSL Wildcard",
-    provider: "sectigo",
-    product_code: "SECT-POS-WC-001",
-    description: "가장 많이 판매되는 Wildcard 도메인 인증서",
-    duration_months: 12,
-    price: 69000,
-    domain_count: 999,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 5,
-    cert_type: "wildcard",
-    multi_year_support: true,
-    logo_url: "/images/logos/sectigo.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://sectigo.com",
-    features: "- 무제한 서브도메인\n- 강력한 암호화",
-    is_active: true
-  },
+cert_types = {
+  single: "single",
+  wildcard: "wildcard",
+  multi: "multi",
+  ev: "ev"
+}
 
-  # =========================
-  # Multi Domain SSL
-  # =========================
-  {
-    category: "multi_domain",
-    name: "GoGetSSL Multi Domain SSL",
-    provider: "gogetssl",
-    product_code: "GG-MD-001",
-    description: "여러 도메인을 한 번에 보호하는 멀티 도메인 인증서",
-    duration_months: 12,
-    price: 38000,
-    domain_count: 3,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 0,
-    cert_type: "multi_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/gogetssl.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://gogetssl.com",
-    features: "- 최대 100개 도메인 확장 가능\n- 빠른 발급",
-    is_active: true
-  },
-  {
-    category: "multi_domain",
-    name: "Sectigo PositiveSSL Multi Domain",
-    provider: "sectigo",
-    product_code: "SECT-POS-MD-001",
-    description: "Sectigo에서 제공하는 Multi Domain 인증서",
-    duration_months: 12,
-    price: 43000,
-    domain_count: 3,
-    validation_type: "DV",
-    liability_usd: 50000,
-    discount: 0,
-    cert_type: "multi_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/sectigo.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://sectigo.com",
-    features: "- SAN 추가 가능\n- 비용 효율적 도메인 관리",
-    is_active: true
-  },
+domain_count_map = {
+  single: 1,
+  wildcard: 999,
+  multi: 5,
+  ev: 1
+}
 
-  # =========================
-  # OV 인증서
-  # =========================
-  {
-    category: "ov_certificate",
-    name: "DigiCert Secure Site SSL",
-    provider: "digicert",
-    product_code: "DIGI-OV-001",
-    description: "기업용 OV SSL 인증서로 최고 수준 신뢰도 제공",
-    duration_months: 12,
-    price: 320000,
-    domain_count: 1,
-    validation_type: "OV",
-    liability_usd: 1500000,
-    discount: 5,
-    cert_type: "single_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/digicert.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://digicert.com",
-    features: "- 기업 실사 검증\n- 최상급 브랜드 신뢰도",
-    is_active: true
-  },
-  {
-    category: "ov_certificate",
-    name: "GeoTrust True BusinessID",
-    provider: "geotrust",
-    product_code: "GEO-OV-001",
-    description: "기업 신뢰를 위한 OV 인증서",
-    duration_months: 12,
-    price: 145000,
-    domain_count: 1,
-    validation_type: "OV",
-    liability_usd: 1250000,
-    discount: 8,
-    cert_type: "single_domain",
-    multi_year_support: true,
-    logo_url: "/images/logos/geotrust.png",
-    warranty_url: "/guides/warranty",
-    brand_site_url: "https://geotrust.com",
-    features: "- OV 검증\n- 강력한 암호화",
-    is_active: true
-  }
-]
+base_prices = {
+  single: 9000,
+  wildcard: 70000,
+  multi: 50000,
+  ev: 150000
+}
 
-Product.insert_all!(products)
+liabilities = [10_000, 25_000, 50_000, 250_000, 500_000, 1_000_000]
 
-puts "== Products Seeding Complete =="
+products_created = 0
+
+providers.each do |prov, prov_code|
+  cert_types.each do |ctype, ctype_value|
+
+    # 같은 provider × cert_type 조합에 대해 1~2개 생성
+    rand(1..2).times do
+      name = "#{prov.to_s.capitalize} #{ctype.to_s.capitalize} SSL"
+      product_code = "#{prov.to_s[0..2].upcase}-#{ctype.to_s[0..2].upcase}-#{SecureRandom.hex(2).upcase}"
+
+      Product.create!(
+        name: name,
+        provider: prov,
+        cert_type: ctype,
+        category: ctype,  # 필터 UI와 동일 구조(single/wildcard/multi/ev)
+        product_code: product_code,
+        description: "#{name} 상품입니다. #{prov.to_s.capitalize}에서 제공하는 #{ctype.to_s.capitalize} SSL 인증서.",
+        duration_months: [12, 24, 36].sample,
+        price: base_prices[ctype] + rand(1000..8000),
+        domain_count: domain_count_map[ctype],
+        validation_type: [:DV, :OV, :EV].sample,
+        liability_usd: liabilities.sample,
+        discount: [0, 5, 10, 20, 30].sample,
+        multi_year_support: [true, false].sample,
+        logo_url: nil,
+        warranty_url: nil,
+        brand_site_url: "https://#{prov}.com",
+        features: "- Strong Encryption\n- Fast Issuance\n- Browser Compatibility",
+        is_active: true
+      )
+
+      products_created += 1
+    end
+  end
+end
+
+puts "=== #{products_created} products created successfully ==="
