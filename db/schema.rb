@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_132213) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_13_165057) do
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "certificate_type"
     t.string "company_address"
@@ -70,11 +70,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_132213) do
     t.string "encrypted_password"
     t.string "name"
     t.string "phone"
+    t.string "provider"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.string "role"
     t.boolean "terms"
+    t.string "uid"
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["api_token"], name: "index_users_on_api_token"

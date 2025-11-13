@@ -25,6 +25,8 @@ gem "dotenv-rails"            # .env 환경변수 로드
 gem "attr_encrypted"          # 데이터 암호화
 gem "active_record_encryption" # Rails 내장 암호화
 gem "devise-i18n"             # 한글 번역
+gem "omniauth"                # 구글회원가입
+gem "omniauth-google-oauth2"  # 구글회원가입ㅠ
 
 # ==========================================================
 # ⚙️ 백그라운드 / 스케줄링
