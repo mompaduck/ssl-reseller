@@ -19,9 +19,11 @@
       </div>
     <% else %>
       <!-- 반응형 그리드: 모바일 1개, 태블릿 2개, 데스크톱 3개 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <% active_products.each do |product| %>
-          <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition border border-gray-100 flex flex-col">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <% active_products.each do |product| %>
+    <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition 
+                border border-gray-100 flex flex-col 
+                w-full max-w-[260px] mx-auto">
             <%# 할인 배지가 있다면 %>
             <% if product.respond_to?(:discount) && product.discount.to_i > 0 %>
               <span class="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-600 to-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
