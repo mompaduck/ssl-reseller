@@ -2,24 +2,31 @@ class ProductsController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
 
   def index
-    # 기본: 활성 상품만 불러오기
-    @products = Product.active.order(provider: :asc, price: :asc, name: :asc)
+    @products = Product.active
 
-    Rails.logger.debug "🧩 Loaded #{@products.size} active products"
-
-    # Provider 필터
+    # -----------------------------------------
+    # 1) 인증기관 (문자열 기반 필터링)
+    # DB에 저장된 값 예 → "Sectigo", "DigiCert"
+    # -----------------------------------------
     if params[:provider].present?
       @products = @products.where(provider: params[:provider])
-      Rails.logger.debug "🔎 Filter applied: provider=#{params[:provider]}"
     end
 
-    # Category 필터
-    if params[:category].present?
-      @products = @products.where(category: params[:category])
-      Rails.logger.debug "🔎 Filter applied: category=#{params[:category]}"
+    # -----------------------------------------
+    # 2) 검증 타입 (DV, OV, EV)
+    # -----------------------------------------
+    if params[:validation_type].present?
+      @products = @products.where(validation_type: params[:validation_type])
     end
 
-    Rails.logger.debug "📦 Final filtered products count = #{@products.size}"
+    # -----------------------------------------
+    # 3) 도메인 타입 (single, wildcard, multi)
+    # -----------------------------------------
+    if params[:domain_type].present?
+      @products = @products.where(domain_type: params[:domain_type])
+    end
+
+    @products = @products.order(provider: :asc, price: :asc)
   end
 
   def show

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_071558) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_13_132213) do
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "certificate_type"
     t.string "company_address"
@@ -38,11 +38,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_071558) do
   create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "brand_site_url"
     t.string "category"
-    t.string "cert_type"
     t.datetime "created_at", null: false
     t.text "description"
     t.integer "discount"
     t.integer "domain_count"
+    t.string "domain_type"
     t.integer "duration_months"
     t.text "features"
     t.boolean "is_active"

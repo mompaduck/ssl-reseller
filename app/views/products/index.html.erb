@@ -13,43 +13,102 @@
 
     <% active_products = @products.where(is_active: true) %>
 
-   <!-- ===== FILTER SECTION ===== -->
+   <!-- ========== FILTER SECTION ========== -->
 <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-8">
 
+  <!-- 가로 정렬 (md 이상) / 세로 정렬 (모바일) -->
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
-    <!-- ===== 상품 종류 ===== -->
-    <div class="flex-1 min-w-0">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">상품 종류</h3>
+    <!-- ========== 인증기관 (CA) + 검증 타입 ========== -->
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
+
+      <!-- ===== 인증기관 (CA) ===== -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">인증기관 (CA)</h3>
+
+        <%= form_with url: products_path, method: :get, local: true do |f| %>
+          <div class="flex items-center gap-3">
+
+            <%= f.select :provider,
+                [
+                  ["전체", ""],
+                  ["Sectigo", "Sectigo"],
+                  ["DigiCert", "DigiCert"],
+                  ["RapidSSL", "RapidSSL"],
+                  ["Certum", "Certum"],
+                  ["Thawte", "Thawte"],
+                  ["GeoTrust", "GeoTrust"]
+                ],
+                { selected: params[:provider] },
+                class: "w-36 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
+                        focus:border-indigo-500 focus:ring-indigo-500 transition",
+                onchange: "this.form.submit();" %>
+
+            <!-- hidden to keep other filters -->
+            <%= f.hidden_field :validation_type, value: params[:validation_type] if params[:validation_type].present? %>
+            <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
+            <%= f.hidden_field :category, value: params[:category] if params[:category].present? %>
+
+          </div>
+        <% end %>
+      </div>
+
+      <!-- ===== 검증 타입 ===== -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">검증 타입</h3>
+
+        <%= form_with url: products_path, method: :get, local: true do |f| %>
+          <div class="flex items-center gap-3">
+
+            <%= f.select :validation_type,
+                [
+                  ["전체", ""],
+                  ["DV (도메인 검증)", "DV"],
+                  ["OV (기업·조직 검증)", "OV"],
+                  ["EV (고급 확장 검증)", "EV"]
+                ],
+                { selected: params[:validation_type] },
+                class: "w-44 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
+                        focus:border-indigo-500 focus:ring-indigo-500 transition",
+                onchange: "this.form.submit();" %>
+
+            <!-- hidden keep previous filters -->
+            <%= f.hidden_field :provider, value: params[:provider] if params[:provider].present? %>
+            <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
+            <%= f.hidden_field :category, value: params[:category] if params[:category].present? %>
+
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+
+    <!-- ========== 도메인 타입 (버튼) ========== -->
+    <div class="flex-1">
+      <h3 class="text-sm font-semibold text-gray-700 mb-2">도메인 타입</h3>
 
       <div class="flex flex-wrap gap-2">
 
-        <% categories = {
-          "single" => "Single Domain SSL",
-          "wildcard" => "Wildcard SSL",
-          "multi" => "Multi Domain SSL",
-          "ov" => "OV 인증서"
+        <% domain_types = {
+          "single" => "Single Domain",
+          "wildcard" => "Wildcard",
+          "multi" => "Multi Domain"
         } %>
 
-        <% all_active = params[:category].blank? %>
+        <% all_active = params[:domain_type].blank? %>
 
-        <!-- 전체 버튼 -->
-        <%= link_to products_path(provider: params[:provider]),
-            class: "
-              h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
-              #{all_active ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-            " do %>
+        <%= link_to products_path(provider: params[:provider], validation_type: params[:validation_type]),
+            class: "h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
+                   #{all_active ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
           전체
         <% end %>
 
-        <% categories.each do |key, label| %>
-          <% active = params[:category] == key %>
+        <% domain_types.each do |key, label| %>
+          <% active = params[:domain_type] == key %>
 
-          <%= link_to products_path(category: key, provider: params[:provider]),
-              class: "
-                h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
-                #{active ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
-              " do %>
+          <%= link_to products_path(domain_type: key, provider: params[:provider], validation_type: params[:validation_type]),
+              class: "h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
+                     #{active ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
             <%= label %>
           <% end %>
         <% end %>
@@ -57,40 +116,10 @@
       </div>
     </div>
 
-    <!-- ===== 인증기관 (CA) ===== -->
-    <div>
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">인증기관 (CA)</h3>
-
-      <%= form_with url: products_path, method: :get, local: true do |f| %>
-        <div class="flex items-center gap-3">
-
-          <%= f.select :provider,
-              [
-                ["전체", ""],
-                ["Sectigo", "Sectigo"],
-                ["Comodo", "Comodo"],
-                ["DigiCert", "DigiCert"],
-                ["RapidSSL", "RapidSSL"],
-                ["Certum", "Certum"],
-                ["Thawte", "Thawte"],
-                ["GeoTrust", "GeoTrust"]
-              ],
-              { selected: params[:provider] },
-              class: "w-36 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
-                      focus:border-indigo-500 focus:ring-indigo-500 transition" %>
-
-          <%# 유지하도록 category 전달 %>
-          <%= f.hidden_field :category, value: params[:category] if params[:category].present? %>
-
-          <%= f.submit "적용",
-              class: "h-10 px-5 rounded-lg bg-indigo-600 text-white text-sm font-semibold 
-                     shadow hover:bg-indigo-700 transition" %>
-        </div>
-      <% end %>
-    </div>
-
   </div>
 </div>
+
+
 
     <% if active_products.blank? %>
       <div class="bg-white border border-gray-200 rounded-2xl p-10 text-center text-gray-500 shadow-sm">
@@ -105,19 +134,28 @@
           <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition 
                       border border-gray-100 flex flex-col">
 
-            <% if product.discount.to_i > 0 %>
-              <span class="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-600 to-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
-                <%= product.discount.to_i %>% 할인
-              </span>
-              
-            <% end %>
+
+<%# 미니멀 코너 스타일 할인 배지 %>
+<% if product.discount.to_i > 0 %>
+  <div class="absolute top-0 right-0 
+              bg-red-500 text-white
+              px-6 py-1.5 
+              transform translate-x-2 -translate-y-0 rotate-45
+              origin-top-right shadow-md">
+    <span class="text-xs font-bold">-<%= product.discount.to_i %>%</span>
+  </div>
+<% end %>
 
             <!-- 카드 본문 -->
             <div class="p-6 flex-1 flex flex-col">
               <div class="mb-3">
-                <p class="text-xs font-semibold text-green-600 uppercase tracking-wider">
+
+
+                <p class="text-xs font-semibold text-green-600 uppercase tracking-wider hidden">
                   <%= product.provider %>
                 </p>
+
+
                 <h3 class="text-xl font-bold text-gray-900 mt-1"><%= product.name %></h3>
                 <p class="text-xs text-gray-400 mt-1">코드: <%= product.product_code %></p>
               </div>
@@ -154,9 +192,18 @@
 
               <div class="flex gap-2">
                 <%= link_to "상세보기", product_path(product),
-                    class: "px-3 py-2 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition" %>
+                    class: "px-3 py-2 text-xs font-medium rounded-lg 
+                            border border-gray-300 text-gray-700 
+                            hover:bg-gray-100 hover:shadow transition" %>
+
                 <%= link_to "주문하기", new_order_path(product_id: product.id),
-                    class: "px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-indigo-600 to-green-500 text-white hover:opacity-90 shadow-sm transition" %>
+                    class: "
+                      px-4 py-2 text-xs font-semibold rounded-lg
+                      bg-gradient-to-r from-indigo-600 to-purple-600 text-white
+                      hover:from-indigo-700 hover:to-purple-700
+                      shadow-lg hover:shadow-xl
+                      transition transform hover:-translate-y-0.5
+                    " %>
               </div>
             </div>
 

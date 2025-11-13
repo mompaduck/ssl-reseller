@@ -5,13 +5,17 @@ class Order < ApplicationRecord
   belongs_to :product
 
   # 주문 상태(enum) 설정
-  enum status: {
-    pending:   "pending",
-    paid:      "paid",
-    issued:    "issued",
-    cancelled: "cancelled",
+  enum :status, {
+    pending:  "pending",
+    paid:     "paid",
+    issued:   "issued",
+    canceled: "canceled",
     refunded:  "refunded"
   }
+
+  belongs_to :product
+  belongs_to :user, optional: true
+
 
 
   # 검증(validation)

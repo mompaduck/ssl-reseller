@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     
     # 회원탈퇴 완료 페이지
     get 'users/deleted', to: 'users/registrations#deleted', as: :deleted_user_registration
+
+    # FAQ
+    get 'faq', to: 'pages#faq', as: 'faq'
+    
   end
 
   # 리소스 라우팅
