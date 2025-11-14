@@ -47,7 +47,6 @@
             <!-- hidden to keep other filters -->
             <%= f.hidden_field :validation_type, value: params[:validation_type] if params[:validation_type].present? %>
             <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
-            <%= f.hidden_field :category, value: params[:category] if params[:category].present? %>
 
           </div>
         <% end %>
@@ -63,9 +62,9 @@
             <%= f.select :validation_type,
                 [
                   ["전체", ""],
-                  ["DV (도메인 검증)", "DV"],
-                  ["OV (기업·조직 검증)", "OV"],
-                  ["EV (고급 확장 검증)", "EV"]
+                  ["DV (도메인 검증)", "dv"],
+                  ["OV (기업·조직 검증)", "ov"],
+                  ["EV (고급 확장 검증)", "ev"]
                 ],
                 { selected: params[:validation_type] },
                 class: "w-44 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
@@ -75,7 +74,6 @@
             <!-- hidden keep previous filters -->
             <%= f.hidden_field :provider, value: params[:provider] if params[:provider].present? %>
             <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
-            <%= f.hidden_field :category, value: params[:category] if params[:category].present? %>
 
           </div>
         <% end %>
