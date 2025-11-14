@@ -134,17 +134,17 @@
           <div class="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition 
                       border border-gray-100 flex flex-col">
 
-
-<%# 미니멀 코너 스타일 할인 배지 %>
-<% if product.discount.to_i > 0 %>
-  <div class="absolute top-0 right-0 
-              bg-red-500 text-white
-              px-6 py-1.5 
-              transform translate-x-2 -translate-y-0 rotate-45
-              origin-top-right shadow-md">
-    <span class="text-xs font-bold">-<%= product.discount.to_i %>%</span>
-  </div>
-<% end %>
+          <%# 미니멀 코너 스타일 할인 배지 %>
+          <% if product.discount.to_i > 0 %>
+            <div class="absolute top-0 right-0 
+            bg-red-500 text-white
+            px-3 py-0.5 
+            transform translate-x-2 -translate-y-2 rotate-25
+            origin-top-right shadow-lgs
+            rounded-lg 
+            **overflow-hidden**"> <span class="text-xs font-bold">-<%= product.discount.to_i %>%</span>
+</div>
+          <% end %>
 
             <!-- 카드 본문 -->
             <div class="p-6 flex-1 flex flex-col">
