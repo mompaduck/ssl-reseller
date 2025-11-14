@@ -26,7 +26,8 @@ gem "attr_encrypted"          # 데이터 암호화
 gem "active_record_encryption" # Rails 내장 암호화
 gem "devise-i18n"             # 한글 번역
 gem "omniauth"                # 구글회원가입
-gem "omniauth-google-oauth2"  # 구글회원가입ㅠ
+gem "omniauth-google-oauth2"  # 구글회원가입
+gem 'omniauth-rails_csrf_protection' # CSRF 보호
 
 # ==========================================================
 # ⚙️ 백그라운드 / 스케줄링

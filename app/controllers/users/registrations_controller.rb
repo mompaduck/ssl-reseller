@@ -11,31 +11,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render json: { exists: exists }
   end
 
-  # 회원가입 처리 오버라이드
-  def create
-    build_resource(sign_up_params)
-
-    resource.save
-    if resource.persisted?
-      if resource.active_for_authentication?
-        flash[:notice] = "회원가입이 완료되었습니다."
-        #flash[:notice] = I18n.t("devise.registrations.signed_up") # I18n.locale 작동 안함. 나중에 다시해야함
-        sign_up(resource_name, resource)
-        redirect_to after_sign_up_path_for(resource)
-      else
-        flash[:notice] = "회원가입이 완료되었지만, 활성화가 필요합니다."
-        #flash[:notice] = I18n.t("devise.registrations.signed_up")
-        expire_data_after_sign_in!
-        redirect_to after_inactive_sign_up_path_for(resource)
-      end
-    else
-      flash.now[:alert] = resource.errors.full_messages.join(" / ")
-      clean_up_passwords(resource)
-      set_minimum_password_length
-      respond_with resource
-    end
-  end
-
   protected
 
   # 수정 처리 방식 오버라이드 (Devise 공식 레시피 적용)

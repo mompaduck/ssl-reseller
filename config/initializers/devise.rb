@@ -9,6 +9,20 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+  # ==> OmniAuth
+  # Add a new OmniAuth provider. Check the wiki for more information on setting
+  # up on your models and hooks.
+  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+  config.omniauth :google_oauth2, 
+                  ENV['GOOGLE_CLIENT_ID'],
+                  ENV['GOOGLE_CLIENT_SECRET'],
+                  {
+                    scope: 'email,profile',
+                    prompt: 'select_account',
+                    image_aspect_ratio: 'square',
+                    image_size: 50
+                  }
+
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
   # confirmation, reset password and unlock tokens in the database.
@@ -26,15 +40,6 @@ Devise.setup do |config|
   # with default "from" parameter.
   #config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
   config.mailer_sender = 'no-reply@certgate.duckdns.org'
-
-  # 구글
-  config.omniauth :google_oauth2,
-  ENV["GOOGLE_CLIENT_ID"],
-  ENV["GOOGLE_CLIENT_SECRET"],
-  {
-    scope: "userinfo.email,userinfo.profile",
-    prompt: "select_account"
-  }
 
   
   # Configure the class responsible to send e-mails.
@@ -278,7 +283,7 @@ Devise.setup do |config|
   # config.navigational_formats = ['*/*', :html, :turbo_stream]
 
   # The default HTTP method used to sign out a resource. Default is :delete.
-  config.sign_out_via = :delete
+  config.sign_out_via = :get
 
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
@@ -322,4 +327,6 @@ Devise.setup do |config|
   # When set to false, does not sign a user in automatically after their password is
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
+  
+  OmniAuth.config.allowed_request_methods = [:get, :post]
 end

@@ -1,31 +1,48 @@
+# app/models/user.rb
 class User < ApplicationRecord
-  # 다음 모듈들이 포함되어 있어야 합니다. :authenticate_user!는 User 모델에 Devise 모듈이 설정되어 있어야 작동합니다.
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,  #, :confirmable
+         :recoverable, :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2]
-         
-  def self.from_google(payload)
-    where(provider: payload.provider, uid: payload.uid).first_or_create do |user|
-      user.email = payload.info.email
-      user.password = Devise.friendly_token[0, 20]
-    end
-  end
 
-  before_validation :sanitize_phone_number
+  validates :name, presence: true, on: :create
+  # terms 검증은 회원가입 시에만
+  validates :terms, acceptance: true, on: :create, if: -> { provider.blank? }
 
-  validates :name, presence: true
-  validates :terms, acceptance: true
-  validates :phone,
-          allow_blank: true,
-          format: { with: /\A(01[016789])\d{7,8}\z/, message: "올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)" }
-          
   has_many :orders, dependent: :destroy
 
-  private
-
-  def sanitize_phone_number
-    if phone.present?
-      self.phone = phone.gsub(/\D/, '')
+  def self.from_omniauth(auth)
+    Rails.logger.info "======== [OmniAuth] Finding or creating user with: #{auth.provider} - #{auth.uid} ========"
+    
+    user = where(provider: auth.provider, uid: auth.uid).first_or_initialize do |u|
+      Rails.logger.info "[OmniAuth] New user initialization block."
+      u.email = auth.info.email
+      u.password = Devise.friendly_token[0, 20]
+      u.name = auth.info.name || auth.info.email.split('@').first
     end
+
+    # provider와 uid를 명시적으로 할당
+    user.provider = auth.provider
+    user.uid = auth.uid
+
+    if user.persisted?
+      Rails.logger.info "[OmniAuth] User exists. Checking for changes."
+      if user.changed?
+        Rails.logger.info "[OmniAuth] User has changes, attempting to save."
+        saved = user.save
+        Rails.logger.info "[OmniAuth] Save result for existing user: #{saved}. Errors: #{user.errors.full_messages.join(', ')}"
+      else
+        Rails.logger.info "[OmniAuth] User has no changes. No save needed."
+      end
+    else
+      Rails.logger.info "[OmniAuth] New user. Attempting to save without validation."
+      # 신규 사용자는 검증 없이 저장
+      saved = user.save(validate: false)
+      Rails.logger.info "[OmniAuth] Save result for new user: #{saved}. Errors: #{user.errors.full_messages.join(', ')}"
+    end
+
+    Rails.logger.info "[OmniAuth] Final user persisted state: #{user.persisted?}"
+    Rails.logger.info "================================================================================"
+    
+    user
   end
 end

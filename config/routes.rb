@@ -1,7 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  get "products/index"
-  get "products/show"
+  # get "products/index"
+  # get "products/show"
   # 기본 헬스체크
   get "up" => "rails/health#show", as: :rails_health_check
 
@@ -15,12 +15,16 @@ Rails.application.routes.draw do
   get "contact", to: "home#contact", as: :contact
   get "pricing", to: "pricing#index", as: :pricing
 
+  # FAQ
+  get 'faq', to: 'pages#faq', as: 'faq'
+
+
   # 인증 시스템 (Devise 사용)
   devise_for :users, controllers: {
     sessions:      "users/sessions",
     registrations: "users/registrations",
-    confirmations: "users/confirmations",
-    omniauth_callbacks: "users/omniauth_callbacks"
+    confirmations: 'users/confirmations',
+    omniauth_callbacks: 'users/omniauth_callbacks'  # 추가
   }
 
   devise_scope :user do
@@ -33,9 +37,9 @@ Rails.application.routes.draw do
     # 회원탈퇴 완료 페이지
     get 'users/deleted', to: 'users/registrations#deleted', as: :deleted_user_registration
 
-    # FAQ
-    get 'faq', to: 'pages#faq', as: 'faq'
-    
+
+    #Devise failure 처리
+    get '/users/auth/failure', to: 'users/sessions#new'
   end
 
   # 리소스 라우팅

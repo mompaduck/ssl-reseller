@@ -28,7 +28,7 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+    config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -81,6 +81,9 @@ Rails.application.configure do
 # 호스트 권한 부여 (Host Authorization) 목록에 도메인 추가
   config.hosts << "certgate.duckdns.org"
 
+  # 프록시 뒤에서 실행 중임을 알림
+  config.action_dispatch.x_sendfile_header = nil
+
   # Enable DNS rebinding protection and other `Host` header attacks.
   # config.hosts = [
   #   "example.com",     # Allow requests from example.com
@@ -89,4 +92,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+ 
+
 end

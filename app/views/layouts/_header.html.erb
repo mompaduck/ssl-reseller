@@ -29,10 +29,10 @@
       <%# 로그인 상태에 따라 다르게 표시 %>
       <% if user_signed_in? %>
         <%= link_to "마이페이지", edit_user_registration_path, class: "hover:text-indigo-200 transition" %>
-        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "hover:text-indigo-200 transition" %>
+        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete, turbo: "false" }, class: "hover:text-indigo-200 transition" %>
       <% else %>
-        <%= link_to "로그인", new_user_session_path, class: "hover:text-indigo-200 transition" %>
-        <%= link_to "회원가입", new_user_registration_path, class: "hover:text-indigo-200 transition" %>
+        <%= link_to "로그인", new_user_session_path, data: { turbo: "false" }, class: "hover:text-indigo-200 transition" %>
+        <%= link_to "회원가입", new_user_registration_path, data: { turbo: "false" }, class: "hover:text-indigo-200 transition" %>
       <% end %>
     </div>
 
@@ -69,10 +69,10 @@
 
       <% if user_signed_in? %>
         <%= link_to "마이페이지", edit_user_registration_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
-        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete, turbo: "false" }, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
       <% else %>
-        <%= link_to "로그인", new_user_session_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
-        <%= link_to "회원가입", new_user_registration_path, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <%= link_to "로그인", new_user_session_path, data: { turbo: "false" }, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
+        <%= link_to "회원가입", new_user_registration_path, data: { turbo: "false" }, class: "py-2 px-3 rounded-md hover:bg-indigo-700 transition" %>
       <% end %>
     </div>
   </div>
