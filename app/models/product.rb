@@ -1,18 +1,19 @@
+# app/models/product.rb
 class Product < ApplicationRecord
   # ============================
-  # ENUMS (문자열 기반)
+  # ENUMS (정수 기반)
   # ============================
 
   enum :domain_type, {
-    single:   "single",
-    wildcard: "wildcard",
-    multi:    "multi"
+    single:   0,
+    wildcard: 1,
+    multi:    2
   }, prefix: true
 
   enum :validation_type, {
-    DV: "DV",
-    OV: "OV",
-    EV: "EV"
+    dv: 0,
+    ov: 1,
+    ev: 2
   }
 
   PROVIDERS = [
@@ -41,8 +42,7 @@ class Product < ApplicationRecord
 
   scope :active, -> { where(is_active: true) }
 
-  # 자동 이름 생성
   def auto_name
-    "#{provider} #{validation_type} #{DOMAIN_LABEL[domain_type]} SSL"
+    "#{provider} #{validation_type.upcase} #{DOMAIN_LABEL[domain_type]} SSL"
   end
 end

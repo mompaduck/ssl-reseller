@@ -15,15 +15,15 @@ class ProductsController < ApplicationController
     # -----------------------------------------
     # 2) 검증 타입 (DV, OV, EV)
     # -----------------------------------------
-    if params[:validation_type].present?
-      @products = @products.where(validation_type: params[:validation_type])
+    if params[:validation_type].present? && Product.validation_types.key?(params[:validation_type])
+      @products = @products.where(validation_type: Product.validation_types[params[:validation_type]])
     end
 
     # -----------------------------------------
     # 3) 도메인 타입 (single, wildcard, multi)
     # -----------------------------------------
-    if params[:domain_type].present?
-      @products = @products.where(domain_type: params[:domain_type])
+    if params[:domain_type].present? && Product.domain_types.key?(params[:domain_type])
+      @products = @products.where(domain_type: Product.domain_types[params[:domain_type]])
     end
 
     @products = @products.order(provider: :asc, price: :asc)

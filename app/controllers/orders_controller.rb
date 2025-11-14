@@ -2,7 +2,8 @@ class OrdersController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    @certificate_type = params[:certificate_type] || "dv"
+    # certificate_type이 유효한 enum 키인지 확인, 아니면 기본값 :dv 사용
+    @certificate_type = Certificate.certificate_types.key?(params[:certificate_type]) ? params[:certificate_type] : :dv
     @order = Order.new(certificate_type: @certificate_type)
   end
 

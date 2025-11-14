@@ -1,0 +1,40 @@
+# app/models/order.rb
+class Order < ApplicationRecord
+  # 관계 설정
+  belongs_to :user
+  belongs_to :product
+
+  # 주문 상태(enum)
+  enum status: {
+    pending: 0,
+    paid: 1,
+    issued: 2,
+    canceled: 3,
+    refunded: 4
+  }
+
+  # 검증(validation)
+  validates :certificate_type, presence: true
+  validates :domain,           presence: true
+  validates :company_name,     presence: true
+  validates :phone,            presence: true
+  validates :user_id,          presence: true
+  validates :product_id,       presence: true
+  validates :status,           presence: true, inclusion: { in: statuses.keys }
+  validates :quantity,         numericality: { only_integer: true, greater_than: 0 }, if: -> { quantity.present? }
+  validates :total_price,      numericality: { only_integer: true, greater_than_or_equal_to: 0 }, if: -> { total_price.present? }
+
+  # 콜백
+  before_validation :set_ordered_time, on: :create
+
+  # 스코프
+  scope :recent,        -> { order(created_at: :desc) }
+  scope :for_user,      ->(user) { where(user_id: user.id) }
+  scope :active_orders, -> { where(status: [:pending, :paid, :issued]) }
+
+  private
+
+  def set_ordered_time
+    self.ordered_at ||= Time.current if respond_to?(:ordered_at)
+  end
+end

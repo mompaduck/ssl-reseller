@@ -1,18 +1,2 @@
-# config/initializers/omniauth.rb
-Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :google_oauth2,
-           ENV['GOOGLE_CLIENT_ID'],
-           ENV['GOOGLE_CLIENT_SECRET'],
-           {
-             scope: 'email,profile',
-             prompt: 'select_account'
-           }
-end
-
-# 실패 처리
-OmniAuth.config.on_failure = Proc.new { |env|
-  OmniAuth::FailureEndpoint.new(env).redirect_to_failure
-}
-
-OmniAuth.config.allowed_request_methods = [:post, :get]
-OmniAuth.config.silence_get_warning = true
+# 이 파일의 내용은 devise.rb로 이전되었습니다.
+# 중복 설정을 방지하기 위해 비워둡니다.

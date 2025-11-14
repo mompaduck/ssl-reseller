@@ -4,7 +4,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def google_oauth2
 
-Rails.logger.info "🔥 OAuth Callback Received"
+  Rails.logger.info "🔥 OAuth Callback Received"
   Rails.logger.info "🔸 request.original_url: #{request.original_url}"
   Rails.logger.info "🔸 forwarded proto: #{request.env['HTTP_X_FORWARDED_PROTO']}"
   Rails.logger.info "🔸 cookie: #{request.cookies.inspect}"

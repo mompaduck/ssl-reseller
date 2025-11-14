@@ -16,7 +16,7 @@
             <li>✅ 1년 유효기간</li>
           </ul>
         </div>
-        <%= link_to "선택하기", new_order_path(certificate_type: "dv"),
+        <%= link_to "선택하기", new_order_path(certificate_type: :dv),
           class: "block text-center bg-gradient-to-r from-indigo-600 to-green-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition" %>
       </div>
 
@@ -32,7 +32,7 @@
             <li>✅ 1~2년 유효기간</li>
           </ul>
         </div>
-        <%= link_to "선택하기", new_order_path(certificate_type: "ov"),
+        <%= link_to "선택하기", new_order_path(certificate_type: :ov),
           class: "block text-center bg-gradient-to-r from-indigo-600 to-green-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition" %>
       </div>
 
@@ -47,7 +47,7 @@
             <li>✅ 1~2년 유효기간</li>
           </ul>
         </div>
-        <%= link_to "선택하기", new_order_path(certificate_type: "ev"),
+        <%= link_to "선택하기", new_order_path(certificate_type: :ev),
           class: "block text-center bg-gradient-to-r from-indigo-600 to-green-500 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition" %>
       </div>
     </div>

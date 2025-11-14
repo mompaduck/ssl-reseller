@@ -1,11 +1,17 @@
 default: &default
   adapter: mysql2
   encoding: utf8mb4
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV.fetch("DB_USERNAME", "certadmin") %>
-  password: <%= ENV.fetch("DB_PASSWORD", "") %>
-  host: <%= ENV.fetch("DB_HOST", "localhost") %>
-  port: <%= ENV.fetch("DB_PORT", 3306) %>
+  pool: 5
+  database: ssl_reseller
+  username: certadmin
+  password: "qweasdQ1!"
+  host: localhost
+  port: 3306
+  #max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  #username: <%= ENV.fetch("DB_USERNAME", "certadmin") %>
+  #password: <%= ENV.fetch("DB_PASSWORD", "") %>
+  #host: <%= ENV.fetch("DB_HOST", "localhost") %>
+  #port: <%= ENV.fetch("DB_PORT", 3306) %>
 
 development:
   <<: *default
@@ -17,11 +23,9 @@ test:
 
 production:
   <<: *default
-  database: ssl_reseller_production
-  username: <%= ENV.fetch("DATABASE_USER", "certadmin") %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD", "") %>
-  host: <%= ENV.fetch("DATAB5ASE_HOST", "127.0.0.1") %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
-
+  database: ssl_reseller_development
+  username: certadmin
+  password: "qweasdQ1!"
+  host: "127.0.0.1"
+  pool: 5
 

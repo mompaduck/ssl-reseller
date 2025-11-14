@@ -9,6 +9,7 @@ class User < ApplicationRecord
   validates :terms, acceptance: true, on: :create, if: -> { provider.blank? }
 
   has_many :orders, dependent: :destroy
+  has_many :certificates, dependent: :destroy
 
   def self.from_omniauth(auth)
     Rails.logger.info "======== [OmniAuth] Finding or creating user with: #{auth.provider} - #{auth.uid} ========"

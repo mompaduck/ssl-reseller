@@ -1,0 +1,36 @@
+# app/models/certificate.rb
+class Certificate < ApplicationRecord
+  belongs_to :order
+  belongs_to :user
+
+  # Certificate status enum (integer)
+  enum status: {
+    pending: 0,
+    issued: 1,
+    expired: 2,
+    revoked: 3
+  }, _suffix: true, default: :pending
+
+  # Certificate type enum (integer)
+  enum certificate_type: {
+    dv: 0,
+    ov: 1,
+    ev: 2
+  }, _prefix: true, default: :dv
+
+  validates :serial_number, presence: true, uniqueness: true
+  validates :certificate_body, presence: true, if: :issued?
+  validates :expires_at, presence: true, if: :issued?
+
+  scope :recent, -> { order(issued_at: :desc) }
+  scope :active, -> { issued.where("expires_at > ?", Time.current) }
+
+  def expired?
+    super || (expires_at.present? && expires_at < Time.current)
+  end
+
+  def revoke!
+    revoked!
+    update!(revoked_at: Time.current)
+  end
+end

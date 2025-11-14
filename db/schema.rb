@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_13_165057) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_14_065913) do
+  create_table "certificates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.text "certificate_body"
+    t.integer "certificate_type", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "issued_at"
+    t.bigint "order_id", null: false
+    t.text "private_key"
+    t.datetime "revoked_at"
+    t.string "serial_number"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["order_id"], name: "index_certificates_on_order_id"
+    t.index ["serial_number"], name: "index_certificates_on_serial_number"
+    t.index ["user_id"], name: "index_certificates_on_user_id"
+  end
+
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "certificate_type"
     t.string "company_address"
@@ -42,7 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_165057) do
     t.text "description"
     t.integer "discount"
     t.integer "domain_count"
-    t.string "domain_type"
+    t.integer "domain_type"
     t.integer "duration_months"
     t.text "features"
     t.boolean "is_active"
@@ -54,7 +72,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_165057) do
     t.string "product_code"
     t.string "provider"
     t.datetime "updated_at", null: false
-    t.string "validation_type"
+    t.integer "validation_type"
     t.string "warranty_url"
   end
 
@@ -85,6 +103,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_13_165057) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
   end
 
+  add_foreign_key "certificates", "orders"
+  add_foreign_key "certificates", "users"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
 end

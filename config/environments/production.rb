@@ -27,6 +27,13 @@ Rails.application.configure do
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
 
+  config.action_controller.forgery_protection_origin_check = false
+
+  config.action_dispatch.trusted_proxies = %w(
+    127.0.0.1
+    ::1
+    localhost
+  )
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
     config.force_ssl = true
 
@@ -92,6 +99,14 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+ 
+ 
+  # Assets 설정
+  config.assets.compile = false  # false로 유지 (precompile 사용)
+  config.assets.digest = true
+  
+  # Public file server 설정
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
  
 

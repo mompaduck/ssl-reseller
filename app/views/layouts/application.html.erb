@@ -3,27 +3,31 @@
 <head>
   <title>CertGate SSL 플랫폼</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+   <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-</head>
+    <%# Tailwind CSS CDN (개발용) - 오류나서 임시로 cdn 사용 %>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<body class="bg-gray-900 text-gray-100 font-sans">
+    <%# ★ 여기 두 줄 추가 %>
+    <%#= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%# javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  </head>
+
+<body>
   <%= render "layouts/header" %>
-  
-  <%# 토스트 메시지 컨테이너 %>
-  <div id="toast-container" class="fixed top-4 right-4 z-50 w-full max-w-sm space-y-3">
-    <%= render "shared/toast" %>
-  </div>
-  
+
   <main class="pt-16 min-h-screen">
     <%= yield %>
   </main>
 
   <%= render "layouts/footer" %>
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[9999] w-full max-w-sm space-y-3" data-turbo-permanent>
+    <%= render "shared/toast" %>
+  </div>
 </body>
 </html>
 
