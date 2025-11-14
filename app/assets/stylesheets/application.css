@@ -15,19 +15,3 @@ html, body {
   overscroll-behavior: none;
   background-color: #111827; /* Tailwind gray-900 */
 }
-
-/* 토스트 메시지 사라지는 애니메이션 */
-@keyframes fade-out-breathe {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-}
-
-.fade-out-breathe {
-  animation: fade-out-breathe 0.5s ease-out forwards;
-}

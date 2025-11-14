@@ -11,8 +11,7 @@ gem "puma"                    # 웹 서버
 gem "turbo-rails"             # Hotwire (Turbo)
 gem "stimulus-rails"          # Hotwire (Stimulus)
 gem "tailwindcss-rails"       # TailwindCSS 통합
-gem 'sprockets-rails'
-#gem "propshaft"               # 에셋 파이프라인 (Sprockets 대체)
+gem "propshaft"               # 에셋 파이프라인 (Sprockets 대체)
 gem "bootsnap", require: false # 부팅 성능 향상
 
 # gem "importmap-rails" # (← 주석처리)

@@ -2,35 +2,40 @@
 <html lang="ko">
 <head>
   <title>CertGate SSL 플랫폼</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-   <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%# Tailwind CSS CDN (개발용) - 오류나서 임시로 cdn 사용 %>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <%# Tailwind CSS CDN (개발용) - 오류나서 임시 CDN %>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <%# ★ 여기 두 줄 추가 %>
-    <%#= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%# ★ ESBuild / Bun / Webpack 사용자 필수 JS %>
+  <%= javascript_include_tag "application", defer: true, "data-turbo-track": "reload" %>
 
-     <!-- ★★★ ESBuild / Bun / Webpack 사용자 필수 ★★★ -->
-    <%= javascript_include_tag "application", defer: true, "data-turbo-track": "reload" %>
+  <!-- ★★★ 바운스 스크롤 제거 + 배경색 보정 ★★★ -->
+  <style>
+    html, body {
+      overscroll-behavior-y: none;      /* 위쪽 바운스 스크롤 방지 */
+      background-color: #4f46e5;        /* indigo-600 (헤더 배경과 동일 색) */
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 
+</head>
 
-  </head>
-
-<body>
+<body class="bg-gray-50">
   <%= render "layouts/header" %>
-
-  <main class="pt-16 min-h-screen">
-    <%= render "shared/toast" %>
+  
+  <%# 메인 컨텐츠 %>
+  <main class="pt-20 min-h-screen bg-white">
+    <%# Flash 메시지 - 컨텐츠 최상단 %>
+    <%= render "shared/flash_messages" %>
+    
     <%= yield %>
   </main>
-
+  
   <%= render "layouts/footer" %>
-
 </body>
 </html>
-
-
-
