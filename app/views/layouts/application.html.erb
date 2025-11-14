@@ -13,21 +13,22 @@
     <%#= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%# stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
-    <%# javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+     <!-- ★★★ ESBuild / Bun / Webpack 사용자 필수 ★★★ -->
+    <%= javascript_include_tag "application", defer: true, "data-turbo-track": "reload" %>
+
+
   </head>
 
 <body>
   <%= render "layouts/header" %>
 
   <main class="pt-16 min-h-screen">
+    <%= render "shared/toast" %>
     <%= yield %>
   </main>
 
   <%= render "layouts/footer" %>
 
-  <div id="toast-container" class="fixed top-4 right-4 z-[9999] w-full max-w-sm space-y-3" data-turbo-permanent>
-    <%= render "shared/toast" %>
-  </div>
 </body>
 </html>
 

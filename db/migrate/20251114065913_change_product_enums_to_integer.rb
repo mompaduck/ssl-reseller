@@ -10,8 +10,8 @@ class ChangeProductEnumsToInteger < ActiveRecord::Migration[8.0]
       SET domain_type_tmp =
         CASE domain_type
           WHEN 'single' THEN 0
-          WHEN 'wildcard' THEN 1
-          WHEN 'multi' THEN 2
+          WHEN 'multi' THEN 1
+          WHEN 'wildcard' THEN 2
         END;
     SQL
 

@@ -1,134 +1,117 @@
-<%# Main Content %>
-<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-20 px-4">
+<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center py-16 px-4">
   <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-   
-      <%# Login Card %>
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        
-        <%# Card Header %>
-        <div class="bg-gradient-to-r from-blue-600 to-green-600 px-8 py-6">
-          <h2 class="text-2xl font-bold text-white text-center">
-            로그인
-          </h2>
-          <p class="text-blue-100 text-center mt-2 text-sm">
-            안전한 SSL 인증서 관리 시스템
+
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+
+      <!-- Header -->
+     <div class="bg-gradient-to-br from-indigo-600 to-purple-600 px-6 py-5">
+        <h2 class="text-2xl font-bold text-white text-center">로그인</h2>
+        <p class="text-purple-100 text-center mt-1 text-sm">
+          안전한 SSL 인증서 관리 시스템
+        </p>
+      </div>
+
+      <div class="px-6 py-4">
+
+        <!-- Social Login -->
+        <div class="mt-4">
+          <% if devise_mapping.omniauthable? %>
+            <% resource_class.omniauth_providers.each do |provider| %>
+              <%= link_to user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full flex items-center justify-center px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition" do %>
+                <svg class="w-5 h-5" viewBox="0 0 48 48">
+                  <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                  <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+                  <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.657-3.657-11.303-8H6.306C9.656,39.663,16.318,44,24,44z"></path>
+                  <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+                </svg>
+                <span class="ml-3 text-sm font-medium text-gray-700">Google 계정으로 로그인</span>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Divider -->
+        <div class="mt-4">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-500">또는</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Flash Messages -->
+      <% if notice %>
+        <div class="mx-6 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800"><%= notice %></p>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-sm text-red-800"><%= alert %></p>
+        </div>
+      <% end %>
+
+      <!-- Login Form -->
+      <div class="px-6 py-6">
+        <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+
+          <!-- Email -->
+          <div>
+            <%= f.label :email, "이메일", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "you@email.com",
+                class: "block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900" %>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <%= f.label :password, "비밀번호", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••",
+                class: "block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900" %>
+          </div>
+
+          <!-- Remember + Forgot -->
+          <div class="flex items-center justify-between">
+            <% if devise_mapping.rememberable? %>
+              <div class="flex items-center">
+                <%= f.check_box :remember_me, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+                <%= f.label :remember_me, "로그인 유지", class: "ml-2 text-sm text-gray-700" %>
+              </div>
+            <% end %>
+
+            <%= link_to "비밀번호 찾기", new_password_path(resource_name), class: "text-sm font-medium text-blue-600 hover:text-blue-500" %>
+          </div>
+
+          <!-- Submit -->
+          <%= f.submit "로그인",
+          class: "w-full py-3 bg-gradient-to-br from-indigo-600 to-purple-600 
+              text-white text-base font-semibold rounded-lg hover:opacity-90 
+              transition shadow-md cursor-pointer" %>
+
+        <% end %>
+
+        <!-- Sign Up Link -->
+        <div class="mt-4 text-center">
+          <p class="text-sm text-gray-600">
+            계정이 없으신가요?
+            <%= link_to "회원가입", new_registration_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
           </p>
         </div>
 
-        <%# Flash Messages %>
-        <% if notice %>
-          <div class="mx-8 mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-sm text-blue-800"><%= notice %></p>
-          </div>
-        <% end %>
-        
-        <% if alert %>
-          <div class="mx-8 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-sm text-red-800"><%= alert %></p>
-          </div>
-        <% end %>
-
-        <%# Form %>
-        <div class="px-8 py-8">
-          <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
-            
-            <%# Email Input %>
-            <div>
-              <%= f.label :email, "이메일", class: "block text-sm font-medium text-gray-700 mb-2" %>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                  </svg>
-                </div>
-                <%= f.email_field :email, 
-                    autofocus: true, 
-                    autocomplete: "email",
-                    placeholder: "your@email.com",
-                    class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-900" %>
-              </div>
-            </div>
-
-            <%# Password Input %>
-            <div>
-              <%= f.label :password, "비밀번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                  </svg>
-                </div>
-                <%= f.password_field :password, 
-                    autocomplete: "current-password",
-                    placeholder: "••••••••",
-                    class: "block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-900" %>
-              </div>
-            </div>
-
-            <%# Remember Me & Forgot Password %>
-            <div class="flex items-center justify-between">
-              <% if devise_mapping.rememberable? %>
-                <div class="flex items-center">
-                  <%= f.check_box :remember_me, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
-                  <%= f.label :remember_me, "로그인 상태 유지", class: "ml-2 block text-sm text-gray-700" %>
-                </div>
-              <% end %>
-
-              <%= link_to "비밀번호 찾기", new_password_path(resource_name), class: "text-sm font-medium text-blue-600 hover:text-blue-500" %>
-            </div>
-
-            <%# Submit Button %>
-            <div>
-              <%= f.submit "로그인", class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition cursor-pointer" %>
-            </div>
-          <% end %>
-
-          <%# Divider %>
-          <div class="mt-6">
-            <div class="relative">
-              <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-gray-300"></div>
-              </div>
-              <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-white text-gray-500">또는</span>
-              </div>
-            </div>
-          </div>
-
-          <%# Social Logins %>
-          <div class="mt-6">
-            <%- if devise_mapping.omniauthable? %>
-              <%- resource_class.omniauth_providers.each do |provider| %>
-                <%= link_to user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition" do %>
-                  <svg class="w-5 h-5" viewBox="0 0 48 48">
-                    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-                    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.657-3.657-11.303-8H6.306C9.656,39.663,16.318,44,24,44z"></path>
-                    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-                  </svg>
-                  <span class="ml-3 text-sm font-medium text-gray-700">Google 계정으로 로그인</span>
-                <% end %>
-              <% end %>
-            <% end %>
-          </div>
-        
-
-          <%# Sign Up Link %>
-          <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-              계정이 없으신가요?
-              <%= link_to "회원가입", new_registration_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
-            </p>
-          <%# Security Badge %>
-          <div class="mt- text-center">
-            <div class="inline-flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200">
-              <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-              </svg>
-              <span class="text-sm text-gray-600">256비트 SSL 암호화로 보호됨</span>
-            </div>
+        <!-- Security Badge -->
+        <div class="mt-4 text-center">
+          <div class="inline-flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200">
+            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span class="text-sm text-gray-600">256비트 SSL 암호화로 보호됨</span>
           </div>
         </div>
+
       </div>
     </div>
   </div>

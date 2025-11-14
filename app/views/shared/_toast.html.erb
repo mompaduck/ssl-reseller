@@ -26,24 +26,4 @@
       </svg>
     </button>
   </div>
-
-  <%# --- DEBUGGING SCRIPT --- %>
-  <script nonce="<%= content_security_policy_nonce %>">
-    try {
-      const toastElement = document.getElementById("toast-<%= type %>-<%= message.object_id %>");
-      if (toastElement) {
-        console.log("DEBUG: Found toast element, will hide in 5s:", toastElement.id);
-        setTimeout(() => {
-          console.log("DEBUG: Hiding toast:", toastElement.id);
-          toastElement.style.transition = 'opacity 0.5s ease-out';
-          toastElement.style.opacity = '0';
-          setTimeout(() => { toastElement.remove(); }, 500);
-        }, 5000);
-      } else {
-        console.error("DEBUG: Could not find toast element for hiding.");
-      }
-    } catch (e) {
-      console.error("DEBUG: Error in toast inline script:", e);
-    }
-  </script>
 <% end %>
