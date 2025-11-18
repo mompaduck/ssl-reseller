@@ -3,7 +3,6 @@
   "private": true,
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
-    "@hotwired/stimulus-webpack-helpers": "^1.0.1",
     "@hotwired/turbo-rails": "^8.0.20",
     "autoprefixer": "^10.4.19",
     "esbuild": "^0.25.12",
