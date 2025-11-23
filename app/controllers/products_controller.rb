@@ -15,8 +15,11 @@ class ProductsController < ApplicationController
     # -----------------------------------------
     # 2) 검증 타입 (DV, OV, EV)
     # -----------------------------------------
-    if params[:validation_type].present? && Product.validation_types.key?(params[:validation_type])
-      @products = @products.where(validation_type: Product.validation_types[params[:validation_type]])
+    if params[:validation_type].present?
+      vt = params[:validation_type].to_s.downcase
+      if Product.validation_types.key?(vt)
+        @products = @products.where(validation_type: Product.validation_types[vt])
+      end
     end
 
     # -----------------------------------------

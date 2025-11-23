@@ -1,27 +1,94 @@
-<h2>Change your password</h2>
+<main class="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center py-16 px-4">
+  <div class="w-full max-w-md">
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= f.error_notification %>
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
 
-  <%= f.input :reset_password_token, as: :hidden %>
-  <%= f.full_error :reset_password_token %>
+      <!-- Header -->
+      <div class="bg-blue-600 px-6 py-5">
+        <div class="flex items-center justify-center mb-2">
+          <i data-lucide="lock-keyhole" class="w-8 h-8 text-white"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white text-center">비밀번호 재설정</h2>
+        <p class="text-blue-100 text-center mt-1 text-sm">
+          새로운 비밀번호를 입력하세요
+        </p>
+      </div>
 
-  <div class="form-inputs">
-    <%= f.input :password,
-                label: "New password",
-                required: true,
-                autofocus: true,
-                hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
-                label: "Confirm your new password",
-                required: true,
-                input_html: { autocomplete: "new-password" } %>
+      <!-- Flash Messages -->
+      <% if notice %>
+        <div class="mx-6 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800"><%= notice %></p>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+          <p class="text-sm text-red-800"><%= alert %></p>
+        </div>
+      <% end %>
+
+      <!-- Form -->
+      <div class="px-6 py-6">
+        <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "space-y-4" }) do |f| %>
+          
+          <%= f.hidden_field :reset_password_token %>
+
+          <!-- Validation Errors -->
+          <% if resource.errors.any? %>
+            <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <h3 class="text-sm font-bold text-red-900 mb-2">
+                <%= pluralize(resource.errors.count, "오류") %>가 발생했습니다:
+              </h3>
+              <ul class="list-disc list-inside text-sm text-red-800 space-y-1">
+                <% resource.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <!-- New Password -->
+          <div>
+            <%= f.label :password, "새 비밀번호", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.password_field :password, autofocus: true, autocomplete: "new-password", placeholder: "새 비밀번호 입력",
+                class: "block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900" %>
+            <% if @minimum_password_length %>
+              <p class="text-xs text-gray-500 mt-1">최소 <%= @minimum_password_length %>자 이상</p>
+            <% end %>
+          </div>
+
+          <!-- Password Confirmation -->
+          <div>
+            <%= f.label :password_confirmation, "비밀번호 확인", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "비밀번호 재입력",
+                class: "block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900" %>
+          </div>
+
+          <!-- Submit -->
+          <%= f.submit "비밀번호 변경",
+              class: "w-full py-3 bg-blue-600 
+                  text-white text-base font-semibold rounded-lg hover:bg-blue-700 
+                  transition shadow-md cursor-pointer" %>
+
+        <% end %>
+
+        <!-- Links -->
+        <div class="mt-6 text-center pt-4 border-t border-gray-200">
+          <p class="text-sm text-gray-600">
+            <%= link_to "로그인 페이지로 돌아가기", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-700" %>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
+</main>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Change my password" %>
-  </div>
-<% end %>
-
-<%= render "users/shared/links" %>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+  
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+  });
+</script>

@@ -1,28 +1,104 @@
-<div class="min-h-screen bg-gray-50 px-4 py-10">
-  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-    <h1 class="text-3xl font-bold text-indigo-700 mb-6">내 정보</h1>
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-10">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">마이페이지</h1>
+      <p class="text-gray-600">계정 정보와 주문 내역을 관리하세요</p>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <p class="text-sm text-gray-500">이름</p>
-        <p class="text-lg text-gray-900"><%= @user.name %></p>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">이메일</p>
-        <p class="text-lg text-gray-900"><%= @user.email %></p>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">회사명</p>
-        <p class="text-lg text-gray-900"><%= @user.company_name %></p>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500">전화번호</p>
-        <p class="text-lg text-gray-900"><%= @user.phone %></p>
+    <%# 메뉴 카드 %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <%# 내 주문 목록 %>
+      <%= link_to my_orders_path, class: "block" do %>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 hover:border-blue-300 group">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-blue-600 transition-colors">
+                  <i data-lucide="shopping-bag" class="w-6 h-6 text-blue-600 group-hover:text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">내 주문 목록</h2>
+              </div>
+              <p class="text-gray-600 mb-4">주문하신 SSL 인증서 내역을 확인하고 관리하세요</p>
+              <div class="flex items-center text-blue-600 font-semibold group-hover:text-blue-700">
+                <span>주문 보기</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%# 회원정보 수정 %>
+      <%= link_to edit_user_registration_path, class: "block" do %>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 hover:border-blue-300 group">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-purple-600 transition-colors">
+                  <i data-lucide="user-cog" class="w-6 h-6 text-purple-600 group-hover:text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">회원정보 수정</h2>
+              </div>
+              <p class="text-gray-600 mb-4">이름, 회사명, 전화번호 등 개인 정보를 수정하세요</p>
+              <div class="flex items-center text-purple-600 font-semibold group-hover:text-purple-700">
+                <span>정보 수정하기</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%# 사용자 정보 요약 %>
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+      <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+        <i data-lucide="user" class="w-5 h-5 mr-2 text-blue-600"></i>
+        계정 정보
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <% if @user.name.present? %>
+          <div>
+            <p class="text-sm text-gray-500 mb-1">이름</p>
+            <p class="text-base text-gray-900 font-medium"><%= @user.name %></p>
+          </div>
+        <% end %>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">이메일</p>
+          <p class="text-base text-gray-900 font-medium"><%= @user.email %></p>
+        </div>
+        <% if @user.company_name.present? %>
+          <div>
+            <p class="text-sm text-gray-500 mb-1">회사명</p>
+            <p class="text-base text-gray-900 font-medium"><%= @user.company_name %></p>
+          </div>
+        <% end %>
+        <% if @user.phone.present? %>
+          <div>
+            <p class="text-sm text-gray-500 mb-1">전화번호</p>
+            <p class="text-base text-gray-900 font-medium"><%= @user.phone %></p>
+          </div>
+        <% end %>
       </div>
     </div>
 
-    <div class="mt-8">
-      <%= link_to "내 주문 보기", my_orders_path, class: "inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition" %>
+    <%# 뒤로가기 %>
+    <div class="mt-6 text-center">
+      <%= link_to root_path, class: "inline-flex items-center gap-x-2 text-gray-600 hover:text-gray-900" do %>
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        홈으로 돌아가기
+      <% end %>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+  
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+  });
+</script>

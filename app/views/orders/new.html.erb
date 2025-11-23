@@ -1,7 +1,7 @@
 <!-- app/views/orders/new.html.erb -->
-<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white py-20 px-4">
+<main class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-20 px-4">
   <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-    <h1 class="text-3xl font-bold text-indigo-700 mb-6">주문 정보 입력</h1>
+    <h1 class="text-3xl font-bold text-blue-700 mb-6">주문 정보 입력</h1>
 
     <% if @order.errors.any? %>
       <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -22,35 +22,53 @@
       <div class="mb-4">
         <%= f.label :domain, "도메인 이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
         <%= f.text_field :domain, placeholder: "example.com",
-            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
         <% if @order.errors[:domain].any? %>
           <p class="text-red-600 text-sm mt-1"><%= @order.errors[:domain].first %></p>
         <% end %>
       </div>
 
+      <div class="mb-4">
+        <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_field :name, placeholder: "홍길동",
+            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+        <% if @order.errors[:name].any? %>
+          <p class="text-red-600 text-sm mt-1"><%= @order.errors[:name].first %></p>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :english_name, "영문 이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_field :english_name, placeholder: "Hong Gildong",
+            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+        <% if @order.errors[:english_name].any? %>
+          <p class="text-red-600 text-sm mt-1"><%= @order.errors[:english_name].first %></p>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :company_name, "회사명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_field :company_name, placeholder: "회사명 입력",
+            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+        <% if @order.errors[:company_name].any? %>
+          <p class="text-red-600 text-sm mt-1"><%= @order.errors[:company_name].first %></p>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.telephone_field :phone, placeholder: "010-1234-5678",
+            class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+        <% if @order.errors[:phone].any? %>
+          <p class="text-red-600 text-sm mt-1"><%= @order.errors[:phone].first %></p>
+        <% end %>
+      </div>
+
       <% if @certificate_type != "dv" %>
-        <div class="mb-4">
-          <%= f.label :company_name, "회사명", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.text_field :company_name, placeholder: "회사명 입력",
-              class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
-          <% if @order.errors[:company_name].any? %>
-            <p class="text-red-600 text-sm mt-1"><%= @order.errors[:company_name].first %></p>
-          <% end %>
-        </div>
-
-        <div class="mb-4">
-          <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= f.telephone_field :phone, placeholder: "010-1234-5678",
-              class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
-          <% if @order.errors[:phone].any? %>
-            <p class="text-red-600 text-sm mt-1"><%= @order.errors[:phone].first %></p>
-          <% end %>
-        </div>
-
         <div class="mb-4">
           <%= f.label :company_address, "회사 주소", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= f.text_field :company_address, placeholder: "서울시 서초구 …",
-              class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
+              class: "w-full border border-gray-300 rounded-lg py-3 px-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition placeholder-gray-400 text-gray-900" %>
           <% if @order.errors[:company_address].any? %>
             <p class="text-red-600 text-sm mt-1"><%= @order.errors[:company_address].first %></p>
           <% end %>
@@ -59,7 +77,7 @@
 
       <div class="mt-6">
         <%= f.submit "주문하기",
-            class: "w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-3 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer" %>
+            class: "w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition cursor-pointer" %>
       </div>
     <% end %>
   </div>

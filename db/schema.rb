@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_14_065913) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_23_181352) do
   create_table "certificates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "certificate_body"
     t.integer "certificate_type", default: 0, null: false
@@ -36,9 +36,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_065913) do
     t.datetime "created_at", null: false
     t.text "csr"
     t.string "domain"
+    t.string "english_name"
     t.datetime "expires_at"
     t.string "internal_order_id"
     t.datetime "issued_at"
+    t.string "name"
     t.string "partner_order_number"
     t.string "payment_method"
     t.string "phone"
@@ -51,6 +53,27 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_065913) do
     t.string "validation_method"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
+  create_table "partner_api_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.text "request_body"
+    t.text "response_body"
+    t.string "status"
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_partner_api_logs_on_order_id"
+  end
+
+  create_table "payments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.string "payment_method"
+    t.integer "status"
+    t.string "transaction_id"
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_payments_on_order_id"
   end
 
   create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -107,4 +130,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_065913) do
   add_foreign_key "certificates", "users"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "partner_api_logs", "orders"
+  add_foreign_key "payments", "orders"
 end

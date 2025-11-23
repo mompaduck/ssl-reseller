@@ -3,15 +3,10 @@ default: &default
   encoding: utf8mb4
   pool: 5
   database: ssl_reseller
-  username: certadmin
-  password: "qweasdQ1!"
-  host: localhost
-  port: 3306
-  #max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  #username: <%= ENV.fetch("DB_USERNAME", "certadmin") %>
-  #password: <%= ENV.fetch("DB_PASSWORD", "") %>
-  #host: <%= ENV.fetch("DB_HOST", "localhost") %>
-  #port: <%= ENV.fetch("DB_PORT", 3306) %>
+  username: <%= ENV.fetch("DB_USERNAME") %>
+  password: <%= ENV.fetch("DB_PASSWORD") %>
+  host: <%= ENV.fetch("DB_HOST") %>
+  port: <%= ENV.fetch("DB_PORT") %>
 
 development:
   <<: *default
@@ -23,9 +18,4 @@ test:
 
 production:
   <<: *default
-  database: ssl_reseller_development
-  username: certadmin
-  password: "qweasdQ1!"
-  host: "127.0.0.1"
-  pool: 5
-
+  database: ssl_reseller_production

@@ -4,7 +4,6 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
-  validates :name, presence: true, on: :create
   # terms 검증은 회원가입 시에만
   validates :terms, acceptance: true, on: :create, if: -> { provider.blank? }
 

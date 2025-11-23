@@ -1,13 +1,11 @@
 <%# app/views/products/show.html.erb %>
-<main class="min-h-screen bg-gradient-to-b from-indigo-50 to-white py-8">
+<main class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <%# 뒤로가기 버튼 %>
     <div class="mb-6">
-      <%= link_to products_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-indigo-600 transition" do %>
-        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
+      <%= link_to products_path, class: "inline-flex items-center text-sm text-gray-600 hover:text-blue-600 transition" do %>
+        <i data-lucide="arrow-left" class="w-5 h-5 mr-1"></i>
         상품 목록으로 돌아가기
       <% end %>
     </div>
@@ -21,9 +19,11 @@
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
-              <p class="text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-2 hidden">
-                <%= @product.provider.presence || "SSL Certificate" %>
-              </p>
+              <% if @product.provider.present? %>
+                <p class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">
+                  <%= @product.provider %>
+                </p>
+              <% end %>
               <h1 class="text-3xl font-bold text-gray-900 mb-2">
                 <%= @product.name %>
               </h1>
@@ -51,9 +51,7 @@
         <%# 주요 특징 %>
         <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-            <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+            <i data-lucide="check-circle" class="w-6 h-6 mr-2 text-blue-600"></i>
             주요 특징
           </h2>
           
@@ -61,15 +59,13 @@
             <%# 검증 유형 %>
             <% if @product.respond_to?(:validation_type) && @product.validation_type.present? %>
               <div class="flex items-start">
-                <div class="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
-                  <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                  </svg>
+                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                  <i data-lucide="shield-check" class="w-6 h-6 text-blue-600"></i>
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900 mb-1">검증 수준</h3>
                   <p class="text-gray-600 text-sm">
-                    <span class="font-medium text-indigo-600"><%= @product.validation_type %></span>
+                    <span class="font-medium text-blue-600"><%= @product.validation_type %></span>
                     <% case @product.validation_type %>
                     <% when 'DV' %>
                       - 도메인 검증
@@ -87,9 +83,7 @@
             <% if @product.duration_months.present? %>
               <div class="flex items-start">
                 <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                  <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                  </svg>
+                  <i data-lucide="calendar" class="w-6 h-6 text-green-600"></i>
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900 mb-1">유효 기간</h3>
@@ -108,20 +102,18 @@
             <%# 도메인 수 %>
             <% if @product.respond_to?(:domain_count) && @product.domain_count.present? %>
               <div class="flex items-start">
-                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                  </svg>
+                <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                  <i data-lucide="globe" class="w-6 h-6 text-purple-600"></i>
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900 mb-1">보호 도메인</h3>
                   <p class="text-gray-600 text-sm">
                     <% if @product.domain_count == 1 %>
-                      <span class="font-medium text-blue-600">단일 도메인</span>
+                      <span class="font-medium text-purple-600">단일 도메인</span>
                     <% elsif @product.domain_count.to_i > 1 %>
-                      <span class="font-medium text-blue-600">최대 <%= @product.domain_count %>개</span>
+                      <span class="font-medium text-purple-600">최대 <%= @product.domain_count %>개</span>
                     <% else %>
-                      <span class="font-medium text-blue-600">제한 없음</span>
+                      <span class="font-medium text-purple-600">제한 없음</span>
                     <% end %>
                   </p>
                 </div>
@@ -131,15 +123,13 @@
             <%# 배상 책임 %>
             <% if @product.liability_usd.present? %>
               <div class="flex items-start">
-                <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                  <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
+                <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                  <i data-lucide="dollar-sign" class="w-6 h-6 text-yellow-600"></i>
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900 mb-1">배상 책임</h3>
                   <p class="text-gray-600 text-sm">
-                    최대 <span class="font-medium text-purple-600">$<%= number_with_delimiter(@product.liability_usd) %></span>
+                    최대 <span class="font-medium text-yellow-600">$<%= number_with_delimiter(@product.liability_usd) %></span>
                   </p>
                 </div>
               </div>
@@ -164,9 +154,7 @@
               <ul class="space-y-2">
                 <% @product.features.split("\n").each do |feature| %>
                   <li class="flex items-start">
-                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
+                    <i data-lucide="check" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
                     <%= feature %>
                   </li>
                 <% end %>
@@ -182,8 +170,8 @@
           <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
             
             <%# 가격 표시 %>
-            <div class="bg-gradient-to-br from-indigo-600 to-purple-600 p-6 text-white">
-              <p class="text-sm font-medium text-indigo-100 mb-2">시작 가격 (VAT 별도)</p>
+            <div class="bg-blue-600 p-6 text-white">
+              <p class="text-sm font-medium text-blue-100 mb-2">시작 가격 (VAT 별도)</p>
               <% if @product.price.present? %>
                 <div class="flex items-baseline">
                   <span class="text-4xl font-extrabold">
@@ -194,7 +182,7 @@
                 
                 <% if @product.duration_months.present? %>
                   <% years = @product.duration_months.to_i / 12.0 %>
-                  <p class="text-sm text-indigo-100 mt-2">
+                  <p class="text-sm text-blue-100 mt-2">
                     / <%= years >= 1 && (years % 1).zero? ? "#{years.to_i}년" : "#{@product.duration_months}개월" %>
                   </p>
                 <% end %>
@@ -206,11 +194,9 @@
             <%# 주문 버튼 %>
             <div class="p-6 space-y-4">
               <%= link_to new_order_path(product_id: @product.id),
-                    class: "block w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center font-bold rounded-xl hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5" do %>
+                    class: "block w-full py-4 bg-blue-600 text-white text-center font-bold rounded-xl hover:bg-blue-700 shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5" do %>
                 <span class="flex items-center justify-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                  </svg>
+                  <i data-lucide="shopping-cart" class="w-5 h-5 mr-2"></i>
                   지금 주문하기
                 </span>
               <% end %>
@@ -218,9 +204,7 @@
               <%= link_to support_path,
                     class: "block w-full py-3 border-2 border-gray-300 text-gray-700 text-center font-semibold rounded-xl hover:bg-gray-50 transition" do %>
                 <span class="flex items-center justify-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
+                  <i data-lucide="message-circle" class="w-5 h-5 mr-2"></i>
                   문의하기
                 </span>
               <% end %>
@@ -230,16 +214,11 @@
             <div class="border-t border-gray-100 p-6 bg-gray-50">
               <div class="flex items-center justify-center space-x-4 text-sm text-gray-600">
                 <div class="flex items-center">
-                  <svg class="w-5 h-5 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
+                  <i data-lucide="shield-check" class="w-5 h-5 text-green-500 mr-1"></i>
                   안전한 결제
                 </div>
                 <div class="flex items-center">
-                  <svg class="w-5 h-5 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                  </svg>
+                  <i data-lucide="zap" class="w-5 h-5 text-blue-500 mr-1"></i>
                   빠른 발급
                 </div>
               </div>
@@ -249,9 +228,7 @@
           <%# 추가 정보 카드 %>
           <div class="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
             <div class="flex items-start">
-              <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-              </svg>
+              <i data-lucide="info" class="w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0"></i>
               <div class="text-sm text-blue-900">
                 <p class="font-semibold mb-1">도움이 필요하신가요?</p>
                 <p class="text-blue-700">
@@ -265,3 +242,13 @@
     </div>
   </div>
 </main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+  
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+  });
+</script>

@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: {
     sessions:      "users/sessions",
     registrations: "users/registrations",
+    passwords:     "users/passwords",
     confirmations: 'users/confirmations',
     omniauth_callbacks: 'users/omniauth_callbacks'  # 추가
   }
@@ -42,8 +43,15 @@ Rails.application.routes.draw do
     get '/users/auth/failure', to: 'users/sessions#new'
   end
 
+  # 사용자 대시보드
+  get 'dashboard', to: 'users#dashboard', as: :dashboard
+
   # 리소스 라우팅
-  resources :orders, only: [:new, :create, :show]
+  get 'my_orders', to: 'orders#my_orders', as: :my_orders
+  
+  resources :orders, only: [:new, :create, :show, :index] do
+    post 'pay', on: :member
+  end
   resources :products, only: [:index, :show]
   resources :certificates, only: [:index]
 end
