@@ -70,6 +70,12 @@ group :development do
   gem "listen"
 end
 
+group :development, :test do
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+end
+
+
 # ==========================================================
 # ☁️ 배포 (선택사항)
 # ==========================================================
