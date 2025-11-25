@@ -1,0 +1,191 @@
+<%= turbo_frame_tag "certificate_tab_content" do %>
+      </button>
+    </div>
+
+    <%# Filter Options %>
+    <div id="log-filter" class="hidden mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+      <div class="flex gap-2 flex-wrap">
+        <% ["all","error","warning","info","success"].each do |type| %>
+          <button onclick="filterLogs('<%= type %>')"
+            class="px-3 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100 transition">
+            <%= type.capitalize %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Build Certificate Logs Array %>
+    <% certificate_logs = [] %>
+
+    <%# DCV failure %>
+    <% if @certificate.status == "dcv_failed" && @certificate.failure_reason.present? %>
+      <% certificate_logs << {
+        timestamp: @certificate.updated_at,
+        type: "error",
+        icon: "x-circle",
+        title: "DCV 검증 실패",
+        message: @certificate.failure_reason,
+        details: "Method: #{@certificate.dcv_method}"
+      } %>
+    <% end %>
+
+    <%# Partner API logs %>
+    <% @certificate.order.partner_api_logs.order(created_at: :desc).limit(10).each do |log| %>
+      <% log_type =
+        log.status == "error" ? "error" :
+        log.status == "success" ? "success" : "info" %>
+
+      <% certificate_logs << {
+        timestamp: log.created_at,
+        type: log_type,
+        icon: log_type == "error" ? "alert-circle" :
+              log_type == "success" ? "check-circle" : "info",
+        title: "Sectigo API: #{log.action}",
+        message: log.response_message || log.status,
+        details: "Response Code: #{log.response_code}"
+      } %>
+    <% end %>
+
+    <%# Audit logs %>
+    <% @certificate.audit_logs.order(created_at: :desc).limit(15).each do |log| %>
+      <% log_type =
+        case log.action
+        when "cancel","dcv_failed" then "error"
+        when "reissue","force_issue" then "warning"
+        when "issued","status_change" then "success"
+        else "info"
+        end %>
+
+      <% certificate_logs << {
+        timestamp: log.created_at,
+        type: log_type,
+        icon: log_type == "error" ? "x-octagon" :
+              log_type == "success" ? "check-circle-2" :
+              log_type == "warning" ? "alert-triangle" : "info",
+        title: log.action.titleize,
+        message: log.message,
+        details: "Actor: #{log.user&.name || 'System'} | IP: #{log.ip_address}",
+        metadata: log.metadata
+      } %>
+    <% end %>
+
+    <% certificate_logs.sort_by! { |l| l[:timestamp] }.reverse! %>
+
+    <%# LOG LIST %>
+    <div class="space-y-3 max-h-96 overflow-y-auto">
+
+      <% if certificate_logs.any? %>
+        <% certificate_logs.each do |log| %>
+
+          <% cfg = {
+            "error"   => { bg:"bg-red-50",    border:"border-red-200",    text:"text-red-900",    badge:"bg-red-100 text-red-800" },
+            "warning" => { bg:"bg-yellow-50", border:"border-yellow-200", text:"text-yellow-900", badge:"bg-yellow-100 text-yellow-800" },
+            "success" => { bg:"bg-green-50",  border:"border-green-200",  text:"text-green-900",  badge:"bg-green-100 text-green-800" },
+            "info"    => { bg:"bg-blue-50",   border:"border-blue-200",   text:"text-blue-900",   badge:"bg-blue-100 text-blue-800" }
+          }[log[:type]] %>
+
+          <div class="log-entry <%= cfg[:bg] %> border <%= cfg[:border] %> rounded-lg p-3"
+               data-log-type="<%= log[:type] %>">
+
+            <div class="flex items-start gap-3">
+
+              <i data-lucide="<%= log[:icon] %>" class="w-4 h-4 <%= cfg[:text] %>"></i>
+
+              <div class="flex-1 min-w-0">
+
+                <div class="flex items-start justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold <%= cfg[:text] %>"><%= log[:title] %></span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold <%= cfg[:badge] %>">
+                      <%= log[:type].upcase %>
+                    </span>
+                  </div>
+                  <span class="text-xs text-gray-500">
+                    <%= log[:timestamp].strftime("%Y-%m-%d %H:%M") %>
+                  </span>
+                </div>
+
+                <p class="text-sm <%= cfg[:text] %> mb-1"><%= log[:message] %></p>
+
+                <% if log[:details].present? %>
+                  <p class="text-xs text-gray-600"><%= log[:details] %></p>
+                <% end %>
+
+                <% if log[:metadata].present? %>
+                  <details class="mt-2">
+                    <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-800">
+                      메타데이터 보기
+                    </summary>
+                    <pre class="mt-2 p-2 bg-white rounded text-xs text-gray-700 overflow-x-auto">
+                      <%= JSON.pretty_generate(log[:metadata]) %>
+                    </pre>
+                  </details>
+                <% end %>
+
+              </div>
+
+            </div>
+          </div>
+
+        <% end %>
+
+      <% else %>
+
+        <div class="text-center py-8">
+          <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
+          <p class="text-sm text-gray-500">로그가 없습니다.</p>
+        </div>
+
+      <% end %>
+    </div>
+
+    <%# Log Statistics %>
+    <% if certificate_logs.any? %>
+      <div class="mt-4 pt-4 border-t border-gray-200">
+        <div class="grid grid-cols-4 text-center gap-3">
+
+          <div>
+            <p class="text-xs text-gray-500">총 로그</p>
+            <p class="text-lg font-bold text-gray-900"><%= certificate_logs.count %></p>
+          </div>
+
+          <div>
+            <p class="text-xs text-red-600">오류</p>
+            <p class="text-lg font-bold text-red-600"><%= certificate_logs.count { |l| l[:type] == "error" } %></p>
+          </div>
+
+          <div>
+            <p class="text-xs text-yellow-600">경고</p>
+            <p class="text-lg font-bold text-yellow-600"><%= certificate_logs.count { |l| l[:type] == "warning" } %></p>
+          </div>
+
+          <div>
+            <p class="text-xs text-green-600">성공</p>
+            <p class="text-lg font-bold text-green-600"><%= certificate_logs.count { |l| l[:type] == "success" } %></p>
+          </div>
+
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <script>
+    function filterLogs(type) {
+      document.querySelectorAll('.log-entry').forEach(log => {
+        log.style.display = (type === "all" || log.dataset.logType === type) ? "block" : "none";
+      });
+    }
+  </script>
+</div>
+
+
+<%# ============================================ %>
+<%#  TAB CONTENT: AUDIT LOGS                    %>
+<%# ============================================ %>
+
+<div id="content-audit-logs" class="tab-content">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+    <div class="flex items-center justify-between mb-4">
+
+<% end %>

@@ -20,15 +20,27 @@
   </div>
 
   <script>
-    // Auto dismiss after 5 seconds
-    setTimeout(() => {
+    // Use turbo:load event to ensure this runs after Turbo navigation
+    document.addEventListener('turbo:load', function() {
       const flashContainer = document.getElementById('flash-messages');
-      if (flashContainer) {
-        flashContainer.style.opacity = '0';
-        flashContainer.style.transition = 'opacity 0.5s';
-        setTimeout(() => flashContainer.remove(), 500);
+      if (flashContainer && !flashContainer.dataset.dismissScheduled) {
+        // Mark as scheduled to prevent duplicate timers
+        flashContainer.dataset.dismissScheduled = 'true';
+        
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+          if (flashContainer && flashContainer.parentElement) {
+            flashContainer.style.opacity = '0';
+            flashContainer.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+              if (flashContainer && flashContainer.parentElement) {
+                flashContainer.remove();
+              }
+            }, 500);
+          }
+        }, 5000);
       }
-    }, 5000);
+    });
   </script>
 
   <style>

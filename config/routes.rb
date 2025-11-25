@@ -65,6 +65,16 @@ Rails.application.routes.draw do
     end
     resources :certificates, only: [:index, :show] do
       member do
+        # Tab actions for Turbo Frames
+        get :overview
+        get :dcv
+        get :files
+        get :issue_logs
+        get :audit_logs
+        get :billing
+        get :customer
+        
+        # Certificate actions
         get :download
         post :reissue
         post :cancel

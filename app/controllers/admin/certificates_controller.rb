@@ -49,6 +49,42 @@ module Admin
       end
     end
 
+    # Tab actions for Turbo Frames
+    def overview
+      set_certificate_data
+      render partial: 'overview', layout: false
+    end
+
+    def dcv
+      set_certificate_data
+      render partial: 'dcv', layout: false
+    end
+
+    def files
+      set_certificate_data
+      render partial: 'files', layout: false
+    end
+
+    def issue_logs
+      set_certificate_data
+      render partial: 'issue_logs', layout: false
+    end
+
+    def audit_logs
+      set_certificate_data
+      render partial: 'audit_logs', layout: false
+    end
+
+    def billing
+      set_certificate_data
+      render partial: 'billing', layout: false
+    end
+
+    def customer
+      set_certificate_data
+      render partial: 'customer', layout: false
+    end
+
     def download
       @certificate = Certificate.find(params[:id])
       format = params[:format] || 'zip'
@@ -189,6 +225,12 @@ module Admin
     end
 
     private
+
+    def set_certificate_data
+      @certificate = Certificate.find(params[:id])
+      @order = @certificate.order
+      @user = @certificate.user
+    end
 
     def check_edit_permission
       unless current_user.can_edit_certificates?

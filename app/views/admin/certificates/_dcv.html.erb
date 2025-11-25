@@ -1,0 +1,264 @@
+<%= turbo_frame_tag "certificate_tab_content" do %>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        <i data-lucide="key" class="w-5 h-5 text-orange-600"></i>
+        DCV (Domain Control Validation) 정보
+      </h2>
+
+      <div class="flex gap-2">
+        <%= button_to refresh_dcv_admin_certificate_path(@certificate), method: :post,
+          class: "px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium
+                 hover:bg-blue-100 transition border border-blue-200 flex items-center gap-1",
+          data: { turbo_frame: "_top" } do %>
+          <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+          상태 새로고침
+        <% end %>
+      </div>
+    </div>
+
+    <%# DCV METHOD SUMMARY BOX %>
+    <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <p class="text-sm font-bold text-orange-900 mb-2">선택된 DCV 방식</p>
+
+          <% if @certificate.dcv_method.present? %>
+            <% dcv_method = @certificate.dcv_method.upcase %>
+
+            <% method_cfg = {
+              "EMAIL" => { color: "bg-purple-100 text-purple-800 border-purple-300", icon: "mail" },
+              "HTTP"  => { color: "bg-green-100 text-green-800 border-green-300", icon: "globe" },
+              "HTTPS" => { color: "bg-blue-100 text-blue-800 border-blue-300", icon: "lock" },
+              "DNS"   => { color: "bg-indigo-100 text-indigo-800 border-indigo-300", icon: "server" },
+              "CNAME" => { color: "bg-indigo-100 text-indigo-800 border-indigo-300", icon: "server" }
+            } %>
+
+            <% cfg = method_cfg[dcv_method] || method_cfg["EMAIL"] %>
+
+            <span class="px-4 py-2 rounded-lg text-sm font-bold border <%= cfg[:color] %>">
+              <i data-lucide="<%= cfg[:icon] %>" class="w-4 h-4 inline mr-1"></i>
+              <%= dcv_method %>
+            </span>
+
+          <% else %>
+            <span class="px-4 py-2 rounded-lg text-sm font-bold border bg-gray-100 text-gray-800 border-gray-300">
+              <i data-lucide="alert-circle" class="w-4 h-4 inline mr-1"></i>
+              미설정
+            </span>
+          <% end %>
+
+        </div>
+
+        <div>
+          <%= button_to change_dcv_method_admin_certificate_path(@certificate), method: :post,
+            class: "px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium hover:bg-orange-700 transition flex items-center gap-1",
+            data: { turbo_confirm: "DCV 방식을 변경하시겠습니까?", turbo_frame: "_top" } do %>
+            <i data-lucide="repeat" class="w-3 h-3"></i> 방식 변경
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# EMAIL DCV %>
+    <% if @certificate.dcv_method&.upcase == "EMAIL" %>
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-5">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+            <i data-lucide="mail" class="w-5 h-5 text-purple-600"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-bold text-purple-900 mb-1">이메일 검증 (EMAIL)</h3>
+            <p class="text-xs text-purple-700">승인 이메일이 도메인 관리자에게 발송되었습니다.</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">DCV 이메일 주소</p>
+          <% dcv_email = @certificate.dcv_email || "admin@#{@certificate.order.domain}" %>
+          <div class="flex items-center gap-2">
+            <code class="flex-1 bg-purple-100 px-3 py-2 rounded text-sm text-purple-900 font-mono">
+              <%= dcv_email %>
+            </code>
+            <button onclick="navigator.clipboard.writeText('<%= dcv_email %>')"
+              class="px-3 py-2 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">승인 가능한 이메일 주소</p>
+          <% domain_root = @certificate.order.domain.gsub(/^\*\./, "") %>
+          <% approver_list = [
+            "admin@#{domain_root}",
+            "administrator@#{domain_root}",
+            "hostmaster@#{domain_root}",
+            "postmaster@#{domain_root}",
+            "webmaster@#{domain_root}"
+          ] %>
+          <div class="space-y-1">
+            <% approver_list.each do |email| %>
+              <div class="text-xs flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-3 h-3 text-purple-600"></i>
+                <code class="text-purple-900 font-mono"><%= email %></code>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%= button_to resend_dcv_admin_certificate_path(@certificate), method: :post,
+          class: "w-full px-4 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition flex items-center justify-center gap-2",
+          data: { turbo_frame: "_top" } do %>
+          <i data-lucide="send" class="w-4 h-4"></i> DCV 이메일 재전송
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# HTTP / HTTPS DCV %>
+    <% if ["HTTP", "HTTPS"].include?(@certificate.dcv_method&.upcase) %>
+      <% dcv_method = @certificate.dcv_method.upcase %>
+      <% url_scheme = dcv_method.downcase %>
+      <% validation_url = @certificate.dcv_file_url || "#{url_scheme}://#{@certificate.order.domain}/.well-known/pki-validation/fileauth.txt" %>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-5">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+            <i data-lucide="<%= dcv_method == 'HTTPS' ? 'lock' : 'globe' %>" class="w-5 h-5 text-green-600"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-bold text-green-900 mb-1"><%= dcv_method %> 파일 검증</h3>
+            <p class="text-xs text-green-700">웹 서버에 검증 파일을 업로드해야 합니다.</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">검증 URL</p>
+          <div class="flex items-center gap-2">
+            <code class="flex-1 bg-green-100 px-3 py-2 rounded text-sm text-green-900 font-mono break-all">
+              <%= validation_url %>
+            </code>
+            <button onclick="navigator.clipboard.writeText('<%= validation_url %>')"
+              class="px-3 py-2 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-semibold text-gray-700">파일 내용 (fileauth.txt)</p>
+            <%= button_to download_dcv_file_admin_certificate_path(@certificate), method: :get,
+              data: { turbo: false },
+              class: "px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center gap-1" do %>
+              <i data-lucide="download" class="w-3 h-3"></i> 다운로드
+            <% end %>
+          </div>
+          <div class="relative">
+            <pre class="bg-green-100 px-3 py-2 rounded text-xs text-green-900 font-mono overflow-x-auto"><%= @certificate.dcv_file_content || "DCV-CONTENT" %></pre>
+            <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)"
+              class="absolute top-2 right-2 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">📋 설정 방법</p>
+          <ol class="text-xs text-gray-700 list-decimal list-inside space-y-2">
+            <li><code>.well-known/pki-validation/</code> 디렉토리 생성</li>
+            <li>파일을 <code>fileauth.txt</code> 로 업로드</li>
+            <li>브라우저에서 검증 URL 접근 테스트</li>
+            <li>"상태 새로고침" 클릭</li>
+          </ol>
+        </div>
+
+        <a href="<%= validation_url %>" target="_blank"
+          class="block w-full px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium
+                 hover:bg-green-700 transition text-center">
+          <i data-lucide="external-link" class="w-4 h-4 inline"></i> URL 테스트
+        </a>
+      </div>
+    <% end %>
+
+    <%# DNS / CNAME DCV %>
+    <% if ["DNS", "CNAME"].include?(@certificate.dcv_method&.upcase) %>
+      <% cname_host = @certificate.dcv_cname_host || "_dnsauth.#{@certificate.order.domain}" %>
+      <% cname_value = @certificate.dcv_cname_value || "dcv-validation-#{@certificate.id}.sectigo.com" %>
+
+      <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+        <div class="flex items-start gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+            <i data-lucide="server" class="w-5 h-5 text-indigo-600"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-bold text-indigo-900 mb-1">DNS / CNAME 검증</h3>
+            <p class="text-xs text-indigo-700">DNS 레코드를 추가하여 도메인 소유권을 증명합니다.</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">CNAME Host</p>
+          <div class="flex items-center gap-2">
+            <code class="flex-1 bg-indigo-100 px-3 py-2 rounded text-sm text-indigo-900 font-mono break-all">
+              <%= cname_host %>
+            </code>
+            <button onclick="navigator.clipboard.writeText('<%= cname_host %>')"
+              class="px-3 py-2 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">CNAME Value</p>
+          <div class="flex items-center gap-2">
+            <code class="flex-1 bg-indigo-100 px-3 py-2 rounded text-sm text-indigo-900 font-mono break-all">
+              <%= cname_value %>
+            </code>
+            <button onclick="navigator.clipboard.writeText('<%= cname_value %>')"
+              class="px-3 py-2 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 mb-3">
+          <p class="text-xs font-semibold text-gray-700 mb-2">📋 설정 방법</p>
+          <ol class="text-xs text-gray-700 list-decimal list-inside space-y-2">
+            <li>DNS 관리 페이지 접속</li>
+            <li>새 CNAME 레코드 추가</li>
+            <li>Name: <code><%= cname_host %></code></li>
+            <li>Value: <code><%= cname_value %></code></li>
+            <li>TTL: 3600 권장</li>
+            <li>DNS 전파 확인 후 "상태 새로고침" 클릭</li>
+          </ol>
+        </div>
+
+        <a href="https://dnschecker.org/#CNAME/<%= cname_host %>" target="_blank"
+          class="block w-full px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium
+                 hover:bg-indigo-700 transition text-center">
+          <i data-lucide="search" class="w-4 h-4 inline"></i> DNS 전파 확인
+        </a>
+      </div>
+    <% end %>
+
+    <%# DCV FAILURE MESSAGE %>
+    <% if @certificate.status == 'dcv_failed' && @certificate.failure_reason.present? %>
+      <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-start gap-2">
+          <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600"></i>
+          <div>
+            <p class="text-sm font-bold text-red-900 mb-1">DCV 검증 실패</p>
+            <p class="text-xs text-red-700"><%= @certificate.failure_reason %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<%# ============================================ %>
+
+<% end %>
