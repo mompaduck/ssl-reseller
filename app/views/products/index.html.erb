@@ -1,37 +1,38 @@
-<main class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8">
-  <div class="max-w-7xl mx-auto px-6">
+<main class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     
     <!-- 헤더 -->
-    <header class="text-center mb-8">
-      <h1 class="text-4xl font-extrabold text-gray-900">
+    <header class="text-center mb-12">
+      <div class="inline-block mb-4">
+        <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+          Trusted SSL Certificates
+        </span>
+      </div>
+      <h1 class="text-5xl  font-bold text-gray-900 mb-4">
         SSL 인증서 상품
       </h1>
-      <p class="mt-3 text-gray-600 text-base">
-        글로벌 인증기관의 다양한 SSL 인증서를 CertGate를 통해 손쉽게 신청하세요.
+      <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+        글로벌 인증기관의 다양한 SSL 인증서를 CertGate를 통해 손쉽게 신청하세요
       </p>
     </header>
 
     <% active_products = @products.where(is_active: true) %>
 
-   <!-- ========== FILTER SECTION ========== -->
-<div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-8">
-
-  <!-- 가로 정렬 (md 이상) / 세로 정렬 (모바일) -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-
-    <!-- ========== 인증기관 (CA) + 검증 타입 ========== -->
-    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
-
-      <!-- ===== 인증기관 (CA) ===== -->
-      <div>
-        <h3 class="text-sm font-semibold text-gray-700 mb-2">인증기관 (CA)</h3>
-
-        <%= form_with url: products_path, method: :get, local: true do |f| %>
-          <div class="flex items-center gap-3">
-
+    <!-- 필터 섹션 -->
+    <div class="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-8 shadow-lg mb-12">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- 인증기관 (CA) -->
+        <div>
+          <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center">
+            <i data-lucide="building-2" class="w-4 h-4 mr-2 text-blue-600"></i>
+            인증기관 (CA)
+          </h3>
+          <%= form_with url: products_path, method: :get, local: true do |f| %>
             <%= f.select :provider,
                 [
-                  ["전체", ""],
+                  ["전체 보기", ""],
                   ["Sectigo", "Sectigo"],
                   ["DigiCert", "DigiCert"],
                   ["RapidSSL", "RapidSSL"],
@@ -40,142 +41,134 @@
                   ["GeoTrust", "GeoTrust"]
                 ],
                 { selected: params[:provider] },
-                class: "w-36 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
-                        focus:border-blue-500 focus:ring-blue-500 transition",
+                class: "w-full h-12 px-4 border-2 border-gray-200 rounded-xl bg-white text-gray-700 text-sm font-medium
+                        focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all cursor-pointer",
                 onchange: "this.form.submit();" %>
-
-            <!-- hidden to keep other filters -->
             <%= f.hidden_field :validation_type, value: params[:validation_type] if params[:validation_type].present? %>
             <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
+          <% end %>
+        </div>
 
-          </div>
-        <% end %>
-      </div>
-
-      <!-- ===== 검증 타입 ===== -->
-      <div>
-        <h3 class="text-sm font-semibold text-gray-700 mb-2">검증 타입</h3>
-
-        <%= form_with url: products_path, method: :get, local: true do |f| %>
-          <div class="flex items-center gap-3">
-
+        <!-- 검증 타입 -->
+        <div>
+          <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center">
+            <i data-lucide="shield-check" class="w-4 h-4 mr-2 text-blue-600"></i>
+            검증 타입
+          </h3>
+          <%= form_with url: products_path, method: :get, local: true do |f| %>
             <%= f.select :validation_type,
                 [
-                  ["전체", ""],
+                  ["전체 보기", ""],
                   ["DV (도메인 검증)", "dv"],
                   ["OV (기업·조직 검증)", "ov"],
                   ["EV (고급 확장 검증)", "ev"]
                 ],
                 { selected: params[:validation_type] },
-                class: "w-44 h-10 px-3 border border-gray-300 rounded-lg bg-white text-gray-700 text-sm
-                        focus:border-blue-500 focus:ring-blue-500 transition",
+                class: "w-full h-12 px-4 border-2 border-gray-200 rounded-xl bg-white text-gray-700 text-sm font-medium
+                        focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all cursor-pointer",
                 onchange: "this.form.submit();" %>
-
-            <!-- hidden keep previous filters -->
             <%= f.hidden_field :provider, value: params[:provider] if params[:provider].present? %>
             <%= f.hidden_field :domain_type, value: params[:domain_type] if params[:domain_type].present? %>
-
-          </div>
-        <% end %>
-      </div>
-
-    </div>
-
-    <!-- ========== 도메인 타입 (버튼) ========== -->
-    <div class="flex-1">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">도메인 타입</h3>
-
-      <div class="flex flex-wrap gap-2">
-
-        <% domain_types = {
-          "single" => "Single Domain",
-          "wildcard" => "Wildcard",
-          "multi" => "Multi Domain"
-        } %>
-
-        <% all_active = params[:domain_type].blank? %>
-
-        <%= link_to products_path(provider: params[:provider], validation_type: params[:validation_type]),
-            class: "h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
-                   #{all_active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
-          전체
-        <% end %>
-
-        <% domain_types.each do |key, label| %>
-          <% active = params[:domain_type] == key %>
-
-          <%= link_to products_path(domain_type: key, provider: params[:provider], validation_type: params[:validation_type]),
-              class: "h-10 px-4 flex items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition
-                     #{active ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
-            <%= label %>
           <% end %>
-        <% end %>
+        </div>
+
+        <!-- 도메인 타입 -->
+        <div>
+          <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center">
+            <i data-lucide="globe" class="w-4 h-4 mr-2 text-blue-600"></i>
+            도메인 타입
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            <% domain_types = {
+              "single" => "Single",
+              "wildcard" => "Wildcard",
+              "multi" => "Multi"
+            } %>
+
+            <% all_active = params[:domain_type].blank? %>
+
+            <%= link_to products_path(provider: params[:provider], validation_type: params[:validation_type]),
+                class: "flex-1 min-w-0 h-12 px-4 flex items-center justify-center rounded-xl text-sm font-semibold transition-all
+                       #{all_active ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
+              전체
+            <% end %>
+
+            <% domain_types.each do |key, label| %>
+              <% active = params[:domain_type] == key %>
+              <%= link_to products_path(domain_type: key, provider: params[:provider], validation_type: params[:validation_type]),
+                  class: "flex-1 min-w-0 h-12 px-4 flex items-center justify-center rounded-xl text-sm font-semibold transition-all
+                         #{active ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" do %>
+                <%= label %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
 
       </div>
     </div>
-
-  </div>
-</div>
-
-
 
     <% if active_products.blank? %>
-      <div class="bg-white border border-gray-200 rounded-2xl p-10 text-center shadow-sm">
-        <div class="flex justify-center mb-4">
-          <i data-lucide="package-x" class="w-16 h-16 text-gray-400"></i>
+      <div class="bg-white rounded-2xl p-16 text-center shadow-sm border border-gray-100">
+        <div class="flex justify-center mb-6">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+            <i data-lucide="package-x" class="w-10 h-10 text-gray-400"></i>
+          </div>
         </div>
-        <h3 class="text-xl font-semibold text-gray-900 mb-2">등록된 상품이 없습니다</h3>
-        <p class="text-gray-500">조건을 변경하여 다시 검색해보세요.</p>
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">등록된 상품이 없습니다</h3>
+        <p class="text-gray-500 text-lg">조건을 변경하여 다시 검색해보세요</p>
       </div>
     <% else %>
 
-      <!-- ===== PRODUCT GRID ===== -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 상품 그리드 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         <% active_products.each do |product| %>
-          <div class="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300
-                      border border-gray-100 hover:border-blue-300 flex flex-col group">
+          <div class="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500
+                      border border-gray-100 hover:border-blue-200 flex flex-col overflow-hidden
+                      hover:-translate-y-1">
 
-          <%# 할인 배지 %>
-          <% if product.discount.to_i > 0 %>
-            <div class="absolute top-0 right-0 
-            bg-red-500 text-white
-            px-3 py-1 
-            transform translate-x-2 -translate-y-2 
-            rounded-lg 
-            shadow-lg">
-              <span class="text-xs font-bold">-<%= product.discount.to_i %>%</span>
+            <!-- 할인 배지 -->
+            <% if product.discount.to_i > 0 %>
+              <div class="absolute top-4 right-4 z-10">
+                <div class="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-lg shadow-lg">
+                  <span class="text-sm font-bold">-<%= product.discount.to_i %>%</span>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- 카드 헤더 -->
+            <div class="p-6 pb-4">
+              <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 mb-2">
+                <%= product.name %>
+              </h3>
+              <span class="inline-block px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                <%= product.product_code %>
+              </span>
             </div>
-          <% end %>
 
             <!-- 카드 본문 -->
-            <div class="p-6 flex-1 flex flex-col">
-              <div class="mb-4">
-                <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition"><%= product.name %></h3>
-                <p class="text-xs text-gray-400 mt-1">코드: <%= product.product_code %></p>
-              </div>
-
-              <dl class="space-y-2.5 text-sm text-gray-700 mt-auto">
-                <div class="flex items-center justify-between">
-                  <dt class="flex items-center text-gray-500">
-                    <i data-lucide="calendar" class="w-4 h-4 mr-1.5"></i>
+            <div class="px-6 pb-6 flex-1">
+              <dl class="space-y-3">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="flex items-center text-gray-600 text-sm">
+                    <i data-lucide="calendar" class="w-4 h-4 mr-2 text-blue-500"></i>
                     기간
                   </dt>
                   <dd class="font-semibold text-gray-900"><%= product.duration_months %>개월</dd>
                 </div>
 
-                <div class="flex items-center justify-between">
-                  <dt class="flex items-center text-gray-500">
-                    <i data-lucide="globe" class="w-4 h-4 mr-1.5"></i>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                  <dt class="flex items-center text-gray-600 text-sm">
+                    <i data-lucide="globe" class="w-4 h-4 mr-2 text-blue-500"></i>
                     도메인
                   </dt>
                   <dd class="font-semibold text-gray-900"><%= product.domain_count %>개</dd>
                 </div>
 
                 <% if product.liability_usd.present? %>
-                  <div class="flex items-center justify-between">
-                    <dt class="flex items-center text-gray-500">
-                      <i data-lucide="shield-check" class="w-4 h-4 mr-1.5"></i>
+                  <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <dt class="flex items-center text-gray-600 text-sm">
+                      <i data-lucide="shield-check" class="w-4 h-4 mr-2 text-blue-500"></i>
                       배상 책임
                     </dt>
                     <dd class="font-semibold text-gray-900">$<%= number_with_delimiter(product.liability_usd) %></dd>
@@ -184,33 +177,35 @@
               </dl>
             </div>
 
-            <!-- 하단 -->
-            <div class="border-t border-gray-100 px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100/50
-                        rounded-b-2xl flex items-center justify-between">
-              <div>
-                <p class="text-xs text-gray-500 mb-1">시작가 (VAT 별도)</p>
-                <p class="text-xl font-extrabold text-blue-700">
-                  <%= number_to_currency(product.price, unit: "₩", precision: 0, format: "%u%n") %>
-                </p>
+            <!-- 하단 가격 및 버튼 -->
+            <div class="border-t-2 border-gray-100 px-6 py-5 bg-gradient-to-br from-slate-50 to-blue-50">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <p class="text-xs text-gray-500 mb-1">시작가 (VAT 별도)</p>
+                  <p class="text-2xl font-bold text-blue-600">
+                    <%= number_to_currency(product.price, unit: "₩", precision: 0, format: "%u%n") %>
+                  </p>
+                </div>
               </div>
 
-              <div class="flex gap-2">
+              <div class="flex gap-3">
                 <%= link_to product_path(product),
-                    class: "px-3 py-2 text-xs font-medium rounded-lg 
-                            border border-gray-300 text-gray-700 
-                            hover:bg-gray-100 hover:shadow transition inline-flex items-center gap-x-1" do %>
-                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                    class: "flex-1 px-4 py-3 text-sm font-semibold rounded-xl 
+                            border-2 border-gray-300 text-gray-700 bg-white
+                            hover:border-blue-500 hover:text-blue-600 hover:shadow-md
+                            transition-all inline-flex items-center justify-center gap-2" do %>
+                  <i data-lucide="eye" class="w-4 h-4"></i>
                   상세
                 <% end %>
 
                 <%= link_to new_order_path(product_id: product.id),
-                    class: "px-4 py-2 text-xs font-semibold rounded-lg
-                      bg-blue-600 text-white
-                      hover:bg-blue-700
-                      shadow-lg hover:shadow-xl
-                      transition transform hover:-translate-y-0.5
-                      inline-flex items-center gap-x-1" do %>
-                  <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+                    class: "flex-1 px-4 py-3 text-sm font-bold rounded-xl
+                            bg-blue-600 text-white
+                            hover:bg-blue-700
+                            shadow-lg hover:shadow-xl
+                            transition-all transform hover:scale-105
+                            inline-flex items-center justify-center gap-2" do %>
+                  <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                   주문
                 <% end %>
               </div>
