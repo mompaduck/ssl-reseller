@@ -29,7 +29,7 @@
       <%# 로그인 상태에 따라 다르게 표시 %>
       <% if user_signed_in? %>
         <%= link_to "마이페이지", dashboard_path, class: "hover:text-blue-100 transition font-medium" %>
-        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete, turbo: "false" }, class: "px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 transition font-medium" %>
+        <%= button_to "로그아웃", destroy_user_session_path, method: :delete, class: "px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 transition font-medium" %>
       <% else %>
         <%= link_to "로그인", new_user_session_path, data: { turbo: "false" }, class: "hover:text-blue-100 transition font-medium" %>
         <%= link_to "회원가입", new_user_registration_path, data: { turbo: "false" }, class: "px-4 py-2 rounded-lg bg-white text-blue-600 hover:bg-blue-50 transition font-semibold" %>
@@ -63,7 +63,7 @@
 
       <% if user_signed_in? %>
         <%= link_to "마이페이지", dashboard_path, class: "py-2 px-3 rounded-md hover:bg-blue-600 transition" %>
-        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete, turbo: "false" }, class: "py-2 px-3 rounded-md hover:bg-blue-600 transition" %>
+        <%= button_to "로그아웃", destroy_user_session_path, method: :delete, class: "py-2 px-3 rounded-md hover:bg-blue-600 transition text-left w-full" %>
       <% else %>
         <%= link_to "로그인", new_user_session_path, data: { turbo: "false" }, class: "py-2 px-3 rounded-md hover:bg-blue-600 transition" %>
         <%= link_to "회원가입", new_user_registration_path, data: { turbo: "false" }, class: "py-2 px-3 rounded-md bg-white text-blue-600 hover:bg-blue-50 transition font-semibold" %>
