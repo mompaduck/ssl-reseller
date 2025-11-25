@@ -1,0 +1,53 @@
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-900">Notification Logs</h1>
+  <p class="mt-1 text-sm text-gray-500">모든 알림 발송 이력을 확인합니다.</p>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">시간</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">타입</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">수신자</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">제목</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% if @notification_logs.any? %>
+          <% @notification_logs.each do |log| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= log.created_at.strftime("%Y-%m-%d %H:%M") %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= log.type_badge_color %>">
+                  <%= log.notification_type.upcase %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900"><%= log.recipient %></td>
+              <td class="px-6 py-4 text-sm text-gray-900"><%= log.subject %></td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= log.status_badge_color %>">
+                  <%= log.status.upcase %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500">로그가 없습니다.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <% if @notification_logs.total_pages > 1 %>
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <%= paginate @notification_logs %>
+    </div>
+  <% end %>
+</div>

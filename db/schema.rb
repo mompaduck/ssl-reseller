@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_093947) do
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action"
     t.bigint "auditable_id", null: false
@@ -23,6 +23,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
     t.bigint "user_id", null: false
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
+  create_table "certificate_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "action"
+    t.bigint "certificate_id", null: false
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.text "message"
+    t.json "metadata"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["certificate_id"], name: "index_certificate_logs_on_certificate_id"
+    t.index ["user_id"], name: "index_certificate_logs_on_user_id"
   end
 
   create_table "certificates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -49,6 +62,31 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
     t.index ["order_id"], name: "index_certificates_on_order_id"
     t.index ["serial_number"], name: "index_certificates_on_serial_number"
     t.index ["user_id"], name: "index_certificates_on_user_id"
+  end
+
+  create_table "notification_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "message"
+    t.json "metadata"
+    t.integer "notification_type"
+    t.string "recipient"
+    t.datetime "sent_at"
+    t.integer "status"
+    t.string "subject"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "order_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "action"
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.text "message"
+    t.json "metadata"
+    t.bigint "order_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["order_id"], name: "index_order_logs_on_order_id"
+    t.index ["user_id"], name: "index_order_logs_on_user_id"
   end
 
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -123,6 +161,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
     t.string "warranty_url"
   end
 
+  create_table "system_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "level"
+    t.text "message"
+    t.json "metadata"
+    t.string "source"
+    t.text "stack_trace"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "address"
     t.boolean "admin", default: false
@@ -165,8 +213,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
   end
 
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "certificate_logs", "certificates"
+  add_foreign_key "certificate_logs", "users"
   add_foreign_key "certificates", "orders"
   add_foreign_key "certificates", "users"
+  add_foreign_key "order_logs", "orders"
+  add_foreign_key "order_logs", "users"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "partner_api_logs", "orders"

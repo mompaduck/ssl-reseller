@@ -71,9 +71,21 @@ Rails.application.routes.draw do
         post :resend_dcv
         post :refresh_status
         post :send_reminder
+        post :refresh_dcv
+        post :change_dcv_method
+        get :download_dcv_file
+        post :force_issue
       end
     end
+    
+    # Log routes
     resources :audit_logs, only: [:index]
+    resources :order_logs, only: [:index]
+    resources :certificate_logs, only: [:index]
+    resources :api_logs, only: [:index]
+    resources :notification_logs, only: [:index]
+    resources :system_logs, only: [:index]
+    
     resources :users do
       member do
         patch :update_role

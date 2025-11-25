@@ -68,88 +68,6 @@
       </dl>
     </div>
 
-    <!-- Security Info -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i>
-        로그인 및 보안 정보
-      </h2>
-      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-        <div>
-          <dt class="text-sm font-medium text-gray-500">현재 로그인 IP</dt>
-          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.current_sign_in_ip || "-" %></dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">이전 로그인 IP</dt>
-          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.last_sign_in_ip || "-" %></dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">실패한 로그인 시도</dt>
-          <dd class="mt-1 text-sm text-gray-900">
-            <span class="<%= @user.failed_attempts > 0 ? 'text-red-600 font-bold' : '' %>">
-              <%= @user.failed_attempts %>회
-            </span>
-          </dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">계정 잠금 상태</dt>
-          <dd class="mt-1 text-sm">
-            <% if @user.locked_at.present? %>
-              <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
-                잠금됨 (<%= @user.locked_at.strftime("%Y-%m-%d") %>)
-              </span>
-            <% else %>
-              <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                정상
-              </span>
-            <% end %>
-          </dd>
-        </div>
-        <div>
-          <dt class="text-sm font-medium text-gray-500">2FA 설정</dt>
-          <dd class="mt-1 text-sm">
-            <% if @user.two_factor_enabled %>
-              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                활성화됨
-              </span>
-            <% else %>
-              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">
-                비활성화
-              </span>
-            <% end %>
-          </dd>
-        </div>
-      </dl>
-
-      <% if current_user.can_manage_users? %>
-        <div class="mt-6 pt-6 border-t border-gray-200">
-          <h3 class="text-sm font-bold text-gray-900 mb-3">보안 관리</h3>
-          <div class="flex flex-wrap gap-2">
-            <%= button_to "비밀번호 초기화", reset_password_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium hover:bg-yellow-200 transition", data: { turbo_confirm: "비밀번호 초기화 이메일을 발송하시겠습니까?" } %>
-            
-            <% if @user.confirmed_at.present? %>
-              <%= button_to "이메일 인증 취소", unconfirm_email_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-orange-100 text-orange-800 rounded-lg text-sm font-medium hover:bg-orange-200 transition", data: { turbo_confirm: "이메일 인증을 취소하시겠습니까?" } %>
-            <% else %>
-              <%= button_to "이메일 인증 승인", confirm_email_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
-            <% end %>
-          </div>
-        </div>
-        
-        <div class="mt-6 pt-6 border-t border-gray-200">
-          <h3 class="text-sm font-bold text-gray-900 mb-3">계정 관리</h3>
-          <div class="flex flex-wrap gap-2">
-            <% if @user.status == 'active' %>
-              <%= button_to "계정 정지", suspend_admin_user_path(@user), method: :patch, class: "px-4 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-medium hover:bg-red-200 transition", data: { turbo_confirm: "이 계정을 정지하시겠습니까?" } %>
-            <% elsif @user.status == 'banned' %>
-              <%= button_to "계정 활성화", activate_admin_user_path(@user), method: :patch, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
-            <% end %>
-            
-            <%= button_to "계정 삭제", soft_delete_admin_user_path(@user), method: :delete, class: "px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition", data: { turbo_confirm: "정말로 이 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다." } %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-
     <!-- All Orders & Certificates -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-4">
@@ -298,28 +216,187 @@
       <% end %>
     </div>
 
+    <!-- Security Info -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i>
+        로그인 및 보안 정보
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">현재 로그인 IP</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.current_sign_in_ip || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">이전 로그인 IP</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.last_sign_in_ip || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">실패한 로그인 시도</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <span class="<%= @user.failed_attempts > 0 ? 'text-red-600 font-bold' : '' %>">
+              <%= @user.failed_attempts %>회
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">계정 잠금 상태</dt>
+          <dd class="mt-1 text-sm">
+            <% if @user.locked_at.present? %>
+              <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
+                잠금됨 (<%= @user.locked_at.strftime("%Y-%m-%d") %>)
+              </span>
+            <% else %>
+              <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                정상
+              </span>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">2FA 설정</dt>
+          <dd class="mt-1 text-sm">
+            <% if @user.two_factor_enabled %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                활성화됨
+              </span>
+            <% else %>
+              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">
+                비활성화
+              </span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Audit Logs for this User -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-gray-400"></i>
+          Audit Log
+        </h2>
+        <span class="text-sm text-gray-500">최근 20개</span>
+      </div>
+      
+      <% user_audit_logs = AuditLog.where("user_id = ? OR (auditable_type = 'User' AND auditable_id = ?)", @user.id, @user.id)
+                                    .includes(:user, :auditable)
+                                    .order(created_at: :desc)
+                                    .limit(20) %>
+      
+      <% if user_audit_logs.any? %>
+        <div class="space-y-3">
+          <% user_audit_logs.each do |log| %>
+            <div class="flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100">
+              <!-- Timeline Dot -->
+              <div class="flex-shrink-0 mt-1">
+                <div class="w-2 h-2 rounded-full <%= log.badge_color.split(' ').first.gsub('bg-', 'bg-') %>"></div>
+              </div>
+              
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex-1">
+                    <!-- Action Badge & Message -->
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 inline-flex text-xs font-semibold rounded-full <%= log.badge_color %>">
+                        <%= log.formatted_action %>
+                      </span>
+                      <span class="text-sm text-gray-900"><%= log.message %></span>
+                    </div>
+                    
+                    <!-- Actor & Target Info -->
+                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                      <span class="flex items-center gap-1">
+                        <i data-lucide="user" class="w-3 h-3"></i>
+                        <%= log.user&.name || "System" %>
+                      </span>
+                      
+                      <% if log.auditable && log.auditable != @user %>
+                        <span class="flex items-center gap-1">
+                          <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                          <% case log.auditable_type %>
+                          <% when 'Order' %>
+                            <%= link_to "Order ##{log.auditable.internal_order_id}", admin_order_path(log.auditable), class: "text-blue-600 hover:underline" %>
+                          <% when 'Certificate' %>
+                            <%= link_to "Certificate ##{log.auditable.id}", admin_certificate_path(log.auditable), class: "text-blue-600 hover:underline" %>
+                          <% when 'Payment' %>
+                            Payment #<%= log.auditable.id %>
+                          <% else %>
+                            <%= log.auditable_type %> #<%= log.auditable_id %>
+                          <% end %>
+                        </span>
+                      <% end %>
+                      
+                      <% if log.ip_address.present? %>
+                        <span class="flex items-center gap-1 font-mono">
+                          <i data-lucide="map-pin" class="w-3 h-3"></i>
+                          <%= log.ip_address %>
+                        </span>
+                      <% end %>
+                    </div>
+                    
+                    <!-- Metadata (if present) -->
+                    <% if log.metadata.present? && log.metadata.is_a?(Hash) && log.metadata.any? %>
+                      <details class="mt-2">
+                        <summary class="text-xs text-blue-600 cursor-pointer hover:text-blue-800">상세 정보</summary>
+                        <pre class="mt-1 text-xs bg-gray-50 p-2 rounded border border-gray-200 overflow-x-auto"><%= JSON.pretty_generate(log.metadata) %></pre>
+                      </details>
+                    <% end %>
+                  </div>
+                  
+                  <!-- Timestamp -->
+                  <div class="flex-shrink-0 text-right">
+                    <div class="text-xs text-gray-500"><%= log.created_at.strftime("%Y-%m-%d") %></div>
+                    <div class="text-xs text-gray-400"><%= log.created_at.strftime("%H:%M:%S") %></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <!-- View All Link -->
+        <div class="mt-4 pt-4 border-t border-gray-200 text-center">
+          <%= link_to "전체 Audit Log 보기", admin_audit_logs_path(q: @user.email), class: "text-sm text-blue-600 hover:text-blue-800 font-medium" %>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
+          <p class="text-sm text-gray-500">Audit Log가 없습니다.</p>
+        </div>
+      <% end %>
+    </div>
+
   </div>
 
   <!-- Right Column -->
   <div class="lg:col-span-1 space-y-6">
     
-    <!-- Status & Role Card -->
+    <!-- Account Management Card (통합) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 class="text-lg font-bold text-gray-900 mb-4">상태 및 권한</h2>
-      <div class="space-y-4">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="user-cog" class="w-5 h-5 text-gray-400"></i>
+        계정 관리
+      </h2>
+      
+      <!-- Status & Role Display -->
+      <div class="space-y-4 mb-6">
         <div>
-          <p class="text-sm text-gray-500 mb-1">계정 상태</p>
+          <p class="text-sm text-gray-500 mb-2">계정 상태</p>
           <% status_colors = {
             'active' => 'bg-green-100 text-green-800',
             'pending' => 'bg-yellow-100 text-yellow-800',
             'banned' => 'bg-red-100 text-red-800'
           } %>
-          <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full <%= status_colors[@user.status] %>">
+          <span class="px-3 py-1.5 inline-flex text-sm font-bold rounded-full <%= status_colors[@user.status] %>">
             <%= @user.status.upcase %>
           </span>
         </div>
+        
         <div>
-          <p class="text-sm text-gray-500 mb-1">권한 레벨</p>
+          <p class="text-sm text-gray-500 mb-2">권한 레벨</p>
           <% role_colors = {
             'user' => 'bg-gray-100 text-gray-800',
             'partner' => 'bg-purple-100 text-purple-800',
@@ -327,11 +404,73 @@
             'admin' => 'bg-blue-100 text-blue-800',
             'super_admin' => 'bg-red-100 text-red-800'
           } %>
-          <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full <%= role_colors[@user.role] %>">
+          <span class="px-3 py-1.5 inline-flex text-sm font-bold rounded-full <%= role_colors[@user.role] %>">
             <%= @user.role.upcase %>
           </span>
         </div>
+        
+        <div>
+          <p class="text-sm text-gray-500 mb-2">이메일 인증</p>
+          <% if @user.confirmed_at.present? %>
+            <span class="px-3 py-1.5 inline-flex text-sm font-semibold rounded-full bg-green-100 text-green-800">
+              <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+              인증됨
+            </span>
+          <% else %>
+            <span class="px-3 py-1.5 inline-flex text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
+              <i data-lucide="alert-circle" class="w-4 h-4 mr-1"></i>
+              미인증
+            </span>
+          <% end %>
+        </div>
       </div>
+      
+      <% if current_user.can_manage_users? %>
+        <!-- Action Buttons -->
+        <div class="pt-6 border-t border-gray-200 space-y-3">
+          <p class="text-sm font-bold text-gray-700 mb-3">관리 작업</p>
+          
+          <!-- Account Status Actions -->
+          <div class="space-y-2">
+            <% if @user.status == 'active' %>
+              <%= button_to suspend_admin_user_path(@user), method: :patch, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition border border-red-200", data: { turbo_confirm: "이 계정을 정지하시겠습니까?" } do %>
+                <i data-lucide="user-x" class="w-4 h-4"></i>
+                <span>계정 정지</span>
+              <% end %>
+            <% elsif @user.status == 'banned' %>
+              <%= button_to activate_admin_user_path(@user), method: :patch, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 rounded-lg text-sm font-medium hover:bg-green-100 transition border border-green-200" do %>
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+                <span>계정 활성화</span>
+              <% end %>
+            <% end %>
+            
+            <!-- Password Reset -->
+            <%= button_to reset_password_admin_user_path(@user), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-100 transition border border-yellow-200", data: { turbo_confirm: "비밀번호 초기화 이메일을 발송하시겠습니까?" } do %>
+              <i data-lucide="key" class="w-4 h-4"></i>
+              <span>비밀번호 초기화</span>
+            <% end %>
+            
+            <!-- Email Confirmation -->
+            <% if @user.confirmed_at.present? %>
+              <%= button_to unconfirm_email_admin_user_path(@user), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-50 text-orange-700 rounded-lg text-sm font-medium hover:bg-orange-100 transition border border-orange-200", data: { turbo_confirm: "이메일 인증을 취소하시겠습니까?" } do %>
+                <i data-lucide="mail-x" class="w-4 h-4"></i>
+                <span>이메일 인증 취소</span>
+              <% end %>
+            <% else %>
+              <%= button_to confirm_email_admin_user_path(@user), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition border border-blue-200" do %>
+                <i data-lucide="mail-check" class="w-4 h-4"></i>
+                <span>이메일 인증 승인</span>
+              <% end %>
+            <% end %>
+            
+            <!-- Delete Account -->
+            <%= button_to soft_delete_admin_user_path(@user), method: :delete, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition", data: { turbo_confirm: "정말로 이 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다." } do %>
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>계정 삭제</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <!-- Role Management -->

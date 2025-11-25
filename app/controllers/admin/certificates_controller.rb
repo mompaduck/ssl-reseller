@@ -1,6 +1,6 @@
 module Admin
   class CertificatesController < BaseController
-    before_action :check_edit_permission, only: [:reissue, :cancel, :resend_dcv, :refresh_status, :send_reminder]
+    before_action :check_edit_permission, only: [:reissue, :cancel, :resend_dcv, :refresh_status, :send_reminder, :refresh_dcv, :change_dcv_method, :force_issue]
     
     def index
       @certificates = current_user.accessible_certificates.includes(:user, :order)
@@ -134,6 +134,58 @@ module Admin
       # UserMailer.expiration_reminder(@certificate).deliver_later
       AuditLogger.log(current_user, @certificate, 'send_reminder', "만료 알림 메일 발송", {}, request.remote_ip)
       redirect_to admin_certificate_path(@certificate), notice: "만료 알림 메일이 발송되었습니다."
+    end
+
+    def refresh_dcv
+      @certificate = Certificate.find(params[:id])
+      service = SslProviderService.new
+      result = service.check_dcv_status(@certificate.order.partner_order_number)
+      
+      if result.success?
+        AuditLogger.log(current_user, @certificate, 'refresh_dcv', "DCV 상태 새로고침", {}, request.remote_ip)
+        redirect_to admin_certificate_path(@certificate), notice: "DCV 상태가 갱신되었습니다."
+      else
+        redirect_to admin_certificate_path(@certificate), alert: "DCV 상태 갱신 실패"
+      end
+    end
+
+    def change_dcv_method
+      @certificate = Certificate.find(params[:id])
+      # In a real app, this would show a form or modal to select new DCV method
+      # For now, just redirect back with a notice
+      AuditLogger.log(current_user, @certificate, 'change_dcv_method', "DCV 방식 변경 요청", {}, request.remote_ip)
+      redirect_to admin_certificate_path(@certificate), notice: "DCV 방식 변경 기능은 곧 제공될 예정입니다."
+    end
+
+    def download_dcv_file
+      @certificate = Certificate.find(params[:id])
+      
+      # Generate DCV file content
+      file_content = @certificate.dcv_file_content || "DCV-VALIDATION-CONTENT-HERE\nSectigo-DCV-#{@certificate.id}"
+      
+      send_data file_content,
+        filename: "fileauth.txt",
+        type: "text/plain",
+        disposition: "attachment"
+      
+      AuditLogger.log(current_user, @certificate, 'download_dcv_file', "DCV 파일 다운로드", {}, request.remote_ip)
+    end
+
+    def force_issue
+      @certificate = Certificate.find(params[:id])
+      service = SslProviderService.new
+      
+      # This is a rare case action - force issue the certificate
+      # In a real app, this would call a special Sectigo API endpoint
+      result = service.force_issue(@certificate.order.partner_order_number)
+      
+      if result.success?
+        @certificate.update(status: :issued, issued_at: Time.current)
+        AuditLogger.log(current_user, @certificate, 'force_issue', "강제 발급 요청 (관리자: #{current_user.name})", { reason: 'manual_override' }, request.remote_ip)
+        redirect_to admin_certificate_path(@certificate), notice: "강제 발급 요청이 처리되었습니다."
+      else
+        redirect_to admin_certificate_path(@certificate), alert: "강제 발급 요청 실패"
+      end
     end
 
     private

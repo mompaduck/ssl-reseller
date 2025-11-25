@@ -1,0 +1,1269 @@
+<div class="mb-6">
+  <div class="flex items-center gap-4 mb-2">
+    <%= link_to admin_certificates_path, class: "p-2 rounded-lg hover:bg-gray-200 text-gray-500 transition" do %>
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    <% end %>
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-gray-900"><%= @certificate.order.domain %></h1>
+        <% status_colors = {
+          'pending' => 'bg-yellow-100 text-yellow-800',
+          'issued' => 'bg-green-100 text-green-800',
+          'expired' => 'bg-gray-100 text-gray-800',
+          'revoked' => 'bg-red-100 text-red-800',
+          'dcv_failed' => 'bg-red-100 text-red-800',
+          'canceled' => 'bg-gray-100 text-gray-800'
+        } %>
+        <span class="px-3 py-1 rounded-full text-sm font-semibold <%= status_colors[@certificate.status] || 'bg-gray-100 text-gray-800' %>">
+          <%= @certificate.status.upcase %>
+        </span>
+      </div>
+      <p class="text-sm text-gray-500 mt-1">Certificate ID: #<%= @certificate.id %></p>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Main Content - 2 columns -->
+  <div class="lg:col-span-2 space-y-6">
+    
+    <!-- 1. Certificate Overview (기본 정보) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-5 h-5 text-blue-600"></i>
+        인증서 기본 정보 (Certificate Overview)
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <!-- Certificate ID -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Certificate ID (내부 PK)</dt>
+          <dd class="text-sm font-mono text-gray-900">#<%= @certificate.id %></dd>
+        </div>
+        
+        <!-- Sectigo Certificate ID -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Sectigo Certificate ID</dt>
+          <dd class="text-sm font-mono text-gray-900"><%= @certificate.serial_number || "-" %></dd>
+        </div>
+        
+        <!-- Sectigo Order Number -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Sectigo Order Number</dt>
+          <dd class="text-sm font-mono text-gray-900"><%= @certificate.order.partner_order_number || "-" %></dd>
+        </div>
+        
+        <!-- Product Type -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Product Type</dt>
+          <dd class="text-sm text-gray-900">
+            <span class="px-2.5 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
+              <%= @certificate.order.product&.name || "Unknown" %>
+            </span>
+          </dd>
+        </div>
+        
+        <!-- Domain / CN -->
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-gray-500 mb-1">Domain / Common Name (CN)</dt>
+          <dd class="text-base font-bold text-gray-900">
+            <%= @certificate.order.domain %>
+            <% if @certificate.order.domain&.start_with?('*.') %>
+              <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs font-semibold">Wildcard</span>
+            <% end %>
+          </dd>
+        </div>
+        
+        <!-- SAN List (if applicable) -->
+        <% if @certificate.csr_parsed_data.present? && @certificate.csr_parsed_data['san'].present? %>
+          <div class="md:col-span-2">
+            <dt class="text-sm font-medium text-gray-500 mb-1">SAN (Subject Alternative Names)</dt>
+            <dd class="text-sm text-gray-900">
+              <div class="flex flex-wrap gap-2">
+                <% @certificate.csr_parsed_data['san'].each do |san| %>
+                  <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-mono"><%= san %></span>
+                <% end %>
+              </div>
+            </dd>
+          </div>
+        <% end %>
+        
+        <!-- Validation Level -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Validation Level</dt>
+          <dd class="text-sm text-gray-900">
+            <% validation_colors = {
+              'dv' => 'bg-green-100 text-green-800',
+              'ov' => 'bg-blue-100 text-blue-800',
+              'ev' => 'bg-purple-100 text-purple-800'
+            } %>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold <%= validation_colors[@certificate.certificate_type] || 'bg-gray-100 text-gray-800' %>">
+              <%= @certificate.certificate_type.upcase %>
+            </span>
+          </dd>
+        </div>
+        
+        <!-- Validity Period -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Validity Period</dt>
+          <dd class="text-sm text-gray-900">
+            <% if @certificate.issued_at && @certificate.expires_at %>
+              <% months = (((@certificate.expires_at - @certificate.issued_at) / 1.month).round) %>
+              <span class="font-semibold"><%= months %> months</span>
+              <span class="text-gray-500 text-xs ml-1">(<%= @certificate.issued_at.strftime("%Y-%m-%d") %> ~ <%= @certificate.expires_at.strftime("%Y-%m-%d") %>)</span>
+            <% else %>
+              <span class="text-gray-400">-</span>
+            <% end %>
+          </dd>
+        </div>
+        
+        <!-- Server Count -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Server Count</dt>
+          <dd class="text-sm text-gray-900">
+            <span class="font-semibold"><%= @certificate.order.quantity || 1 %></span> server(s)
+          </dd>
+        </div>
+        
+        <!-- Order Type -->
+        <div>
+          <dt class="text-sm font-medium text-gray-500 mb-1">Order Type</dt>
+          <dd class="text-sm text-gray-900">
+            <% order_type_colors = {
+              'new' => 'bg-blue-100 text-blue-800',
+              'reissue' => 'bg-orange-100 text-orange-800',
+              'renew' => 'bg-green-100 text-green-800'
+            } %>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold <%= order_type_colors[@certificate.order.order_type] || 'bg-gray-100 text-gray-800' %>">
+              <%= @certificate.order.order_type&.upcase || "NEW" %>
+            </span>
+          </dd>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Status Section (발급/검증 상태) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="activity" class="w-5 h-5 text-green-600"></i>
+        발급/검증 상태 (Status)
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Order Status -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+          <p class="text-sm font-medium text-blue-900 mb-2">Order Status</p>
+          <% order_status_config = {
+            'pending' => { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', icon: 'clock', label: 'Pending' },
+            'paid' => { color: 'bg-blue-100 text-blue-800 border-blue-300', icon: 'credit-card', label: 'Paid' },
+            'issued' => { color: 'bg-green-100 text-green-800 border-green-300', icon: 'check-circle', label: 'Issued' },
+            'canceled' => { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'x-circle', label: 'Canceled' },
+            'refunded' => { color: 'bg-orange-100 text-orange-800 border-orange-300', icon: 'rotate-ccw', label: 'Refunded' }
+          } %>
+          <% status_info = order_status_config[@certificate.order.status] || { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'help-circle', label: @certificate.order.status } %>
+          
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-full text-sm font-bold border <%= status_info[:color] %>">
+              <i data-lucide="<%= status_info[:icon] %>" class="w-4 h-4 inline mr-1"></i>
+              <%= status_info[:label] %>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Certificate Status -->
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+          <p class="text-sm font-medium text-purple-900 mb-2">Certificate Status</p>
+          <% cert_status_config = {
+            'pending' => { color: 'bg-yellow-100 text-yellow-800 border-yellow-300', icon: 'clock', label: 'Pending' },
+            'issued' => { color: 'bg-green-100 text-green-800 border-green-300', icon: 'shield-check', label: 'Issued' },
+            'expired' => { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'calendar-x', label: 'Expired' },
+            'dcv_failed' => { color: 'bg-red-100 text-red-800 border-red-300', icon: 'alert-circle', label: 'DCV Failed' },
+            'canceled' => { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'x-circle', label: 'Canceled' }
+          } %>
+          <% cert_info = cert_status_config[@certificate.status] || { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'help-circle', label: @certificate.status } %>
+          
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-full text-sm font-bold border <%= cert_info[:color] %>">
+              <i data-lucide="<%= cert_info[:icon] %>" class="w-4 h-4 inline mr-1"></i>
+              <%= cert_info[:label] %>
+            </span>
+          </div>
+        </div>
+        
+        <!-- DCV Status -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+          <p class="text-sm font-medium text-green-900 mb-2">DCV Status</p>
+          <% 
+            # DCV 상태 판단 로직
+            dcv_status = if @certificate.status == 'issued'
+              'verified'
+            elsif @certificate.status == 'dcv_failed'
+              'failed'
+            elsif @certificate.dcv_email.present? || @certificate.dcv_method.present?
+              'email_sent'
+            else
+              'not_started'
+            end
+            
+            dcv_status_config = {
+              'not_started' => { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'circle', label: 'Not Started' },
+              'email_sent' => { color: 'bg-blue-100 text-blue-800 border-blue-300', icon: 'mail', label: 'Email Sent' },
+              'verified' => { color: 'bg-green-100 text-green-800 border-green-300', icon: 'check-circle-2', label: 'Verified' },
+              'failed' => { color: 'bg-red-100 text-red-800 border-red-300', icon: 'x-octagon', label: 'Failed' }
+            }
+            dcv_info = dcv_status_config[dcv_status]
+          %>
+          
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-full text-sm font-bold border <%= dcv_info[:color] %>">
+              <i data-lucide="<%= dcv_info[:icon] %>" class="w-4 h-4 inline mr-1"></i>
+              <%= dcv_info[:label] %>
+            </span>
+          </div>
+          
+          <% if @certificate.dcv_method.present? %>
+            <p class="text-xs text-green-700 mt-2">
+              Method: <span class="font-semibold"><%= @certificate.dcv_method %></span>
+            </p>
+          <% end %>
+        </div>
+        
+        <!-- Validation Method -->
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+          <p class="text-sm font-medium text-orange-900 mb-2">Validation Method</p>
+          <div class="flex items-center gap-2">
+            <% if @certificate.order.validation_method.present? %>
+              <span class="px-3 py-1.5 rounded-full text-sm font-bold border bg-orange-100 text-orange-800 border-orange-300">
+                <i data-lucide="key" class="w-4 h-4 inline mr-1"></i>
+                <%= @certificate.order.validation_method.upcase %>
+              </span>
+            <% else %>
+              <span class="px-3 py-1.5 rounded-full text-sm font-bold border bg-gray-100 text-gray-800 border-gray-300">
+                <i data-lucide="minus" class="w-4 h-4 inline mr-1"></i>
+                Not Set
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Important Dates -->
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <h3 class="text-sm font-bold text-gray-900 mb-4">Important Dates</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- Created At -->
+          <div>
+            <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <i data-lucide="plus-circle" class="w-3 h-3"></i>
+              생성일
+            </p>
+            <p class="text-sm font-semibold text-gray-900">
+              <%= @certificate.created_at.strftime("%Y-%m-%d") %>
+            </p>
+            <p class="text-xs text-gray-400">
+              <%= @certificate.created_at.strftime("%H:%M") %>
+            </p>
+          </div>
+          
+          <!-- Issued At -->
+          <div>
+            <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3 h-3"></i>
+              발급일
+            </p>
+            <% if @certificate.issued_at %>
+              <p class="text-sm font-semibold text-green-600">
+                <%= @certificate.issued_at.strftime("%Y-%m-%d") %>
+              </p>
+              <p class="text-xs text-gray-400">
+                <%= @certificate.issued_at.strftime("%H:%M") %>
+              </p>
+            <% else %>
+              <p class="text-sm text-gray-400">-</p>
+            <% end %>
+          </div>
+          
+          <!-- Expires At -->
+          <div>
+            <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <i data-lucide="calendar-x" class="w-3 h-3"></i>
+              만료일
+            </p>
+            <% if @certificate.expires_at %>
+              <% days_left = (@certificate.expires_at.to_date - Date.current).to_i %>
+              <p class="text-sm font-semibold <%= days_left < 0 ? 'text-red-600' : days_left <= 30 ? 'text-orange-600' : 'text-green-600' %>">
+                <%= @certificate.expires_at.strftime("%Y-%m-%d") %>
+              </p>
+              <p class="text-xs <%= days_left < 0 ? 'text-red-500' : days_left <= 30 ? 'text-orange-500' : 'text-gray-400' %>">
+                <%= days_left < 0 ? "만료됨" : "D-#{days_left}" %>
+              </p>
+            <% else %>
+              <p class="text-sm text-gray-400">-</p>
+            <% end %>
+          </div>
+          
+          <!-- Last Synced -->
+          <div>
+            <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+              최근 동기화
+            </p>
+            <p class="text-sm font-semibold text-gray-900">
+              <%= @certificate.updated_at.strftime("%Y-%m-%d") %>
+            </p>
+            <p class="text-xs text-gray-400">
+              <%= @certificate.updated_at.strftime("%H:%M") %>
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Status Timeline (Visual Progress) -->
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <h3 class="text-sm font-bold text-gray-900 mb-4">Status Timeline</h3>
+        <div class="relative">
+          <!-- Progress Bar Background -->
+          <div class="absolute top-5 left-0 right-0 h-1 bg-gray-200 rounded-full"></div>
+          
+          <!-- Progress Bar Fill -->
+          <% 
+            progress_percentage = case @certificate.status
+            when 'pending' then 25
+            when 'dcv_failed' then 50
+            when 'issued' then 100
+            when 'expired' then 100
+            when 'canceled' then 0
+            else 0
+            end
+          %>
+          <div class="absolute top-5 left-0 h-1 bg-blue-500 rounded-full transition-all duration-500" style="width: <%= progress_percentage %>%"></div>
+          
+          <!-- Timeline Steps -->
+          <div class="relative flex justify-between">
+            <!-- Step 1: Created -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full <%= @certificate.created_at ? 'bg-blue-500' : 'bg-gray-300' %> flex items-center justify-center mb-2 relative z-10">
+                <i data-lucide="plus" class="w-5 h-5 text-white"></i>
+              </div>
+              <p class="text-xs text-gray-600 font-medium">Created</p>
+            </div>
+            
+            <!-- Step 2: DCV -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full <%= @certificate.dcv_method.present? ? 'bg-blue-500' : 'bg-gray-300' %> flex items-center justify-center mb-2 relative z-10">
+                <i data-lucide="key" class="w-5 h-5 text-white"></i>
+              </div>
+              <p class="text-xs text-gray-600 font-medium">DCV</p>
+            </div>
+            
+            <!-- Step 3: Issued -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full <%= @certificate.status == 'issued' ? 'bg-green-500' : @certificate.status == 'dcv_failed' ? 'bg-red-500' : 'bg-gray-300' %> flex items-center justify-center mb-2 relative z-10">
+                <i data-lucide="<%= @certificate.status == 'issued' ? 'check' : @certificate.status == 'dcv_failed' ? 'x' : 'clock' %>" class="w-5 h-5 text-white"></i>
+              </div>
+              <p class="text-xs text-gray-600 font-medium">Issued</p>
+            </div>
+            
+            <!-- Step 4: Active/Expired -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full <%= @certificate.status == 'expired' ? 'bg-gray-500' : @certificate.status == 'issued' ? 'bg-green-500' : 'bg-gray-300' %> flex items-center justify-center mb-2 relative z-10">
+                <i data-lucide="<%= @certificate.status == 'expired' ? 'calendar-x' : 'shield-check' %>" class="w-5 h-5 text-white"></i>
+              </div>
+              <p class="text-xs text-gray-600 font-medium">Active</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. DCV Information (도메인 검증 정보) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="key" class="w-5 h-5 text-orange-600"></i>
+          DCV (Domain Control Validation) 정보
+        </h2>
+        
+        <!-- Quick Actions -->
+        <div class="flex gap-2">
+          <%= button_to refresh_dcv_admin_certificate_path(@certificate), method: :post, class: "px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-100 transition border border-blue-200 flex items-center gap-1" do %>
+            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+            <span>상태 새로고침</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- DCV Method Selection -->
+      <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <p class="text-sm font-bold text-orange-900 mb-2">선택된 DCV 방식</p>
+            <% if @certificate.dcv_method.present? %>
+              <% method_config = {
+                'EMAIL' => { color: 'bg-purple-100 text-purple-800 border-purple-300', icon: 'mail' },
+                'HTTP' => { color: 'bg-green-100 text-green-800 border-green-300', icon: 'globe' },
+                'HTTPS' => { color: 'bg-blue-100 text-blue-800 border-blue-300', icon: 'lock' },
+                'DNS' => { color: 'bg-indigo-100 text-indigo-800 border-indigo-300', icon: 'server' },
+                'CNAME' => { color: 'bg-indigo-100 text-indigo-800 border-indigo-300', icon: 'server' }
+              } %>
+              <% method_info = method_config[@certificate.dcv_method.upcase] || { color: 'bg-gray-100 text-gray-800 border-gray-300', icon: 'help-circle' } %>
+              
+              <div class="flex items-center gap-2">
+                <span class="px-4 py-2 rounded-lg text-sm font-bold border <%= method_info[:color] %>">
+                  <i data-lucide="<%= method_info[:icon] %>" class="w-4 h-4 inline mr-1"></i>
+                  <%= @certificate.dcv_method.upcase %>
+                </span>
+              </div>
+            <% else %>
+              <span class="px-4 py-2 rounded-lg text-sm font-bold border bg-gray-100 text-gray-800 border-gray-300">
+                <i data-lucide="alert-circle" class="w-4 h-4 inline mr-1"></i>
+                미설정
+              </span>
+            <% end %>
+          </div>
+          
+          <!-- Change DCV Method -->
+          <div>
+            <%= button_to change_dcv_method_admin_certificate_path(@certificate), method: :post, class: "px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium hover:bg-orange-700 transition flex items-center gap-1", data: { turbo_confirm: "DCV 방식을 변경하시겠습니까?" } do %>
+              <i data-lucide="repeat" class="w-3 h-3"></i>
+              <span>방식 변경</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- DCV Method Specific Information -->
+      <% if @certificate.dcv_method.present? %>
+        
+        <!-- EMAIL Method -->
+        <% if @certificate.dcv_method.upcase == 'EMAIL' %>
+          <div class="bg-purple-50 border border-purple-200 rounded-lg p-5">
+            <div class="flex items-start gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="mail" class="w-5 h-5 text-purple-600"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-sm font-bold text-purple-900 mb-1">이메일 검증 (EMAIL)</h3>
+                <p class="text-xs text-purple-700">승인 이메일이 발송되었습니다. 이메일을 확인하고 승인 링크를 클릭하세요.</p>
+              </div>
+            </div>
+            
+            <!-- DCV Email -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">DCV 이메일 주소</p>
+              <div class="flex items-center gap-2">
+                <code class="flex-1 bg-purple-100 px-3 py-2 rounded text-sm text-purple-900 font-mono">
+                  <%= @certificate.dcv_email || "admin@#{@certificate.order.domain}" %>
+                </code>
+                <button onclick="navigator.clipboard.writeText('<%= @certificate.dcv_email || "admin@#{@certificate.order.domain}" %>')" class="px-3 py-2 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Email Approver List -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">승인 가능한 이메일 주소</p>
+              <div class="space-y-1">
+                <% domain = @certificate.order.domain.gsub(/^\*\./, '') %>
+                <% approver_emails = [
+                  "admin@#{domain}",
+                  "administrator@#{domain}",
+                  "hostmaster@#{domain}",
+                  "postmaster@#{domain}",
+                  "webmaster@#{domain}"
+                ] %>
+                <% approver_emails.each do |email| %>
+                  <div class="flex items-center gap-2 text-xs">
+                    <i data-lucide="check-circle" class="w-3 h-3 text-purple-600"></i>
+                    <code class="text-purple-900 font-mono"><%= email %></code>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            
+            <!-- Resend Email Button -->
+            <div class="flex gap-2">
+              <%= button_to resend_dcv_admin_certificate_path(@certificate), method: :post, class: "flex-1 px-4 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition flex items-center justify-center gap-2" do %>
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>DCV 이메일 재전송</span>
+              <% end %>
+            </div>
+            
+            <!-- Troubleshooting -->
+            <div class="mt-4 p-3 bg-purple-100 rounded-lg">
+              <p class="text-xs font-semibold text-purple-900 mb-2">📌 문제 해결 팁</p>
+              <ul class="text-xs text-purple-800 space-y-1 list-disc list-inside">
+                <li>스팸 메일함을 확인하세요</li>
+                <li>이메일 수신까지 최대 30분 소요될 수 있습니다</li>
+                <li>승인 링크는 30일간 유효합니다</li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- HTTP/HTTPS Method -->
+        <% if @certificate.dcv_method.upcase == 'HTTP' || @certificate.dcv_method.upcase == 'HTTPS' %>
+          <div class="bg-green-50 border border-green-200 rounded-lg p-5">
+            <div class="flex items-start gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="<%= @certificate.dcv_method.upcase == 'HTTPS' ? 'lock' : 'globe' %>" class="w-5 h-5 text-green-600"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-sm font-bold text-green-900 mb-1"><%= @certificate.dcv_method.upcase %> 파일 검증</h3>
+                <p class="text-xs text-green-700">웹 서버에 검증 파일을 업로드하여 도메인 소유권을 증명합니다.</p>
+              </div>
+            </div>
+            
+            <!-- HTTP Validation URL -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">검증 URL</p>
+              <% validation_url = @certificate.dcv_file_url || "#{@certificate.dcv_method.downcase}://#{@certificate.order.domain}/.well-known/pki-validation/fileauth.txt" %>
+              <div class="flex items-center gap-2">
+                <code class="flex-1 bg-green-100 px-3 py-2 rounded text-sm text-green-900 font-mono break-all">
+                  <%= validation_url %>
+                </code>
+                <button onclick="navigator.clipboard.writeText('<%= validation_url %>')" class="px-3 py-2 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex-shrink-0">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- File Content -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-semibold text-gray-700">파일 내용 (fileauth.txt)</p>
+                <%= button_to download_dcv_file_admin_certificate_path(@certificate), method: :get, class: "px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center gap-1" do %>
+                  <i data-lucide="download" class="w-3 h-3"></i>
+                  <span>다운로드</span>
+                <% end %>
+              </div>
+              <div class="relative">
+                <pre class="bg-green-100 px-3 py-2 rounded text-xs text-green-900 font-mono overflow-x-auto"><%= @certificate.dcv_file_content || "DCV-VALIDATION-CONTENT-HERE\nSectigo-DCV-#{@certificate.id}" %></pre>
+                <button onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)" class="absolute top-2 right-2 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">📋 설정 방법</p>
+              <ol class="text-xs text-gray-700 space-y-2 list-decimal list-inside">
+                <li>웹 서버에 <code class="bg-gray-100 px-1 py-0.5 rounded">.well-known/pki-validation/</code> 디렉토리 생성</li>
+                <li>위의 파일 내용을 <code class="bg-gray-100 px-1 py-0.5 rounded">fileauth.txt</code>로 저장</li>
+                <li>파일을 해당 디렉토리에 업로드</li>
+                <li>브라우저에서 검증 URL 접근 가능 여부 확인</li>
+                <li>"상태 새로고침" 버튼 클릭</li>
+              </ol>
+            </div>
+            
+            <!-- Test URL Button -->
+            <div class="flex gap-2">
+              <a href="<%= validation_url %>" target="_blank" class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span>URL 테스트 (새 창)</span>
+              </a>
+            </div>
+            
+            <!-- Troubleshooting -->
+            <div class="mt-4 p-3 bg-green-100 rounded-lg">
+              <p class="text-xs font-semibold text-green-900 mb-2">📌 문제 해결 팁</p>
+              <ul class="text-xs text-green-800 space-y-1 list-disc list-inside">
+                <li>파일이 정확히 <code class="bg-green-200 px-1 rounded">/.well-known/pki-validation/fileauth.txt</code> 경로에 있는지 확인</li>
+                <li>파일 내용이 정확히 일치하는지 확인 (공백, 줄바꿈 포함)</li>
+                <li>웹 서버가 .txt 파일을 text/plain으로 제공하는지 확인</li>
+                <li>리다이렉트나 인증이 없는지 확인</li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- DNS/CNAME Method -->
+        <% if @certificate.dcv_method.upcase == 'DNS' || @certificate.dcv_method.upcase == 'CNAME' %>
+          <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-5">
+            <div class="flex items-start gap-3 mb-4">
+              <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="server" class="w-5 h-5 text-indigo-600"></i>
+              </div>
+              <div class="flex-1">
+                <h3 class="text-sm font-bold text-indigo-900 mb-1">DNS CNAME 검증</h3>
+                <p class="text-xs text-indigo-700">DNS에 CNAME 레코드를 추가하여 도메인 소유권을 증명합니다.</p>
+              </div>
+            </div>
+            
+            <!-- CNAME Host -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">CNAME Host (Name)</p>
+              <div class="flex items-center gap-2">
+                <code class="flex-1 bg-indigo-100 px-3 py-2 rounded text-sm text-indigo-900 font-mono break-all">
+                  <%= @certificate.dcv_cname_host || "_dnsauth.#{@certificate.order.domain}" %>
+                </code>
+                <button onclick="navigator.clipboard.writeText('<%= @certificate.dcv_cname_host || "_dnsauth.#{@certificate.order.domain}" %>')" class="px-3 py-2 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 transition flex-shrink-0">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- CNAME Target -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">CNAME Target (Value)</p>
+              <div class="flex items-center gap-2">
+                <code class="flex-1 bg-indigo-100 px-3 py-2 rounded text-sm text-indigo-900 font-mono break-all">
+                  <%= @certificate.dcv_cname_value || "dcv-validation-#{@certificate.id}.sectigo.com" %>
+                </code>
+                <button onclick="navigator.clipboard.writeText('<%= @certificate.dcv_cname_value || "dcv-validation-#{@certificate.id}.sectigo.com" %>')" class="px-3 py-2 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700 transition flex-shrink-0">
+                  <i data-lucide="copy" class="w-3 h-3"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="bg-white rounded-lg p-4 mb-3">
+              <p class="text-xs font-semibold text-gray-700 mb-2">📋 설정 방법</p>
+              <ol class="text-xs text-gray-700 space-y-2 list-decimal list-inside">
+                <li>도메인 DNS 관리 페이지에 접속</li>
+                <li>새 CNAME 레코드 추가</li>
+                <li>Name/Host: <code class="bg-gray-100 px-1 py-0.5 rounded"><%= @certificate.dcv_cname_host || "_dnsauth" %></code></li>
+                <li>Value/Target: <code class="bg-gray-100 px-1 py-0.5 rounded"><%= @certificate.dcv_cname_value || "dcv.sectigo.com" %></code></li>
+                <li>TTL: 3600 (1시간) 권장</li>
+                <li>DNS 전파 대기 (최대 24시간)</li>
+                <li>"상태 새로고침" 버튼 클릭</li>
+              </ol>
+            </div>
+            
+            <!-- DNS Lookup Tool -->
+            <div class="flex gap-2">
+              <a href="https://dnschecker.org/#CNAME/<%= @certificate.dcv_cname_host || "_dnsauth.#{@certificate.order.domain}" %>" target="_blank" class="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>DNS 전파 확인</span>
+              </a>
+            </div>
+            
+            <!-- Troubleshooting -->
+            <div class="mt-4 p-3 bg-indigo-100 rounded-lg">
+              <p class="text-xs font-semibold text-indigo-900 mb-2">📌 문제 해결 팁</p>
+              <ul class="text-xs text-indigo-800 space-y-1 list-disc list-inside">
+                <li>DNS 전파는 최대 24-48시간 소요될 수 있습니다</li>
+                <li>CNAME 레코드가 정확히 입력되었는지 확인</li>
+                <li>일부 DNS 제공업체는 호스트명 끝에 도메인을 자동 추가합니다</li>
+                <li>TTL 값이 너무 크면 전파가 느려질 수 있습니다</li>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+        
+      <% else %>
+        <!-- No DCV Method Selected -->
+        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+          <i data-lucide="alert-circle" class="w-12 h-12 text-gray-400 mx-auto mb-3"></i>
+          <p class="text-sm font-semibold text-gray-700 mb-1">DCV 방식이 설정되지 않았습니다</p>
+          <p class="text-xs text-gray-500 mb-4">도메인 검증을 시작하려면 DCV 방식을 선택하세요</p>
+          <%= button_to "DCV 방식 설정", change_dcv_method_admin_certificate_path(@certificate), method: :post, class: "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition" %>
+        </div>
+      <% end %>
+      
+      <!-- DCV Status Check -->
+      <% if @certificate.status == 'dcv_failed' && @certificate.failure_reason.present? %>
+        <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div class="flex items-start gap-2">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"></i>
+            <div>
+              <p class="text-sm font-bold text-red-900 mb-1">DCV 검증 실패</p>
+              <p class="text-xs text-red-700"><%= @certificate.failure_reason %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    </div>
+
+    <!-- 9. Issue/Problem Logs (발급/문제 로그) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-red-600"></i>
+          발급/문제 로그 (Issue Logs)
+        </h2>
+        <div class="flex gap-2">
+          <button onclick="document.getElementById('log-filter').classList.toggle('hidden')" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-200 transition">
+            <i data-lucide="filter" class="w-3 h-3 inline mr-1"></i>
+            필터
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filter Options (Hidden by default) -->
+      <div id="log-filter" class="hidden mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex gap-2 flex-wrap">
+          <button class="px-3 py-1 bg-white border border-gray-300 rounded text-xs font-medium hover:bg-gray-100 transition" onclick="filterLogs('all')">전체</button>
+          <button class="px-3 py-1 bg-red-50 border border-red-200 text-red-700 rounded text-xs font-medium hover:bg-red-100 transition" onclick="filterLogs('error')">오류</button>
+          <button class="px-3 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-xs font-medium hover:bg-yellow-100 transition" onclick="filterLogs('warning')">경고</button>
+          <button class="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded text-xs font-medium hover:bg-blue-100 transition" onclick="filterLogs('info')">정보</button>
+          <button class="px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded text-xs font-medium hover:bg-green-100 transition" onclick="filterLogs('success')">성공</button>
+        </div>
+      </div>
+      
+      <!-- Logs Timeline -->
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        <% 
+          # Collect all relevant logs for this certificate
+          certificate_logs = []
+          
+          # DCV failure logs
+          if @certificate.status == 'dcv_failed' && @certificate.failure_reason.present?
+            certificate_logs << {
+              timestamp: @certificate.updated_at,
+              type: 'error',
+              icon: 'x-circle',
+              title: 'DCV 검증 실패',
+              message: @certificate.failure_reason,
+              details: "Method: #{@certificate.dcv_method}"
+            }
+          end
+          
+          # API logs from partner_api_logs
+          if @certificate.order.partner_api_logs.any?
+            @certificate.order.partner_api_logs.order(created_at: :desc).limit(10).each do |api_log|
+              log_type = api_log.status == 'error' ? 'error' : api_log.status == 'success' ? 'success' : 'info'
+              certificate_logs << {
+                timestamp: api_log.created_at,
+                type: log_type,
+                icon: log_type == 'error' ? 'alert-circle' : log_type == 'success' ? 'check-circle' : 'info',
+                title: "Sectigo API: #{api_log.action}",
+                message: api_log.response_message || api_log.status,
+                details: "Response Code: #{api_log.response_code}"
+              }
+            end
+          end
+          
+          # Audit logs related to certificate
+          @certificate.audit_logs.order(created_at: :desc).limit(15).each do |audit_log|
+            log_type = case audit_log.action
+                      when 'cancel', 'dcv_failed' then 'error'
+                      when 'reissue', 'force_issue' then 'warning'
+                      when 'issued', 'status_change' then 'success'
+                      else 'info'
+                      end
+            
+            certificate_logs << {
+              timestamp: audit_log.created_at,
+              type: log_type,
+              icon: log_type == 'error' ? 'x-octagon' : log_type == 'success' ? 'check-circle-2' : log_type == 'warning' ? 'alert-triangle' : 'info',
+              title: audit_log.action.titleize,
+              message: audit_log.message,
+              details: "Actor: #{audit_log.user&.name || 'System'} | IP: #{audit_log.ip_address}",
+              metadata: audit_log.metadata
+            }
+          end
+          
+          # Sort all logs by timestamp (newest first)
+          certificate_logs.sort_by! { |log| log[:timestamp] }.reverse!
+        %>
+        
+        <% if certificate_logs.any? %>
+          <% certificate_logs.each do |log| %>
+            <% 
+              type_config = {
+                'error' => { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-900', icon_color: 'text-red-600', badge: 'bg-red-100 text-red-800' },
+                'warning' => { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-900', icon_color: 'text-yellow-600', badge: 'bg-yellow-100 text-yellow-800' },
+                'success' => { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', icon_color: 'text-green-600', badge: 'bg-green-100 text-green-800' },
+                'info' => { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', icon_color: 'text-blue-600', badge: 'bg-blue-100 text-blue-800' }
+              }
+              config = type_config[log[:type]] || type_config['info']
+            %>
+            
+            <div class="log-entry <%= config[:bg] %> border <%= config[:border] %> rounded-lg p-3" data-log-type="<%= log[:type] %>">
+              <div class="flex items-start gap-3">
+                <!-- Icon -->
+                <div class="flex-shrink-0 mt-0.5">
+                  <i data-lucide="<%= log[:icon] %>" class="w-4 h-4 <%= config[:icon_color] %>"></i>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-sm font-semibold <%= config[:text] %>"><%= log[:title] %></span>
+                      <span class="px-2 py-0.5 rounded-full text-xs font-semibold <%= config[:badge] %>">
+                        <%= log[:type].upcase %>
+                      </span>
+                    </div>
+                    <span class="text-xs text-gray-500 whitespace-nowrap">
+                      <%= log[:timestamp].strftime("%Y-%m-%d %H:%M") %>
+                    </span>
+                  </div>
+                  
+                  <p class="text-sm <%= config[:text] %> mb-1"><%= log[:message] %></p>
+                  
+                  <% if log[:details].present? %>
+                    <p class="text-xs text-gray-600"><%= log[:details] %></p>
+                  <% end %>
+                  
+                  <!-- Expandable Metadata -->
+                  <% if log[:metadata].present? && log[:metadata].any? %>
+                    <details class="mt-2">
+                      <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-800">메타데이터 보기</summary>
+                      <pre class="mt-2 p-2 bg-white rounded text-xs text-gray-700 overflow-x-auto"><%= JSON.pretty_generate(log[:metadata]) %></pre>
+                    </details>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <!-- No Logs -->
+          <div class="text-center py-8">
+            <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
+            <p class="text-sm text-gray-500">로그가 없습니다.</p>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Log Statistics -->
+      <% if certificate_logs.any? %>
+        <div class="mt-4 pt-4 border-t border-gray-200">
+          <div class="grid grid-cols-4 gap-3">
+            <div class="text-center">
+              <p class="text-xs text-gray-500">총 로그</p>
+              <p class="text-lg font-bold text-gray-900"><%= certificate_logs.count %></p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-gray-500">오류</p>
+              <p class="text-lg font-bold text-red-600"><%= certificate_logs.count { |l| l[:type] == 'error' } %></p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-gray-500">경고</p>
+              <p class="text-lg font-bold text-yellow-600"><%= certificate_logs.count { |l| l[:type] == 'warning' } %></p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-gray-500">성공</p>
+              <p class="text-lg font-bold text-green-600"><%= certificate_logs.count { |l| l[:type] == 'success' } %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Simple JavaScript for log filtering -->
+    <script>
+      function filterLogs(type) {
+        const logs = document.querySelectorAll('.log-entry');
+        logs.forEach(log => {
+          if (type === 'all' || log.dataset.logType === type) {
+            log.style.display = 'block';
+          } else {
+            log.style.display = 'none';
+          }
+        });
+      }
+    </script>
+
+    <!-- 10. Audit Logs (감사 로그) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-indigo-600"></i>
+          감사 로그 (Audit Logs)
+        </h2>
+        <%= link_to admin_audit_logs_path(auditable_type: 'Certificate', auditable_id: @certificate.id), class: "text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1" do %>
+          <span>전체보기</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        <% end %>
+      </div>
+      
+      <p class="text-sm text-gray-600 mb-4">이 인증서에 대해 수행된 모든 관리 작업이 기록됩니다.</p>
+      
+      <!-- Audit Timeline -->
+      <div class="flow-root">
+        <ul role="list" class="-mb-8">
+          <% @certificate.audit_logs.order(created_at: :desc).limit(20).each_with_index do |log, idx| %>
+            <li>
+              <div class="relative pb-8">
+                <% unless idx == [@certificate.audit_logs.limit(20).count - 1, 19].min %>
+                  <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                <% end %>
+                
+                <div class="relative flex items-start space-x-3">
+                  <!-- Icon -->
+                  <div class="relative">
+                    <% 
+                      action_config = {
+                        'create' => { bg: 'bg-blue-500', icon: 'plus' },
+                        'update' => { bg: 'bg-purple-500', icon: 'edit' },
+                        'delete' => { bg: 'bg-red-500', icon: 'trash-2' },
+                        'reissue' => { bg: 'bg-green-500', icon: 'refresh-cw' },
+                        'cancel' => { bg: 'bg-red-500', icon: 'x-circle' },
+                        'resend_dcv' => { bg: 'bg-indigo-500', icon: 'send' },
+                        'refresh_status' => { bg: 'bg-purple-500', icon: 'refresh-ccw' },
+                        'refresh_dcv' => { bg: 'bg-blue-500', icon: 'refresh-cw' },
+                        'change_dcv_method' => { bg: 'bg-orange-500', icon: 'repeat' },
+                        'force_issue' => { bg: 'bg-pink-500', icon: 'zap' },
+                        'send_reminder' => { bg: 'bg-yellow-500', icon: 'bell' },
+                        'download' => { bg: 'bg-gray-500', icon: 'download' },
+                        'download_dcv_file' => { bg: 'bg-gray-500', icon: 'file-down' },
+                        'status_change' => { bg: 'bg-green-500', icon: 'arrow-right' }
+                      }
+                      config = action_config[log.action] || { bg: 'bg-gray-500', icon: 'activity' }
+                    %>
+                    
+                    <span class="h-10 w-10 rounded-full <%= config[:bg] %> flex items-center justify-center ring-8 ring-white">
+                      <i data-lucide="<%= config[:icon] %>" class="w-5 h-5 text-white"></i>
+                    </span>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="flex-1">
+                        <!-- Action Title -->
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="text-sm font-semibold text-gray-900"><%= log.action.titleize %></span>
+                          <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                            <%= log.action %>
+                          </span>
+                        </div>
+                        
+                        <!-- Message -->
+                        <p class="text-sm text-gray-700 mb-1"><%= log.message %></p>
+                        
+                        <!-- Actor & Details -->
+                        <div class="flex items-center gap-3 text-xs text-gray-500">
+                          <span class="flex items-center gap-1">
+                            <i data-lucide="user" class="w-3 h-3"></i>
+                            <% if log.user %>
+                              <%= link_to log.user.name || log.user.email, admin_user_path(log.user), class: "text-blue-600 hover:underline" %>
+                            <% else %>
+                              <span class="text-gray-500">System</span>
+                            <% end %>
+                          </span>
+                          
+                          <% if log.ip_address.present? %>
+                            <span class="flex items-center gap-1">
+                              <i data-lucide="globe" class="w-3 h-3"></i>
+                              <%= log.ip_address %>
+                            </span>
+                          <% end %>
+                        </div>
+                        
+                        <!-- Metadata (if present) -->
+                        <% if log.metadata.present? && log.metadata.any? %>
+                          <details class="mt-2">
+                            <summary class="text-xs text-gray-600 cursor-pointer hover:text-gray-800 flex items-center gap-1">
+                              <i data-lucide="code" class="w-3 h-3"></i>
+                              상세 정보
+                            </summary>
+                            <div class="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                              <pre class="text-xs text-gray-700 overflow-x-auto"><%= JSON.pretty_generate(log.metadata) %></pre>
+                            </div>
+                          </details>
+                        <% end %>
+                      </div>
+                      
+                      <!-- Timestamp -->
+                      <div class="text-right flex-shrink-0">
+                        <p class="text-xs text-gray-500 whitespace-nowrap">
+                          <%= log.created_at.strftime("%Y-%m-%d") %>
+                        </p>
+                        <p class="text-xs text-gray-400">
+                          <%= log.created_at.strftime("%H:%M:%S") %>
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">
+                          <%= time_ago_in_words(log.created_at) %> ago
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+          
+          <% if @certificate.audit_logs.empty? %>
+            <li class="text-center py-8">
+              <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
+              <p class="text-sm text-gray-500">감사 로그가 없습니다.</p>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      
+      <!-- Audit Summary -->
+      <% if @certificate.audit_logs.any? %>
+        <div class="mt-6 pt-4 border-t border-gray-200">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="text-center p-3 bg-gray-50 rounded-lg">
+              <p class="text-xs text-gray-500 mb-1">총 작업</p>
+              <p class="text-lg font-bold text-gray-900"><%= @certificate.audit_logs.count %></p>
+            </div>
+            
+            <div class="text-center p-3 bg-blue-50 rounded-lg">
+              <p class="text-xs text-blue-700 mb-1">관리자 작업</p>
+              <p class="text-lg font-bold text-blue-600"><%= @certificate.audit_logs.where.not(user_id: nil).count %></p>
+            </div>
+            
+            <div class="text-center p-3 bg-purple-50 rounded-lg">
+              <p class="text-xs text-purple-700 mb-1">시스템 작업</p>
+              <p class="text-lg font-bold text-purple-600"><%= @certificate.audit_logs.where(user_id: nil).count %></p>
+            </div>
+            
+            <div class="text-center p-3 bg-green-50 rounded-lg">
+              <p class="text-xs text-green-700 mb-1">최근 작업</p>
+              <p class="text-xs font-semibold text-green-600">
+                <%= @certificate.audit_logs.last&.created_at&.strftime("%m/%d %H:%M") || "-" %>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Distribution -->
+        <div class="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+          <p class="text-xs font-semibold text-indigo-900 mb-2">주요 작업 분포</p>
+          <div class="flex gap-2 flex-wrap">
+            <% 
+              action_counts = @certificate.audit_logs.group(:action).count.sort_by { |k, v| -v }.take(5)
+              action_counts.each do |action, count|
+            %>
+              <span class="px-2 py-1 bg-white border border-indigo-200 rounded text-xs">
+                <span class="font-semibold text-indigo-900"><%= action.titleize %></span>
+                <span class="text-indigo-600 ml-1">(<%= count %>)</span>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <!-- Right Sidebar - 1 column -->
+  <div class="lg:col-span-1 space-y-6">
+    
+    <!-- Quick Actions -->
+    <% if current_user.can_edit_certificates? %>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <i data-lucide="settings" class="w-5 h-5 text-gray-600"></i>
+          관리 작업
+        </h2>
+        
+        <div class="space-y-2">
+          <!-- Primary Actions -->
+          <div class="pb-3 border-b border-gray-200 space-y-2">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">주요 작업</p>
+            
+            <!-- Download Certificate -->
+            <%= button_to download_admin_certificate_path(@certificate), method: :get, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition shadow-sm" do %>
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>인증서 다운로드</span>
+            <% end %>
+            
+            <!-- Reissue -->
+            <%= button_to reissue_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 rounded-lg text-sm font-medium hover:bg-green-100 transition border border-green-200", data: { turbo_confirm: "새 CSR을 입력하여 재발급하시겠습니까?" } do %>
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>재발급 (Reissue)</span>
+            <% end %>
+            
+            <!-- Force Refresh Status -->
+            <%= button_to refresh_status_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-50 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-100 transition border border-purple-200" do %>
+              <i data-lucide="refresh-ccw" class="w-4 h-4"></i>
+              <span>상태 강제 새로고침</span>
+            <% end %>
+          </div>
+          
+          <!-- DCV Actions -->
+          <div class="pb-3 border-b border-gray-200 space-y-2">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">DCV 관리</p>
+            
+            <!-- Resend DCV Email -->
+            <%= button_to resend_dcv_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition border border-indigo-200" do %>
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>DCV 이메일 재전송</span>
+            <% end %>
+            
+            <!-- Change DCV Method -->
+            <%= button_to change_dcv_method_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-50 text-orange-700 rounded-lg text-sm font-medium hover:bg-orange-100 transition border border-orange-200", data: { turbo_confirm: "DCV 방식을 변경하시겠습니까?" } do %>
+              <i data-lucide="repeat" class="w-4 h-4"></i>
+              <span>DCV 방법 변경</span>
+            <% end %>
+          </div>
+          
+          <!-- Notification Actions -->
+          <div class="pb-3 border-b border-gray-200 space-y-2">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">알림</p>
+            
+            <!-- Send Expiration Reminder -->
+            <%= button_to send_reminder_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-100 transition border border-yellow-200" do %>
+              <i data-lucide="bell" class="w-4 h-4"></i>
+              <span>만료 알림 발송</span>
+            <% end %>
+          </div>
+          
+          <!-- Critical Actions -->
+          <div class="space-y-2">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">위험 작업</p>
+            
+            <!-- Force Issue (Rare Case) -->
+            <%= button_to force_issue_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-pink-50 text-pink-700 rounded-lg text-sm font-medium hover:bg-pink-100 transition border border-pink-200", data: { turbo_confirm: "⚠️ 강제 발급은 특수한 경우에만 사용됩니다. 계속하시겠습니까?" } do %>
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span>강제 발급 요청</span>
+            <% end %>
+            
+            <!-- Cancel Order -->
+            <%= button_to cancel_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition border border-red-200", data: { turbo_confirm: "주문을 취소하시겠습니까? 환불 정책에 따라 처리됩니다." } do %>
+              <i data-lucide="x-circle" class="w-4 h-4"></i>
+              <span>취소 (Cancel Order)</span>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- Warning Note -->
+        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div class="flex items-start gap-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+            <p class="text-xs text-amber-800">
+              <span class="font-semibold">주의:</span> 위험 작업은 되돌릴 수 없습니다. 실행 전 반드시 확인하세요.
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Customer Info (고객 정보) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+          고객 정보
+        </h2>
+        <%= link_to admin_user_path(@certificate.user), class: "text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1" do %>
+          <span>상세보기</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        <% end %>
+      </div>
+      
+      <div class="space-y-3">
+        <!-- User ID -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">User ID</p>
+          <p class="text-sm font-semibold text-gray-900">#<%= @certificate.user.id %></p>
+        </div>
+        
+        <!-- Name & Email -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">이름 / 이메일</p>
+          <p class="text-sm font-semibold text-gray-900"><%= @certificate.user.name || "-" %></p>
+          <p class="text-xs text-blue-600 font-mono"><%= @certificate.user.email %></p>
+        </div>
+        
+        <!-- Phone -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">전화번호</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.user.phone || "-" %></p>
+        </div>
+        
+        <!-- Country -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">국가</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.user.country || "-" %></p>
+        </div>
+        
+        <!-- Company -->
+        <% if @certificate.order.company_name.present? %>
+          <div>
+            <p class="text-xs text-gray-500 mb-1">회사명</p>
+            <p class="text-sm font-medium text-gray-900"><%= @certificate.order.company_name %></p>
+          </div>
+        <% end %>
+        
+        <!-- Quick Contact -->
+        <div class="pt-3 border-t border-gray-200">
+          <% if @certificate.user.email.present? %>
+            <a href="mailto:<%= @certificate.user.email %>" class="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-100 transition">
+              <i data-lucide="mail" class="w-3 h-3"></i>
+              <span>이메일 보내기</span>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Info (주문 정보) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-purple-600"></i>
+          주문 정보
+        </h2>
+        <%= link_to admin_order_path(@certificate.order), class: "text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1" do %>
+          <span>상세보기</span>
+          <i data-lucide="external-link" class="w-3 h-3"></i>
+        <% end %>
+      </div>
+      
+      <div class="space-y-3">
+        <!-- Order Number -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">주문번호 (Internal)</p>
+          <p class="text-sm font-semibold text-gray-900 font-mono"><%= @certificate.order.internal_order_id %></p>
+        </div>
+        
+        <!-- Sectigo Order Number -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">Sectigo Order Number</p>
+          <p class="text-sm font-medium text-gray-900 font-mono"><%= @certificate.order.partner_order_number || "-" %></p>
+        </div>
+        
+        <!-- Order Date -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">주문일</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.order.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+        </div>
+        
+        <!-- Payment Status -->
+        <div>
+          <p class="text-xs text-gray-500 mb-1">결제 상태</p>
+          <% payment_status_config = {
+            'pending' => { color: 'bg-yellow-100 text-yellow-800', label: 'Pending' },
+            'paid' => { color: 'bg-green-100 text-green-800', label: 'Paid' },
+            'refunded' => { color: 'bg-orange-100 text-orange-800', label: 'Refunded' },
+            'canceled' => { color: 'bg-gray-100 text-gray-800', label: 'Canceled' }
+          } %>
+          <% payment_info = payment_status_config[@certificate.order.status] || { color: 'bg-gray-100 text-gray-800', label: @certificate.order.status } %>
+          <span class="px-2 py-1 rounded-full text-xs font-semibold <%= payment_info[:color] %>">
+            <%= payment_info[:label] %>
+          </span>
+        </div>
+        
+        <!-- Pricing Info -->
+        <div class="pt-3 border-t border-gray-200 space-y-2">
+          <p class="text-xs font-semibold text-gray-700 mb-2">가격 정보</p>
+          
+          <!-- 판매가 -->
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-500">판매가</span>
+            <span class="text-sm font-bold text-gray-900">₩<%= number_with_delimiter(@certificate.order.total_price) %></span>
+          </div>
+          
+          <!-- Product Price -->
+          <% if @certificate.order.product&.price.present? %>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-gray-500">제품 단가</span>
+              <span class="text-sm font-medium text-gray-700">₩<%= number_with_delimiter(@certificate.order.product.price) %></span>
+            </div>
+          <% end %>
+          
+          <!-- Quantity -->
+          <% if @certificate.order.quantity && @certificate.order.quantity > 1 %>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-gray-500">수량</span>
+              <span class="text-sm font-medium text-gray-700"><%= @certificate.order.quantity %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

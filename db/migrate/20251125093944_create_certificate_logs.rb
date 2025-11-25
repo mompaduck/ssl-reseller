@@ -1,8 +1,8 @@
-class CreateAuditLogs < ActiveRecord::Migration[8.1]
+class CreateCertificateLogs < ActiveRecord::Migration[8.1]
   def change
-    create_table :audit_logs do |t|
+    create_table :certificate_logs do |t|
+      t.references :certificate, null: false, foreign_key: true
       t.references :user, null: true, foreign_key: true
-      t.references :auditable, polymorphic: true, null: true
       t.string :action
       t.text :message
       t.json :metadata

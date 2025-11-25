@@ -1,9 +1,21 @@
 # app/controllers/users/sessions_controller.rb
 class Users::SessionsController < Devise::SessionsController
   # POST /resource/sign_in
-  # def create
-  #   super
-  # end
+  def create
+    super do |resource|
+      # Log admin logins
+      if resource.can_access_admin?
+        AuditLogger.log(
+          resource,
+          resource,
+          'login',
+          "관리자 로그인 (#{resource.role})",
+          { role: resource.role },
+          request.remote_ip
+        )
+      end
+    end
+  end
 
   # DELETE /resource/sign_out
   # def destroy

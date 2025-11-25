@@ -4,11 +4,61 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_sign_up_params, only: [:create]
   before_action :configure_account_update_params, only: [:update]
 
-  # 이메일 중복 확인 (AJAX)
   def check_email
     email = params[:email].to_s.strip.downcase
     exists = User.exists?(email: email)
     render json: { exists: exists }
+  end
+
+  # Override update to track changes
+  def update
+    self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
+    
+    # Track what's being changed
+    changed_fields = []
+    is_password_change = params[:user][:password].present?
+    
+    # Detect profile changes
+    %w[name email company_name phone country].each do |field|
+      if params[:user][field.to_sym].present? && params[:user][field.to_sym] != resource.send(field)
+        changed_fields << field
+      end
+    end
+
+    prev_attributes = resource.attributes.slice('name', 'email', 'company_name', 'phone', 'country')
+    
+    super do |resource|
+      if resource.errors.empty?
+        # Log password change
+        if is_password_change
+          AuditLogger.log(
+            resource,
+            resource,
+            'password_change',
+            "비밀번호 변경",
+            {},
+            request.remote_ip
+          )
+        end
+        
+        # Log profile update
+        if changed_fields.any?
+          changes = {}
+          changed_fields.each do |field|
+            changes[field] = { from: prev_attributes[field], to: resource.send(field) }
+          end
+          
+          AuditLogger.log(
+            resource,
+            resource,
+            'profile_update',
+            "프로필 정보 수정: #{changed_fields.join(', ')}",
+            changes,
+            request.remote_ip
+          )
+        end
+      end
+    end
   end
 
   protected
@@ -38,8 +88,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def configure_account_update_params
     devise_parameter_sanitizer.permit(:account_update, keys: [
       :name, :company_name, :phone, :country,
-            :email, :password, :password_confirmation, :current_password
-          ])
-        end
-      end
+      :email, :password, :password_confirmation, :current_password
+    ])
+  end
+end
       
