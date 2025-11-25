@@ -1,0 +1,381 @@
+<div class="mb-6 flex items-center justify-between">
+  <div class="flex items-center gap-4">
+    <%= link_to admin_users_path, class: "p-2 rounded-lg hover:bg-gray-200 text-gray-500 transition" do %>
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    <% end %>
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">사용자 상세</h1>
+      <p class="mt-1 text-sm text-gray-500"><%= @user.email %></p>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Left Column - 2 Columns Width -->
+  <div class="lg:col-span-2 space-y-6">
+    
+    <!-- Basic Info -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+        기본 정보
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">사용자 ID</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-mono">#<%= @user.id %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">이름</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.name || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">이메일</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.email %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">전화번호</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.phone || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">회사명</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.company_name || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">부서</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.department || "-" %></dd>
+        </div>
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-gray-500">주소</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.address || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">국가</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.country || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">가입일</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.created_at.strftime("%Y-%m-%d %H:%M") %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">최근 로그인</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "없음" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">로그인 횟수</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.sign_in_count %>회</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Security Info -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i>
+        로그인 및 보안 정보
+      </h2>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">현재 로그인 IP</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.current_sign_in_ip || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">이전 로그인 IP</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @user.last_sign_in_ip || "-" %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">실패한 로그인 시도</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <span class="<%= @user.failed_attempts > 0 ? 'text-red-600 font-bold' : '' %>">
+              <%= @user.failed_attempts %>회
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">계정 잠금 상태</dt>
+          <dd class="mt-1 text-sm">
+            <% if @user.locked_at.present? %>
+              <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
+                잠금됨 (<%= @user.locked_at.strftime("%Y-%m-%d") %>)
+              </span>
+            <% else %>
+              <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                정상
+              </span>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">2FA 설정</dt>
+          <dd class="mt-1 text-sm">
+            <% if @user.two_factor_enabled %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                활성화됨
+              </span>
+            <% else %>
+              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">
+                비활성화
+              </span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+
+      <% if current_user.can_manage_users? %>
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h3 class="text-sm font-bold text-gray-900 mb-3">보안 관리</h3>
+          <div class="flex flex-wrap gap-2">
+            <%= button_to "비밀번호 초기화", '#', method: :post, class: "px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium hover:bg-yellow-200 transition", data: { turbo_confirm: "비밀번호를 초기화하시겠습니까?" } %>
+            <% if @user.two_factor_enabled %>
+              <%= button_to "2FA 해제", '#', method: :post, class: "px-4 py-2 bg-orange-100 text-orange-800 rounded-lg text-sm font-medium hover:bg-orange-200 transition", data: { turbo_confirm: "2FA를 해제하시겠습니까?" } %>
+            <% end %>
+            <% if @user.locked_at.present? %>
+              <%= button_to "계정 잠금 해제", '#', method: :post, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
+            <% end %>
+            <%= button_to "로그인 실패 횟수 초기화", '#', method: :post, class: "px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-200 transition" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- All Orders & Certificates -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-400"></i>
+          주문 및 인증서 내역 (<%= @user.orders.count %>)
+        </h2>
+        <%= link_to "전체보기", admin_orders_path(user_id: @user.id), class: "text-sm text-blue-600 hover:text-blue-700" %>
+      </div>
+      
+      <% if @orders.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">주문번호</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">도메인</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">인증서 종류</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">DCV 방식</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">발급일</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">만료일</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">관리</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <% @user.orders.includes(:certificate, :product).order(created_at: :desc).each do |order| %>
+                <% cert = order.certificate %>
+                <tr class="hover:bg-gray-50 transition-colors <%= cert&.status == 'dcv_failed' ? 'bg-red-50' : '' %>">
+                  <td class="px-4 py-3 text-sm font-medium">
+                    <%= link_to order.internal_order_id, admin_order_path(order), class: "text-blue-600 hover:underline" %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-900">
+                    <%= order.domain %>
+                    <% if cert&.status == 'dcv_failed' %>
+                      <span class="ml-2 inline-flex items-center gap-1 text-xs text-red-600">
+                        <i data-lucide="alert-circle" class="w-3 h-3"></i>
+                        DCV 실패
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3 text-sm">
+                    <% if order.product %>
+                      <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-semibold">
+                        <%= order.product.name.split(' ').first %>
+                      </span>
+                      <% if order.domain&.start_with?('*.') %>
+                        <span class="ml-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">
+                          Wildcard
+                        </span>
+                      <% end %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3 text-sm">
+                    <% if cert %>
+                      <% status_colors = {
+                        'pending' => 'bg-yellow-100 text-yellow-800',
+                        'issued' => 'bg-green-100 text-green-800',
+                        'expired' => 'bg-gray-100 text-gray-800',
+                        'revoked' => 'bg-red-100 text-red-800',
+                        'dcv_failed' => 'bg-red-100 text-red-800',
+                        'canceled' => 'bg-gray-100 text-gray-800'
+                      } %>
+                      <span class="px-2 py-1 rounded-full text-xs font-semibold <%= status_colors[cert.status] || 'bg-gray-100 text-gray-800' %>">
+                        <%= cert.status.upcase %>
+                      </span>
+                    <% else %>
+                      <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                        대기중
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">
+                    <% if cert&.dcv_method %>
+                      <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">
+                        <%= cert.dcv_method %>
+                      </span>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">
+                    <%= cert&.issued_at&.strftime("%Y-%m-%d") || "-" %>
+                  </td>
+                  <td class="px-4 py-3 text-sm">
+                    <% if cert&.expires_at %>
+                      <% days_left = (cert.expires_at.to_date - Date.current).to_i %>
+                      <% if days_left < 0 %>
+                        <span class="text-red-600 font-semibold">만료됨</span>
+                      <% elsif days_left <= 30 %>
+                        <span class="text-orange-600 font-semibold">
+                          <%= cert.expires_at.strftime("%Y-%m-%d") %>
+                          <br><span class="text-xs">(D-<%= days_left %>)</span>
+                        </span>
+                      <% else %>
+                        <span class="text-gray-500">
+                          <%= cert.expires_at.strftime("%Y-%m-%d") %>
+                        </span>
+                      <% end %>
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                  <td class="px-4 py-3 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <%= link_to "주문", admin_order_path(order), class: "text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition" %>
+                      <% if cert %>
+                        <%= link_to "인증서", admin_certificate_path(cert), class: "text-xs bg-purple-50 text-purple-600 hover:bg-purple-100 px-2 py-1 rounded transition" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Summary Stats -->
+        <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <p class="text-xs text-gray-500">총 주문</p>
+            <p class="text-lg font-bold text-gray-900"><%= @user.orders.count %></p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs text-gray-500">발급 완료</p>
+            <p class="text-lg font-bold text-green-600"><%= @user.certificates.issued.count %></p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs text-gray-500">DCV 실패</p>
+            <p class="text-lg font-bold text-red-600"><%= @user.certificates.where(status: :dcv_failed).count %></p>
+          </div>
+          <div class="text-center">
+            <p class="text-xs text-gray-500">만료 예정</p>
+            <p class="text-lg font-bold text-orange-600">
+              <%= @user.certificates.issued.where("expires_at BETWEEN ? AND ?", Time.current, 30.days.from_now).count %>
+            </p>
+          </div>
+        </div>
+      <% else %>
+        <div class="text-center py-8">
+          <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-2"></i>
+          <p class="text-sm text-gray-500">주문 내역이 없습니다.</p>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <!-- Right Column -->
+  <div class="lg:col-span-1 space-y-6">
+    
+    <!-- Status & Role Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">상태 및 권한</h2>
+      <div class="space-y-4">
+        <div>
+          <p class="text-sm text-gray-500 mb-1">계정 상태</p>
+          <% status_colors = {
+            'active' => 'bg-green-100 text-green-800',
+            'pending' => 'bg-yellow-100 text-yellow-800',
+            'banned' => 'bg-red-100 text-red-800'
+          } %>
+          <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full <%= status_colors[@user.status] %>">
+            <%= @user.status.upcase %>
+          </span>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">권한 레벨</p>
+          <% role_colors = {
+            'user' => 'bg-gray-100 text-gray-800',
+            'partner' => 'bg-purple-100 text-purple-800',
+            'support' => 'bg-green-100 text-green-800',
+            'admin' => 'bg-blue-100 text-blue-800',
+            'super_admin' => 'bg-red-100 text-red-800'
+          } %>
+          <span class="px-3 py-1 inline-flex text-sm font-bold rounded-full <%= role_colors[@user.role] %>">
+            <%= @user.role.upcase %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Management -->
+    <% if current_user.can_manage_users? %>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">역할 관리</h2>
+        <%= form_with url: update_role_admin_user_path(@user), method: :patch do |f| %>
+          <div class="mb-4">
+            <%= f.select 'user[role]', options_for_select([
+              ['User', 'user'],
+              ['Partner', 'partner'],
+              ['Support', 'support'],
+              ['Admin', 'admin'],
+              ['Super Admin', 'super_admin']
+            ], @user.role), {}, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+          </div>
+          <%= f.submit "역할 변경", class: "w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition" %>
+        <% end %>
+      </div>
+
+      <!-- Partner Assignment -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">파트너 할당</h2>
+        <%= form_with url: assign_partner_admin_user_path(@user), method: :patch do |f| %>
+          <div class="mb-2">
+            <p class="text-sm text-gray-500 mb-1">현재: <%= @user.assigned_partner&.name || "없음" %></p>
+          </div>
+          <div class="mb-4">
+            <%= f.select 'user[assigned_partner_id]', options_for_select(
+              [['없음', nil]] + User.where(role: [:partner, :admin, :super_admin]).map { |u| [u.name || u.email, u.id] },
+              @user.assigned_partner_id
+            ), {}, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+          </div>
+          <%= f.submit "파트너 할당", class: "w-full px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 shadow-sm transition" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Stats Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">통계</h2>
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <span class="text-sm text-gray-500">총 주문</span>
+          <span class="text-sm font-bold text-gray-900"><%= @user.orders.count %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-sm text-gray-500">총 인증서</span>
+          <span class="text-sm font-bold text-gray-900"><%= @user.certificates.count %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-sm text-gray-500">발급 완료</span>
+          <span class="text-sm font-bold text-green-600"><%= @user.certificates.issued.count %></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

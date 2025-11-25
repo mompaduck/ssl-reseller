@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+  allow_browser versions: :modern
 
   # 1️⃣ 모든 요청에 로그인 필터 적용 (로그인 안하면 /users/sign_in 으로 이동)
   before_action :authenticate_user!
@@ -8,8 +10,8 @@ class ApplicationController < ActionController::Base
 
   # ✅ 로그인 성공 후 이동 경로 커스터마이징
   def after_sign_in_path_for(resource)
-    if resource.is_a?(User) && resource.role == "admin"
-      admin_dashboard_path
+    if resource.is_a?(User) && resource.can_access_admin?
+      admin_root_path
     else
       root_path
     end

@@ -1,7 +1,9 @@
 # app/models/user.rb
 class User < ApplicationRecord
+  include Authorization
+  
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
+         :recoverable, :rememberable, :validatable, :trackable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   # terms 검증은 회원가입 시에만
@@ -9,6 +11,23 @@ class User < ApplicationRecord
 
   has_many :orders, dependent: :destroy
   has_many :certificates, dependent: :destroy
+  belongs_to :assigned_partner, class_name: 'User', optional: true
+  has_many :assigned_users, class_name: 'User', foreign_key: :assigned_partner_id
+  has_many :audit_logs, as: :auditable
+
+  enum :role, {
+    user: 0,
+    partner: 1,
+    support: 2,
+    admin: 3,
+    super_admin: 4
+  }, default: :user
+
+  enum :status, {
+    active: 0,
+    pending: 1,
+    banned: 2
+  }, default: :active
 
   def self.from_omniauth(auth)
     # provider와 uid로 먼저 사용자를 찾습니다.

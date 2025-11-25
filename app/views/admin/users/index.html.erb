@@ -1,0 +1,143 @@
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">사용자 관리</h1>
+    <p class="mt-1 text-sm text-gray-500">플랫폼 사용자 및 권한을 관리합니다. (총 <%= User.count %>명)</p>
+  </div>
+</div>
+
+<!-- Search & Filter -->
+<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+  <%= form_tag admin_users_path, method: :get, class: "space-y-4" do %>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <!-- Search Bar -->
+      <div class="md:col-span-4 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+        </div>
+        <%= text_field_tag :q, params[:q], placeholder: "이름, 이메일, 전화번호 검색...", class: "pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+      </div>
+
+      <!-- Role Filter -->
+      <div class="md:col-span-2">
+        <%= select_tag :role, options_for_select([['모든 역할', ''], ['User', 'user'], ['Partner', 'partner'], ['Support', 'support'], ['Admin', 'admin'], ['Super Admin', 'super_admin']], params[:role]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="md:col-span-2">
+        <%= select_tag :status, options_for_select([['모든 상태', ''], ['Active', 'active'], ['Pending', 'pending'], ['Banned', 'banned']], params[:status]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+      </div>
+
+      <!-- Sort -->
+      <div class="md:col-span-2">
+        <%= select_tag :sort, options_for_select([
+          ['최신가입순', 'created_at_desc'],
+          ['오래된순', 'created_at_asc'],
+          ['최근로그인순', 'last_sign_in_desc'],
+          ['오래된로그인순', 'last_sign_in_asc'],
+          ['주문많은순', 'orders_count']
+        ], params[:sort]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+      </div>
+      
+      <!-- Submit -->
+      <div class="md:col-span-2 flex gap-2">
+        <button type="submit" class="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 shadow-sm transition">
+          검색
+        </button>
+        <%= link_to "초기화", admin_users_path, class: "px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm transition" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Users List Table -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사용자</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">전화번호</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">역할</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">할당 파트너</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문 수</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가입일</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최근 로그인</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @users.each do |user| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+              #<%= user.id %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+                    <%= user.email.first(2).upcase %>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900"><%= user.name || "-" %></div>
+                  <div class="text-sm text-gray-500"><%= user.email %></div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= user.phone || "-" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <% status_colors = {
+                'active' => 'bg-green-100 text-green-800',
+                'pending' => 'bg-yellow-100 text-yellow-800',
+                'banned' => 'bg-red-100 text-red-800'
+              } %>
+              <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= status_colors[user.status] %>">
+                <%= user.status.upcase %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <% role_colors = {
+                'user' => 'bg-gray-100 text-gray-800',
+                'partner' => 'bg-purple-100 text-purple-800',
+                'support' => 'bg-green-100 text-green-800',
+                'admin' => 'bg-blue-100 text-blue-800',
+                'super_admin' => 'bg-red-100 text-red-800'
+              } %>
+              <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= role_colors[user.role] %>">
+                <%= user.role.upcase %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= user.assigned_partner&.name || "-" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+              <%= user.orders.count %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= user.created_at.strftime("%Y-%m-%d") %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "없음" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <%= link_to "상세", admin_user_path(user), class: "text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+    <div class="text-sm text-gray-700">
+      총 <span class="font-medium"><%= @users.total_count %></span>명
+    </div>
+    <div>
+      <%= paginate @users %>
+    </div>
+  </div>
+</div>

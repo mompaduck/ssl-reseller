@@ -1,13 +1,15 @@
 class Certificate < ApplicationRecord
   belongs_to :order
   belongs_to :user
+  has_many :audit_logs, as: :auditable
 
   enum :status, {
     pending: 0,
     issued: 1,
     expired: 2,
-    revoked: 3
-  }, default: :pending, suffix: true
+    dcv_failed: 4,
+    canceled: 5
+  }, default: :pending
 
   enum :certificate_type, {
     dv: 0,

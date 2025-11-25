@@ -1,0 +1,214 @@
+<div class="mb-8 flex items-center justify-between">
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-900">인증서 관리</h1>
+  <p class="mt-1 text-sm text-gray-500">모든 SSL 인증서를 관리하고 모니터링합니다.</p>
+</div>
+
+<!-- Stats Widgets -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+  <!-- Same as before -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-500">전체 인증서</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1"><%= @stats[:total] %></p>
+      </div>
+      <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-500">발급 완료</p>
+        <p class="text-2xl font-bold text-green-600 mt-1"><%= @stats[:issued] %></p>
+      </div>
+      <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-500">DCV 대기중</p>
+        <p class="text-2xl font-bold text-yellow-600 mt-1"><%= @stats[:pending] %></p>
+      </div>
+      <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-500">DCV 실패</p>
+        <p class="text-2xl font-bold text-red-600 mt-1"><%= @stats[:dcv_failed] %></p>
+      </div>
+      <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Search & Filter -->
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+  <%= form_tag admin_certificates_path, method: :get, id: "filter-form" do %>
+    <!-- Search Row -->
+    <div class="flex gap-3 mb-4">
+      <div class="flex-1 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+        </div>
+        <%= text_field_tag :q, params[:q], 
+            placeholder: "도메인, 이메일, 주문번호, 인증서 ID 검색...", 
+            class: "pl-10 block w-full h-11 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+      </div>
+      <button type="submit" class="px-6 h-11 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-sm transition flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4"></i>
+        검색
+      </button>
+      <%= link_to admin_certificates_path, class: "px-6 h-11 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 shadow-sm transition flex items-center gap-2" do %>
+        <i data-lucide="x" class="w-4 h-4"></i>
+        초기화
+      <% end %>
+    </div>
+    
+    <!-- Filter Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">상태</label>
+        <%= select_tag :status, 
+            options_for_select([['전체', ''], ['발급완료', 'issued'], ['대기중', 'pending'], ['DCV실패', 'dcv_failed'], ['만료', 'expired'], ['취소', 'canceled']], params[:status]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">인증서 종류</label>
+        <%= select_tag :certificate_type,
+            options_for_select([['전체', ''], ['DV', 'dv'], ['OV', 'ov'], ['EV', 'ev']], params[:certificate_type]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">DCV 방식</label>
+        <%= select_tag :dcv_method,
+            options_for_select([['전체', ''], ['EMAIL', 'EMAIL'], ['HTTP', 'HTTP'], ['DNS', 'DNS']], params[:dcv_method]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+  <!-- Issued 30d -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">발급 성공 (30일)</h3>
+    <p class="text-xl font-bold text-gray-900 mt-1"><%= @issued_30d %></p>
+  </div>
+  
+  <!-- DCV Failed -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">DCV 실패</h3>
+    <p class="text-xl font-bold text-red-600 mt-1"><%= @dcv_failed %></p>
+  </div>
+
+  <!-- Pending -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">대기중 (Pending)</h3>
+    <p class="text-xl font-bold text-yellow-600 mt-1"><%= @pending %></p>
+  </div>
+
+  <!-- Expiring Soon -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">갱신 필요 (30일)</h3>
+    <p class="text-xl font-bold text-orange-600 mt-1"><%= @expiring_soon %></p>
+  </div>
+
+  <!-- Refund/Cancel -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">환불/취소</h3>
+    <p class="text-xl font-bold text-gray-600 mt-1"><%= @refund_requests %></p>
+  </div>
+
+  <!-- API Errors -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+    <h3 class="text-xs font-medium text-gray-500">API 오류</h3>
+    <p class="text-xl font-bold text-red-600 mt-1"><%= @api_errors %></p>
+  </div>
+</div>
+
+<!-- Certificate List Table -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sectigo Order #</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">고객 / 도메인</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">타입</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DCV 방식</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">만료일</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @certificates.each do |cert| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              <%= cert.order.internal_order_id || "##{cert.order.id}" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+              <%= cert.order.partner_order_number || "-" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900"><%= cert.order.domain %></div>
+              <div class="text-xs text-gray-500"><%= cert.user.name %> (<%= cert.user.email %>)</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= cert.certificate_type.upcase %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <% status_colors = {
+                'pending' => 'bg-yellow-100 text-yellow-800',
+                'issued' => 'bg-blue-100 text-blue-800',
+                'expired' => 'bg-gray-100 text-gray-800',
+                'revoked' => 'bg-red-100 text-red-800',
+                'dcv_failed' => 'bg-red-100 text-red-800',
+                'canceled' => 'bg-gray-100 text-gray-800'
+              } %>
+              <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= status_colors[cert.status] %>">
+                <%= cert.status.upcase %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= cert.dcv_method || "-" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= cert.expires_at&.strftime("%Y-%m-%d") || "-" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <%= link_to "상세", admin_certificate_path(cert), class: "text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="px-6 py-4 border-t border-gray-200">
+    <%# paginate @certificates %>
+  </div>
+</div>

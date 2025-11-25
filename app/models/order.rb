@@ -2,6 +2,7 @@ class Order < ApplicationRecord
   belongs_to :user
   belongs_to :product
   has_one :certificate, dependent: :destroy
+  has_many :audit_logs, as: :auditable, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :partner_api_logs, dependent: :destroy
 

@@ -1,0 +1,305 @@
+<div class="mb-6">
+  <div class="flex items-center gap-4 mb-2">
+    <%= link_to admin_certificates_path, class: "p-2 rounded-lg hover:bg-gray-200 text-gray-500 transition" do %>
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    <% end %>
+    <div class="flex-1">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-gray-900"><%= @certificate.order.domain %></h1>
+        <% status_colors = {
+          'pending' => 'bg-yellow-100 text-yellow-800',
+          'issued' => 'bg-green-100 text-green-800',
+          'expired' => 'bg-gray-100 text-gray-800',
+          'revoked' => 'bg-red-100 text-red-800',
+          'dcv_failed' => 'bg-red-100 text-red-800',
+          'canceled' => 'bg-gray-100 text-gray-800'
+        } %>
+        <span class="px-3 py-1 rounded-full text-sm font-semibold <%= status_colors[@certificate.status] || 'bg-gray-100 text-gray-800' %>">
+          <%= @certificate.status.upcase %>
+        </span>
+      </div>
+      <p class="text-sm text-gray-500 mt-1">인증서 ID: <%= @certificate.id %> | 주문번호: <%= link_to @certificate.order.internal_order_id, admin_order_path(@certificate.order), class: "text-blue-600 hover:underline" %></p>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <!-- Main Content - 2 columns -->
+  <div class="lg:col-span-2 space-y-6">
+    
+    <!-- Certificate Overview -->
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="shield-check" class="w-5 h-5 text-blue-600"></i>
+        인증서 정보
+      </h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">도메인</p>
+          <p class="text-lg font-bold text-gray-900"><%= @certificate.order.domain %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">인증서 타입</p>
+          <p class="text-lg font-bold text-gray-900"><%= @certificate.certificate_type.upcase %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">만료일</p>
+          <% if @certificate.expires_at %>
+            <% days_left = (@certificate.expires_at.to_date - Date.current).to_i %>
+            <% if days_left < 0 %>
+              <p class="text-lg font-bold text-red-600">만료됨</p>
+            <% elsif days_left <= 30 %>
+              <p class="text-lg font-bold text-orange-600"><%= @certificate.expires_at.strftime("%Y-%m-%d") %> (D-<%= days_left %>)</p>
+            <% else %>
+              <p class="text-lg font-bold text-green-600"><%= @certificate.expires_at.strftime("%Y-%m-%d") %> (D-<%= days_left %>)</p>
+            <% end %>
+          <% else %>
+            <p class="text-lg text-gray-400">-</p>
+          <% end %>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">발급일</p>
+          <p class="text-lg font-bold text-gray-900"><%= @certificate.issued_at&.strftime("%Y-%m-%d") || "-" %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+        고객 정보
+      </h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm text-gray-500">이름</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.user.name || "-" %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">이메일</p>
+          <p class="text-sm font-medium text-gray-900">
+            <%= link_to @certificate.user.email, admin_user_path(@certificate.user), class: "text-blue-600 hover:underline" %>
+          </p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">회사명</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.order.company_name || "-" %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">주문 금액</p>
+          <p class="text-sm font-bold text-gray-900">₩<%= number_with_delimiter(@certificate.order.total_price) %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DCV Information -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="key" class="w-5 h-5 text-gray-400"></i>
+        DCV (Domain Control Validation) 정보
+      </h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="text-sm text-gray-500">DCV 방식</p>
+          <p class="text-sm font-medium text-gray-900">
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">
+              <%= @certificate.dcv_method || "미설정" %>
+            </span>
+          </p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">DCV 이메일</p>
+          <p class="text-sm font-medium text-gray-900"><%= @certificate.dcv_email || "-" %></p>
+        </div>
+      </div>
+      
+      <% if @certificate.dcv_method == "DNS" %>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p class="text-sm font-semibold text-blue-900 mb-2">DNS CNAME 레코드</p>
+          <div class="space-y-2">
+            <div>
+              <p class="text-xs text-blue-700">Host:</p>
+              <code class="block bg-white px-3 py-2 rounded text-sm text-gray-900 font-mono"><%= @certificate.dcv_dns_host || "_dnsauth.#{@certificate.order.domain}" %></code>
+            </div>
+            <div>
+              <p class="text-xs text-blue-700">Value:</p>
+              <code class="block bg-white px-3 py-2 rounded text-sm text-gray-900 font-mono"><%= @certificate.dcv_dns_value || "verification-code.dcv.sectigo.com" %></code>
+            </div>
+          </div>
+        </div>
+      <% elsif @certificate.dcv_method == "HTTP" %>
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p class="text-sm font-semibold text-green-900 mb-2">HTTP 파일 검증</p>
+          <div class="space-y-2">
+            <div>
+              <p class="text-xs text-green-700">URL:</p>
+              <code class="block bg-white px-3 py-2 rounded text-sm text-gray-900 font-mono"><%= @certificate.dcv_http_url || "http://#{@certificate.order.domain}/.well-known/pki-validation/file.txt" %></code>
+            </div>
+            <div>
+              <p class="text-xs text-green-700">내용:</p>
+              <code class="block bg-white px-3 py-2 rounded text-sm text-gray-900 font-mono"><%= @certificate.dcv_http_content || "verification-content-here" %></code>
+            </div>
+          </div>
+        </div>
+      <% elsif @certificate.dcv_method == "EMAIL" %>
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+          <p class="text-sm font-semibold text-purple-900 mb-2">이메일 검증</p>
+          <p class="text-sm text-purple-700">DCV 이메일이 <strong><%= @certificate.dcv_email %></strong>로 발송되었습니다.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Troubleshooting Guide -->
+    <% if @certificate.status == 'dcv_failed' || @certificate.status == 'pending' %>
+      <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
+        <h2 class="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">
+          <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-600"></i>
+          문제 해결 가이드
+        </h2>
+        
+        <% if @certificate.failure_reason.present? %>
+          <div class="bg-white border border-orange-300 rounded-lg p-4 mb-4">
+            <p class="text-sm font-semibold text-orange-900 mb-1">실패 사유</p>
+            <p class="text-sm text-gray-700"><%= @certificate.failure_reason %></p>
+          </div>
+        <% end %>
+
+        <div class="bg-white rounded-lg p-4">
+          <p class="text-sm font-semibold text-gray-900 mb-3">해결 방법</p>
+          
+          <% case @certificate.dcv_method %>
+          <% when "DNS" %>
+            <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+              <li>도메인 DNS 설정 페이지에 접속하세요</li>
+              <li>CNAME 레코드를 추가하세요</li>
+              <li>Host: <code class="bg-gray-100 px-2 py-1 rounded text-xs"><%= @certificate.dcv_dns_host %></code></li>
+              <li>Value: <code class="bg-gray-100 px-2 py-1 rounded text-xs"><%= @certificate.dcv_dns_value %></code></li>
+              <li>DNS 전파를 기다린 후 (최대 24시간) 아래 "상태 갱신" 버튼을 클릭하세요</li>
+            </ol>
+          <% when "HTTP" %>
+            <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+              <li>웹 서버에 <code class="bg-gray-100 px-2 py-1 rounded text-xs">/.well-known/pki-validation/</code> 디렉토리를 생성하세요</li>
+              <li>해당 디렉토리에 파일을 업로드하세요</li>
+              <li>URL: <code class="bg-gray-100 px-2 py-1 rounded text-xs"><%= @certificate.dcv_http_url %></code>가 접근 가능한지 확인하세요</li>
+              <li>파일 내용이 정확한지 확인한 후 "상태 갱신" 버튼을 클릭하세요</li>
+            </ol>
+          <% when "EMAIL" %>
+            <ol class="list-decimal list-inside space-y-2 text-sm text-gray-700">
+              <li><strong><%= @certificate.dcv_email %></strong> 이메일 계정의 받은편지함을 확인하세요</li>
+              <li>DCV 인증 이메일을 찾아 승인 링크를 클릭하세요</li>
+              <li>이메일이 없다면 아래 "DCV 이메일 재전송" 버튼을 클릭하세요</li>
+            </ol>
+            <%= button_to "DCV 이메일 재전송", resend_dcv_admin_certificate_path(@certificate), method: :post, class: "mt-3 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Audit History -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="history" class="w-5 h-5 text-gray-400"></i>
+        변경 이력 (Audit History)
+      </h2>
+      <div class="flow-root">
+        <ul role="list" class="-mb-8">
+          <% @certificate.audit_logs.order(created_at: :desc).limit(10).each_with_index do |log, idx| %>
+            <li>
+              <div class="relative pb-8">
+                <% unless idx == @certificate.audit_logs.limit(10).count - 1 %>
+                  <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                <% end %>
+                <div class="relative flex space-x-3">
+                  <div>
+                    <span class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                      <i data-lucide="user" class="w-4 h-4 text-gray-500"></i>
+                    </span>
+                  </div>
+                  <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                    <div>
+                      <p class="text-sm text-gray-500">
+                        <span class="font-medium text-gray-900"><%= log.user&.name || "System" %></span>
+                        <%= log.message %>
+                      </p>
+                    </div>
+                    <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                      <time datetime="<%= log.created_at %>"><%= time_ago_in_words(log.created_at) %> ago</time>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% end %>
+          <% if @certificate.audit_logs.empty? %>
+            <p class="text-sm text-gray-500 italic text-center py-4">이력이 없습니다.</p>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right Sidebar - 1 column -->
+  <div class="lg:col-span-1 space-y-6">
+    
+    <!-- Quick Actions -->
+    <% if current_user.can_edit_certificates? %>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">관리 작업</h2>
+        <div class="space-y-2">
+          <%= button_to "인증서 다운로드", download_admin_certificate_path(@certificate), method: :get, class: "w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition" do %>
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>다운로드</span>
+          <% end %>
+          <%= button_to "재발급 요청", reissue_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition", data: { turbo_confirm: "정말 재발급을 요청하시겠습니까?" } do %>
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>재발급</span>
+          <% end %>
+          <%= button_to "상태 갱신", refresh_status_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium hover:bg-purple-200 transition" do %>
+            <i data-lucide="refresh-ccw" class="w-4 h-4"></i>
+            <span>상태 갱신</span>
+          <% end %>
+          <%= button_to "만료 알림 발송", send_reminder_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium hover:bg-yellow-200 transition" do %>
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            <span>만료 알림</span>
+          <% end %>
+          <%= button_to "주문 취소", cancel_admin_certificate_path(@certificate), method: :post, class: "w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-medium hover:bg-red-200 transition", data: { turbo_confirm: "정말 이 주문을 취소하시겠습니까?" } do %>
+            <i data-lucide="x-circle" class="w-4 h-4"></i>
+            <span>주문 취소</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Certificate Details -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">상세 정보</h2>
+      <div class="space-y-4">
+        <div>
+          <p class="text-xs text-gray-500 mb-1">시리얼 번호</p>
+          <p class="text-sm font-mono text-gray-900"><%= @certificate.serial_number || "-" %></p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">발급 기관</p>
+          <p class="text-sm text-gray-900">Sectigo</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">유효 기간</p>
+          <p class="text-sm text-gray-900">
+            <%= @certificate.issued_at&.strftime("%Y-%m-%d") || "-" %> ~ 
+            <%= @certificate.expires_at&.strftime("%Y-%m-%d") || "-" %>
+          </p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">생성일</p>
+          <p class="text-sm text-gray-900"><%= @certificate.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">최종 수정</p>
+          <p class="text-sm text-gray-900"><%= @certificate.updated_at.strftime("%Y-%m-%d %H:%M") %></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -54,4 +54,31 @@ Rails.application.routes.draw do
   end
   resources :products, only: [:index, :show]
   resources :certificates, only: [:index]
+
+  # 관리자 페이지
+  namespace :admin do
+    root "dashboard#index"
+    resources :orders, only: [:index, :show] do
+      member do
+        patch :update_status
+      end
+    end
+    resources :certificates, only: [:index, :show] do
+      member do
+        get :download
+        post :reissue
+        post :cancel
+        post :resend_dcv
+        post :refresh_status
+        post :send_reminder
+      end
+    end
+    resources :audit_logs, only: [:index]
+    resources :users, only: [:index, :show] do
+      member do
+        patch :update_role
+        patch :assign_partner
+      end
+    end
+  end
 end

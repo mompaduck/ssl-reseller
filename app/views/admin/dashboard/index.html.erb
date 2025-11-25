@@ -1,0 +1,196 @@
+<div class="mb-8">
+  <h1 class="text-2xl font-bold text-gray-900">대시보드</h1>
+  <p class="mt-1 text-sm text-gray-500">서비스 전체 현황을 한눈에 확인하세요.</p>
+</div>
+
+<!-- Today vs This Month Stats -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+  <!-- Today Stats -->
+  <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold">오늘</h2>
+      <i data-lucide="calendar-days" class="w-6 h-6 opacity-80"></i>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="text-sm opacity-80">주문 수</p>
+        <p class="text-3xl font-bold"><%= @today_orders %></p>
+      </div>
+      <div>
+        <p class="text-sm opacity-80">수익</p>
+        <p class="text-2xl font-bold">₩<%= number_with_delimiter(@today_revenue) %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- This Month Stats -->
+  <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold">이번 달</h2>
+      <i data-lucide="calendar" class="w-6 h-6 opacity-80"></i>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="text-sm opacity-80">주문 수</p>
+        <p class="text-3xl font-bold"><%= @month_orders %></p>
+      </div>
+      <div>
+        <p class="text-sm opacity-80">수익</p>
+        <p class="text-2xl font-bold">₩<%= number_with_delimiter(@month_revenue) %></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+  <!-- Issued Certificates -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-2">
+      <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+      </div>
+      <span class="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">
+        이번 달 +<%= @issued_this_month %>
+      </span>
+    </div>
+    <p class="text-2xl font-bold text-gray-900"><%= @issued_certificates %></p>
+    <p class="text-sm text-gray-500">발급 성공</p>
+  </div>
+
+  <!-- DCV Failed -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-2">
+      <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+      </div>
+    </div>
+    <p class="text-2xl font-bold text-gray-900"><%= @dcv_failed %></p>
+    <p class="text-sm text-gray-500">DCV 실패</p>
+  </div>
+
+  <!-- Expiring Soon -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-2">
+      <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+      </div>
+    </div>
+    <p class="text-2xl font-bold text-gray-900"><%= @expiring_soon %></p>
+    <p class="text-sm text-gray-500">만료 예정 (30일)</p>
+  </div>
+
+  <!-- API Errors -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-2">
+      <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-orange-600"></i>
+      </div>
+      <span class="text-xs text-orange-600 font-semibold bg-orange-50 px-2 py-1 rounded-full">
+        오늘 <%= @api_errors_today %>
+      </span>
+    </div>
+    <p class="text-2xl font-bold text-gray-900"><%= @api_errors_total %></p>
+    <p class="text-sm text-gray-500">API 에러</p>
+  </div>
+</div>
+
+<!-- Revenue -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="dollar-sign" class="w-5 h-5 text-blue-600"></i>
+      </div>
+      <p class="text-sm text-gray-500">총 수익</p>
+    </div>
+    <p class="text-2xl font-bold text-gray-900">₩<%= number_with_delimiter(@total_revenue) %></p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="trending-up" class="w-5 h-5 text-green-600"></i>
+      </div>
+      <p class="text-sm text-gray-500">예상 순이익 (30%)</p>
+    </div>
+    <p class="text-2xl font-bold text-green-600">₩<%= number_with_delimiter(@estimated_profit.to_i) %></p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="calendar-check" class="w-5 h-5 text-purple-600"></i>
+      </div>
+      <p class="text-sm text-gray-500">이번 달 수익</p>
+    </div>
+    <p class="text-2xl font-bold text-purple-600">₩<%= number_with_delimiter(@month_revenue) %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Recent Activities -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        <i data-lucide="activity" class="w-5 h-5 text-gray-400"></i>
+        최근 작업 로그
+      </h2>
+      <%= link_to "전체보기", admin_audit_logs_path, class: "text-sm text-blue-600 hover:text-blue-700" %>
+    </div>
+    <div class="space-y-3">
+      <% if @recent_activities.any? %>
+        <% @recent_activities.each do |log| %>
+          <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
+            <div class="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+              <i data-lucide="<%= log.user ? 'user' : 'cpu' %>" class="w-4 h-4 text-gray-500"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">
+                <span class="font-medium"><%= log.user&.name || "System" %></span>
+                <%= log.message %>
+              </p>
+              <p class="text-xs text-gray-500 mt-1"><%= time_ago_in_words(log.created_at) %> ago</p>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">활동 내역이 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-gray-400"></i>
+        최근 주문
+      </h2>
+      <%= link_to "전체보기", admin_orders_path, class: "text-sm text-blue-600 hover:text-blue-700" %>
+    </div>
+    <div class="divide-y divide-gray-100">
+      <% if @recent_orders.any? %>
+        <% @recent_orders.each do |order| %>
+          <div class="py-3">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-sm font-medium text-gray-900">
+                <%= link_to order.internal_order_id, admin_order_path(order), class: "text-blue-600 hover:underline" %>
+              </p>
+              <span class="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-800">
+                <%= order.status&.upcase %>
+              </span>
+            </div>
+            <p class="text-sm text-gray-500"><%= order.domain %></p>
+            <div class="flex items-center justify-between mt-1">
+              <p class="text-xs text-gray-400"><%= order.user.email %></p>
+              <p class="text-xs text-gray-400"><%= time_ago_in_words(order.created_at) %> ago</p>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">주문 내역이 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
