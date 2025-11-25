@@ -32,25 +32,34 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  #config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
-  config.action_mailer.default_url_options = { host: "certgate.duckdns.org", protocol: "https" }
-  config.action_mailer.delivery_method = :smtp
-
-  config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    domain: "gmail.com",
-    user_name: ENV["SMTP_USERNAME"], # Gmail 주소
-    password: ENV["SMTP_PASSWORD"],  # Gmail 앱 비밀번호
-    authentication: "plain",
-    enable_starttls_auto: true
-  }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  # Production/staging uses: { host: "certgate.duckdns.org", protocol: "https" }
+  
+  # Use letter_opener for development (emails open in browser)
+  # Or use SMTP for real email sending
+  if ENV['USE_SMTP'] == 'true'
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: ENV["SMTP_HOST"] || "smtp.gmail.com",
+      port: ENV["SMTP_PORT"] || 587,
+      domain: "gmail.com",
+      user_name: ENV["SMTP_USERNAME"], # Gmail 주소
+      password: ENV["SMTP_PASSWORD"],  # Gmail 앱 비밀번호
+      authentication: "plain",
+      enable_starttls_auto: true,
+      openssl_verify_mode: 'none'  # Development only - skip certificate verification
+    }
+  else
+    # Default: Open emails in browser (install letter_opener gem)
+    config.action_mailer.delivery_method = :letter_opener
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

@@ -1,0 +1,157 @@
+<div class="max-w-4xl">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+      <i data-lucide="mail" class="w-7 h-7 text-blue-600"></i>
+      Email SMTP 설정
+    </h1>
+    <p class="text-sm text-gray-600 mt-2">
+      고객에게 이메일을 발송하기 위한 SMTP 서버 설정을 관리합니다.
+    </p>
+  </div>
+
+  <!-- SMTP Settings Form -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+    <%= form_with url: admin_settings_update_email_smtp_path, method: :patch, local: true do |f| %>
+      <div class="p-6 space-y-6">
+        
+        <!-- SMTP Host -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i data-lucide="server" class="w-4 h-4 inline mr-1"></i>
+            SMTP Host *
+          </label>
+          <%= f.text_field :smtp_host, 
+            value: @smtp_host,
+            placeholder: "smtp.gmail.com",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">예: smtp.gmail.com, smtp.sendgrid.net</p>
+        </div>
+
+        <!-- SMTP Port -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i data-lucide="hash" class="w-4 h-4 inline mr-1"></i>
+            SMTP Port *
+          </label>
+          <%= f.number_field :smtp_port, 
+            value: @smtp_port,
+            min: 1,
+            max: 65535,
+            placeholder: "587",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">일반적으로 587 (TLS) 또는 465 (SSL)</p>
+        </div>
+
+        <!-- Username -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i data-lucide="user" class="w-4 h-4 inline mr-1"></i>
+            Username
+          </label>
+          <%= f.text_field :smtp_username, 
+            value: @smtp_username,
+            placeholder: "your-email@example.com",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i data-lucide="lock" class="w-4 h-4 inline mr-1"></i>
+            Password
+          </label>
+          <%= f.password_field :smtp_password, 
+            value: @smtp_password,
+            placeholder: "비밀번호를 변경하려면 입력하세요",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">비워두면 기존 비밀번호가 유지됩니다</p>
+        </div>
+
+        <!-- From Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <i data-lucide="at-sign" class="w-4 h-4 inline mr-1"></i>
+            From Email Address *
+          </label>
+          <%= f.email_field :smtp_from_email, 
+            value: @smtp_from_email,
+            placeholder: "noreply@certgate.com",
+            class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <p class="text-xs text-gray-500 mt-1">발신자 이메일 주소</p>
+        </div>
+
+        <!-- TLS/SSL -->
+        <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+          <%= f.check_box :smtp_use_tls, 
+            checked: @smtp_use_tls,
+            class: "w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500" %>
+          <div class="flex-1">
+            <label class="text-sm font-medium text-gray-900">TLS/SSL 사용</label>
+            <p class="text-xs text-gray-500">보안 연결을 위해 TLS/SSL을 사용합니다 (권장)</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between rounded-b-xl">
+        <div class="text-sm text-gray-600">
+          <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+          * 필수 항목
+        </div>
+        
+        <%= f.submit "설정 저장", 
+          class: "px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition",
+          data: { confirm: "SMTP 설정을 변경하시겠습니까?" } %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Test Email Section -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+        <i data-lucide="send" class="w-5 h-5 text-green-600"></i>
+        테스트 이메일 전송
+      </h3>
+      <p class="text-sm text-gray-600 mb-4">
+        SMTP 설정이 올바른지 확인하기 위해 테스트 이메일을 전송합니다.
+      </p>
+      
+      <%= form_with url: admin_settings_test_email_path, method: :post, local: true do |f| %>
+        <div class="flex gap-3">
+          <%= f.email_field :test_email_address, 
+            placeholder: "test@example.com",
+            class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" %>
+          <%= f.submit "테스트 전송", 
+            class: "px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-start gap-3">
+      <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+      <div class="flex-1">
+        <h4 class="text-sm font-semibold text-blue-900 mb-1">SMTP 설정 가이드</h4>
+        <ul class="text-sm text-blue-800 space-y-1">
+          <li>• <strong>Gmail:</strong> smtp.gmail.com, Port 587, 앱 비밀번호 사용 필요</li>
+          <li>• <strong>SendGrid:</strong> smtp.sendgrid.net, Port 587, API Key 사용</li>
+          <li>• <strong>AWS SES:</strong> email-smtp.[region].amazonaws.com, Port 587</li>
+          <li>• 설정 변경 후 반드시 테스트 이메일을 전송하여 확인하세요</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  });
+</script>

@@ -68,6 +68,7 @@ end
 group :development do
   gem "web-console"
   gem "listen"
+  gem "letter_opener"  # Email preview in browser
 end
 
 # ==========================================================

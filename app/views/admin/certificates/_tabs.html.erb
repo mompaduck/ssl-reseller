@@ -68,7 +68,7 @@
 
 <script>
   // Mark active tab based on current URL
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('turbo:load', function() {
     updateActiveTab();
   });
 
@@ -78,6 +78,7 @@
 
   function updateActiveTab() {
     const currentPath = window.location.pathname;
+    
     document.querySelectorAll('.tab-button').forEach(link => {
       link.classList.remove('active');
       if (link.getAttribute('href') === currentPath) {

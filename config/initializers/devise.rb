@@ -21,10 +21,13 @@ Devise.setup do |config|
     }
 
   # Email
-  config.mailer_sender = 'no-reply@certgate.duckdns.org'
+  config.mailer_sender = ENV['SMTP_USERNAME'] || 'no-reply@certgate.duckdns.org'
 
   # ORM
   require 'devise/orm/active_record'
+
+  # Enable scoped views to use app/views/users/mailer instead of default Devise views
+  config.scoped_views = true
 
   config.case_insensitive_keys = [:email]
   config.strip_whitespace_keys = [:email]
@@ -36,6 +39,12 @@ Devise.setup do |config|
   config.password_length = 6..128
   config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
   config.reset_password_within = 6.hours
+  
+  # Confirmable settings - 이메일 인증 필수
+  config.allow_unconfirmed_access_for = 0.days  # 인증 안 된 사용자는 로그인 불가
+  config.confirm_within = 3.days  # 3일 이내에 인증해야 함
+  config.reconfirmable = true  # 이메일 변경 시 재인증 필요
+  
   config.sign_out_via = :delete
 
   config.responder.error_status = :unprocessable_entity

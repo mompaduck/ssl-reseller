@@ -20,13 +20,14 @@ Rails.application.routes.draw do
 
 
   # 인증 시스템 (Devise 사용)
-  devise_for :users, controllers: {
-    sessions:      "users/sessions",
-    registrations: "users/registrations",
-    passwords:     "users/passwords",
-    confirmations: 'users/confirmations',
-    omniauth_callbacks: 'users/omniauth_callbacks'  # 추가
-  }
+  devise_for :users, 
+    controllers: {
+      sessions: "users/sessions",
+      registrations: "users/registrations",
+      passwords: "users/passwords",
+      confirmations: "users/confirmations",
+      omniauth_callbacks: "users/omniauth_callbacks"
+    }
 
   devise_scope :user do
     # 이메일 중복 확인 API (POST → GET 변경)
@@ -41,7 +42,10 @@ Rails.application.routes.draw do
 
     #Devise failure 처리
     get '/users/auth/failure', to: 'users/sessions#new'
-  end
+
+    # 이메일 인증
+     get "/confirm/:token", to: "users#confirm", as: :confirm_user
+   end
 
   # 사용자 대시보드
   get 'dashboard', to: 'users#dashboard', as: :dashboard
@@ -95,6 +99,16 @@ Rails.application.routes.draw do
     resources :api_logs, only: [:index]
     resources :notification_logs, only: [:index]
     resources :system_logs, only: [:index]
+    
+    # Settings routes
+    scope :settings, module: 'settings' do
+      get :logging_retention, to: 'logging_retention#logging_retention', as: :settings_logging_retention
+      patch :logging_retention, to: 'logging_retention#update_logging_retention', as: :settings_update_logging_retention
+      
+      get :email_smtp, to: 'email_smtp#email_smtp', as: :settings_email_smtp
+      patch :email_smtp, to: 'email_smtp#update_email_smtp', as: :settings_update_email_smtp
+      post :test_email, to: 'email_smtp#test_email', as: :settings_test_email
+    end
     
     resources :users do
       member do

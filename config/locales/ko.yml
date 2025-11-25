@@ -1,2 +1,10 @@
 ko:
   hello: "안녕하세요"
+  
+  views:
+    pagination:
+      first: "&laquo; 처음"
+      last: "마지막 &raquo;"
+      previous: "&lsaquo; 이전"
+      next: "다음 &rsaquo;"
+      truncate: "&hellip;"

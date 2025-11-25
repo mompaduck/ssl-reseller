@@ -1,0 +1,77 @@
+<div id="dcv-method-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+  <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-900">DCV 방식 변경</h3>
+      <button onclick="closeDcvMethodModal()" class="text-gray-400 hover:text-gray-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    
+    <p class="text-sm text-gray-600 mb-4">새로운 DCV 검증 방식을 선택하세요. 기존 DCV 데이터는 초기화됩니다.</p>
+    
+    <%= form_with url: change_dcv_method_admin_certificate_path(@certificate), 
+                  method: :post, 
+                  data: { turbo_frame: "_top" } do |f| %>
+      
+      <div class="space-y-3 mb-6">
+        <% [
+          ['EMAIL', 'mail', '이메일 검증', 'purple'],
+          ['HTTP', 'globe', 'HTTP 파일 검증', 'green'],
+          ['HTTPS', 'lock', 'HTTPS 파일 검증', 'blue'],
+          ['DNS', 'server', 'DNS CNAME 검증', 'indigo'],
+          ['CNAME', 'server', 'CNAME 검증', 'indigo']
+        ].each do |method, icon, label, color| %>
+          <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition
+                        <%= @certificate.dcv_method&.upcase == method ? "border-#{color}-500 bg-#{color}-50" : 'border-gray-200' %>">
+            <%= f.radio_button :new_method, method, 
+                class: "w-4 h-4 text-#{color}-600", 
+                checked: @certificate.dcv_method&.upcase == method %>
+            <i data-lucide="<%= icon %>" class="w-4 h-4 ml-3 text-<%= color %>-600"></i>
+            <span class="ml-2 text-sm font-medium"><%= label %></span>
+            <% if @certificate.dcv_method&.upcase == method %>
+              <span class="ml-auto text-xs text-<%= color %>-600 font-semibold">(현재)</span>
+            <% end %>
+          </label>
+        <% end %>
+      </div>
+      
+      <div class="flex gap-3">
+        <button type="button" onclick="closeDcvMethodModal()" 
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+          취소
+        </button>
+        <%= f.submit "변경", 
+          class: "flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition",
+          data: { confirm: "DCV 방식을 변경하시겠습니까? 기존 DCV 데이터는 초기화됩니다." } %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  function openDcvMethodModal() {
+    document.getElementById('dcv-method-modal').classList.remove('hidden');
+    // Re-initialize Lucide icons in modal
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  }
+  
+  function closeDcvMethodModal() {
+    document.getElementById('dcv-method-modal').classList.add('hidden');
+  }
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeDcvMethodModal();
+    }
+  });
+  
+  // Close modal on background click
+  document.getElementById('dcv-method-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeDcvMethodModal();
+    }
+  });
+</script>

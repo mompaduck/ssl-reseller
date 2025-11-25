@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 8px 8px 0 0;
+      text-align: center;
+    }
+    .content {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-top: none;
+      padding: 30px;
+      border-radius: 0 0 8px 8px;
+    }
+    .badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .info-box {
+      background: #f3f4f6;
+      border-left: 4px solid #2563eb;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 style="margin: 0; font-size: 24px;">🔧 SMTP 테스트 이메일</h1>
+  </div>
+  
+  <div class="content">
+    <div class="badge">✓ 테스트 성공</div>
+    
+    <p>안녕하세요,</p>
+    
+    <p>이 이메일은 <strong>CertGate SSL 플랫폼</strong>의 SMTP 설정을 테스트하기 위해 발송되었습니다.</p>
+    
+    <div class="info-box">
+      <strong>📅 발송 시간:</strong> <%= @test_time %><br>
+      <strong>📧 발신자:</strong> <%= Setting.get_string('smtp_from_email', 'noreply@certgate.com') %><br>
+      <strong>🖥️ SMTP 서버:</strong> <%= Setting.get_string('smtp_host', 'smtp.gmail.com') %>:<%= Setting.get('smtp_port', 587) %>
+    </div>
+    
+    <p>이 이메일을 정상적으로 수신하셨다면, SMTP 설정이 올바르게 구성되었습니다.</p>
+    
+    <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+      이 이메일에 회신하지 마세요. 이 이메일은 자동으로 발송되었습니다.
+    </p>
+  </div>
+  
+  <div class="footer">
+    <p>© <%= Time.current.year %> CertGate. All rights reserved.</p>
+  </div>
+</body>
+</html>

@@ -187,10 +187,63 @@ module Admin
 
     def change_dcv_method
       @certificate = Certificate.find(params[:id])
-      # In a real app, this would show a form or modal to select new DCV method
-      # For now, just redirect back with a notice
-      AuditLogger.log(current_user, @certificate, 'change_dcv_method', "DCV 방식 변경 요청", {}, request.remote_ip)
-      redirect_to admin_certificate_path(@certificate), notice: "DCV 방식 변경 기능은 곧 제공될 예정입니다."
+      new_method = params[:new_method]
+      
+      # Validate state - only allow changes in pending or dcv_failed status
+      unless ['pending', 'dcv_failed'].include?(@certificate.status)
+        redirect_to admin_certificate_path(@certificate), 
+          alert: "DCV 방식 변경은 pending 또는 dcv_failed 상태에서만 가능합니다. (현재: #{@certificate.status})"
+        return
+      end
+      
+      # Validate method
+      valid_methods = ['EMAIL', 'HTTP', 'HTTPS', 'DNS', 'CNAME']
+      unless valid_methods.include?(new_method&.upcase)
+        redirect_to admin_certificate_path(@certificate), 
+          alert: "유효하지 않은 DCV 방식입니다."
+        return
+      end
+      
+      # Reset DCV data
+      @certificate.update(
+        dcv_method: new_method.upcase,
+        dcv_email: nil,
+        dcv_cname_host: nil,
+        dcv_cname_value: nil,
+        dcv_file_content: nil,
+        dcv_file_url: nil
+      )
+      
+      # Call API and generate new DCV data
+      service = SslProviderService.new
+      result = service.change_dcv_method(@certificate.order.partner_order_number, new_method)
+      
+      if result.success?
+        # Update certificate with new DCV data based on method
+        case new_method.upcase
+        when 'EMAIL'
+          @certificate.update(dcv_email: result.dcv_email || "admin@#{@certificate.order.domain}")
+        when 'HTTP', 'HTTPS'
+          @certificate.update(
+            dcv_file_content: result.file_content,
+            dcv_file_url: result.file_url
+          )
+        when 'DNS', 'CNAME'
+          @certificate.update(
+            dcv_cname_host: result.cname_host,
+            dcv_cname_value: result.cname_value
+          )
+        end
+        
+        AuditLogger.log(current_user, @certificate, 'change_dcv_method', 
+          "DCV 방식 변경: #{new_method}", { new_method: new_method }, request.remote_ip)
+        
+        redirect_to admin_certificate_path(@certificate), 
+          notice: "DCV 방식이 #{new_method}(으)로 변경되었습니다."
+      else
+        redirect_to admin_certificate_path(@certificate), 
+          alert: "DCV 방식 변경 실패: #{result.error}"
+      end
     end
 
     def download_dcv_file

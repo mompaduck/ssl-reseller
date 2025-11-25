@@ -10,6 +10,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render json: { exists: exists }
   end
 
+  # Override sign_up to prevent auto-login after registration
+  def sign_up(resource_name, resource)
+    # Do nothing - don't sign in the user automatically
+    # User must confirm email before login
+  end
+
   # Override update to track changes
   def update
     self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
@@ -62,6 +68,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   protected
+
+  # Redirect to login page after signup with confirmation message
+  def after_inactive_sign_up_path_for(resource)
+    new_session_path(resource_name)
+  end
 
   # 수정 처리 방식 오버라이드 (Devise 공식 레시피 적용)
   def update_resource(resource, params)

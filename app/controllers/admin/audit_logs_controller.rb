@@ -15,7 +15,7 @@ module Admin
         )
       end
 
-      @audit_logs = @audit_logs.page(params[:page]).per(50)
+      @audit_logs = @audit_logs.page(params[:page]).per(30)
       
       # For filter dropdowns
       @action_types = AuditLog::ACTION_TYPES

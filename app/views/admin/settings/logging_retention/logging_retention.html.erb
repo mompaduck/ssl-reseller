@@ -1,0 +1,135 @@
+<div class="max-w-4xl">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+      <i data-lucide="database" class="w-7 h-7 text-blue-600"></i>
+      로그 보관 기간 설정
+    </h1>
+    <p class="text-sm text-gray-600 mt-2">
+      시스템 로그의 보관 기간을 설정합니다. 설정된 기간이 지난 로그는 자동으로 삭제됩니다.
+    </p>
+  </div>
+
+  <!-- Settings Form -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <%= form_with url: admin_settings_update_logging_retention_path, method: :patch, local: true do |f| %>
+      <div class="p-6 space-y-6">
+        
+        <!-- Audit Log Retention -->
+        <div class="pb-6 border-b border-gray-200">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="shield-check" class="w-6 h-6 text-blue-600"></i>
+            </div>
+            
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">Audit Log 보관 기간</h3>
+              <p class="text-sm text-gray-600 mb-4">
+                관리자 및 시스템의 모든 작업 기록을 보관하는 기간입니다.
+              </p>
+              
+              <div class="flex items-center gap-4">
+                <%= f.number_field :audit_log_retention_days, 
+                  value: @audit_log_retention,
+                  min: 1,
+                  max: 3650,
+                  class: "w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                <span class="text-sm text-gray-700 font-medium">일</span>
+              </div>
+              
+              <p class="text-xs text-gray-500 mt-2">
+                권장: 90일 이상 (최소 1일, 최대 3650일)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Issue Log Retention -->
+        <div>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="alert-circle" class="w-6 h-6 text-orange-600"></i>
+            </div>
+            
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 mb-1">Issue Log 보관 기간</h3>
+              <p class="text-sm text-gray-600 mb-4">
+                인증서 발급 과정에서 발생한 이슈 및 오류 로그를 보관하는 기간입니다.
+              </p>
+              
+              <div class="flex items-center gap-4">
+                <%= f.number_field :issue_log_retention_days, 
+                  value: @issue_log_retention,
+                  min: 1,
+                  max: 3650,
+                  class: "w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+                <span class="text-sm text-gray-700 font-medium">일</span>
+              </div>
+              
+              <p class="text-xs text-gray-500 mt-2">
+                권장: 30일 이상 (최소 1일, 최대 3650일)
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between rounded-b-xl">
+        <div class="text-sm text-gray-600">
+          <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+          변경 사항은 즉시 적용됩니다
+        </div>
+        
+        <%= f.submit "설정 저장", 
+          class: "px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2",
+          data: { confirm: "로그 보관 기간을 변경하시겠습니까?" } %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Info Box -->
+  <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-start gap-3">
+      <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+      <div class="flex-1">
+        <h4 class="text-sm font-semibold text-blue-900 mb-1">자동 삭제 정책</h4>
+        <ul class="text-sm text-blue-800 space-y-1">
+          <li>• 설정된 보관 기간이 지난 로그는 매일 자동으로 삭제됩니다</li>
+          <li>• 삭제된 로그는 복구할 수 없으므로 신중하게 설정하세요</li>
+          <li>• 법적 요구사항이 있는 경우 충분한 보관 기간을 설정하세요</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Statistics -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+      <div class="flex items-center gap-3 mb-2">
+        <i data-lucide="shield-check" class="w-5 h-5 text-blue-600"></i>
+        <h4 class="text-sm font-semibold text-gray-900">Audit Log 통계</h4>
+      </div>
+      <div class="text-2xl font-bold text-gray-900"><%= AuditLog.count.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse %></div>
+      <p class="text-xs text-gray-500 mt-1">총 로그 수</p>
+    </div>
+    
+    <div class="bg-white rounded-lg border border-gray-200 p-4">
+      <div class="flex items-center gap-3 mb-2">
+        <i data-lucide="alert-circle" class="w-5 h-5 text-orange-600"></i>
+        <h4 class="text-sm font-semibold text-gray-900">Issue Log 통계</h4>
+      </div>
+      <div class="text-2xl font-bold text-gray-900">0</div>
+      <p class="text-xs text-gray-500 mt-1">총 로그 수 (준비 중)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  });
+</script>

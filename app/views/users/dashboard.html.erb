@@ -68,6 +68,25 @@
           <p class="text-sm text-gray-500 mb-1">이메일</p>
           <p class="text-base text-gray-900 font-medium"><%= @user.email %></p>
         </div>
+        <div>
+          <p class="text-sm text-gray-500 mb-1">이메일 인증</p>
+          <% if @user.confirmed? %>
+            <span class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              인증 완료
+            </span>
+          <% else %>
+            <div>
+              <span class="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full mb-2">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                미인증
+              </span>
+              <%= button_to "인증 이메일 재발송", user_confirmation_path, method: :post, params: { user: { email: @user.email } },
+                class: "block text-xs text-blue-600 hover:text-blue-800 underline mt-1",
+                form: { data: { turbo: false } } %>
+            </div>
+          <% end %>
+        </div>
         <% if @user.company_name.present? %>
           <div>
             <p class="text-sm text-gray-500 mb-1">회사명</p>

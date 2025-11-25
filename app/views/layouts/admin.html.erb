@@ -86,10 +86,58 @@
             <i data-lucide="users" class="w-5 h-5"></i>
             사용자 관리
           <% end %>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-gray-800 hover:text-white transition-colors">
-              <i data-lucide="settings" class="w-5 h-5"></i>
-              설정
-            </a>
+            
+            <%# Settings Dropdown Menu %>
+            <% settings_active = request.path.include?('settings') %>
+            <div class="settings-dropdown">
+              <button onclick="toggleSettingsMenu()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors w-full text-left <%= settings_active ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' %>">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span class="flex-1">설정</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 settings-chevron transition-transform"></i>
+              </button>
+              
+              <div id="settingsSubmenu" class="ml-8 mt-1 space-y-1 <%= settings_active ? '' : 'hidden' %>">
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="shield" class="w-4 h-4"></i>
+                  Security Settings
+                <% end %>
+                
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="bell" class="w-4 h-4"></i>
+                  Notification Settings
+                <% end %>
+                
+                <%= link_to admin_settings_email_smtp_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                  Email SMTP
+                <% end %>
+                
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="key" class="w-4 h-4"></i>
+                  API Settings
+                <% end %>
+                
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="credit-card" class="w-4 h-4"></i>
+                  Billing Settings
+                <% end %>
+                
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="package" class="w-4 h-4"></i>
+                  Product Settings
+                <% end %>
+                
+                <%= link_to admin_settings_logging_retention_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="database" class="w-4 h-4"></i>
+                  Logging Retention
+                <% end %>
+                
+                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
+                  <i data-lucide="wrench" class="w-4 h-4"></i>
+                  System Maintenance
+                <% end %>
+              </div>
+            </div>
           </div>
         </nav>
 
@@ -139,6 +187,13 @@
       function toggleLogsMenu() {
         const submenu = document.getElementById('logsSubmenu');
         const chevron = document.querySelector('.logs-chevron');
+        submenu.classList.toggle('hidden');
+        chevron.classList.toggle('rotate-180');
+      }
+      
+      function toggleSettingsMenu() {
+        const submenu = document.getElementById('settingsSubmenu');
+        const chevron = document.querySelector('.settings-chevron');
         submenu.classList.toggle('hidden');
         chevron.classList.toggle('rotate-180');
       }
