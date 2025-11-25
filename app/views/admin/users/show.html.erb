@@ -43,15 +43,15 @@
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">부서</dt>
-          <dd class="mt-1 text-sm text-gray-900"><%= @user.department || "-" %></dd>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.try(:department) || "-" %></dd>
         </div>
         <div class="md:col-span-2">
           <dt class="text-sm font-medium text-gray-500">주소</dt>
-          <dd class="mt-1 text-sm text-gray-900"><%= @user.address || "-" %></dd>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.try(:address) || "-" %></dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">국가</dt>
-          <dd class="mt-1 text-sm text-gray-900"><%= @user.country || "-" %></dd>
+          <dd class="mt-1 text-sm text-gray-900"><%= @user.try(:country) || "-" %></dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-gray-500">가입일</dt>
