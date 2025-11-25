@@ -14,6 +14,12 @@ class Order < ApplicationRecord
     refunded: 'refunded'
   }, default: 'pending'
 
+  enum :order_type, {
+    new_order: 'new',
+    reissue: 'reissue',
+    renew: 'renew'
+  }, default: 'new', prefix: :order
+
   validates :certificate_type, presence: true
   validates :domain, presence: true
   validates :name, presence: true

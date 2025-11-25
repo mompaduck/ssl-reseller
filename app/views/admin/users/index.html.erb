@@ -6,44 +6,70 @@
 </div>
 
 <!-- Search & Filter -->
-<div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
-  <%= form_tag admin_users_path, method: :get, class: "space-y-4" do %>
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-      <!-- Search Bar -->
-      <div class="md:col-span-4 relative">
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+  <%= form_tag admin_users_path, method: :get, id: "filter-form" do %>
+    <!-- Search Row -->
+    <div class="flex gap-3 mb-4">
+      <div class="flex-1 relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i data-lucide="search" class="w-4 h-4 text-gray-400"></i>
+          <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
         </div>
-        <%= text_field_tag :q, params[:q], placeholder: "이름, 이메일, 전화번호 검색...", class: "pl-10 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-      </div>
-
-      <!-- Role Filter -->
-      <div class="md:col-span-2">
-        <%= select_tag :role, options_for_select([['모든 역할', ''], ['User', 'user'], ['Partner', 'partner'], ['Support', 'support'], ['Admin', 'admin'], ['Super Admin', 'super_admin']], params[:role]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-      </div>
-
-      <!-- Status Filter -->
-      <div class="md:col-span-2">
-        <%= select_tag :status, options_for_select([['모든 상태', ''], ['Active', 'active'], ['Pending', 'pending'], ['Banned', 'banned']], params[:status]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
-      </div>
-
-      <!-- Sort -->
-      <div class="md:col-span-2">
-        <%= select_tag :sort, options_for_select([
-          ['최신가입순', 'created_at_desc'],
-          ['오래된순', 'created_at_asc'],
-          ['최근로그인순', 'last_sign_in_desc'],
-          ['오래된로그인순', 'last_sign_in_asc'],
-          ['주문많은순', 'orders_count']
-        ], params[:sort]), class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+        <%= text_field_tag :q, params[:q], 
+            placeholder: "이름, 이메일, 회사명 검색...", 
+            class: "pl-10 block w-full h-11 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
       </div>
       
-      <!-- Submit -->
-      <div class="md:col-span-2 flex gap-2">
-        <button type="submit" class="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 shadow-sm transition">
-          검색
-        </button>
-        <%= link_to "초기화", admin_users_path, class: "px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 shadow-sm transition" %>
+      <button type="submit" class="px-6 h-11 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-sm transition flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4"></i>
+        검색
+      </button>
+      
+      <%= link_to admin_users_path, class: "px-6 h-11 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 shadow-sm transition flex items-center gap-2" do %>
+        <i data-lucide="x" class="w-4 h-4"></i>
+        초기화
+      <% end %>
+    </div>
+    
+    <!-- Filter Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">역할</label>
+        <%= select_tag :role, 
+            options_for_select([
+              ['전체', ''],
+              ['사용자', 'user'],
+              ['파트너', 'partner'],
+              ['지원팀', 'support'],
+              ['관리자', 'admin'],
+              ['슈퍼관리자', 'super_admin']
+            ], params[:role]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">상태</label>
+        <%= select_tag :status,
+            options_for_select([
+              ['전체', ''],
+              ['활성', 'active'],
+              ['대기', 'pending'],
+              ['정지', 'banned']
+            ], params[:status]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">정렬</label>
+        <%= select_tag :sort,
+            options_for_select([
+              ['최근 가입순', 'created_desc'],
+              ['이름순', 'name_asc'],
+              ['이메일순', 'email_asc']
+            ], params[:sort]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
       </div>
     </div>
   <% end %>
@@ -55,15 +81,56 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사용자</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'id_asc' ? 'id_desc' : 'id_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              ID
+              <% if params[:sort]&.start_with?('id') %>
+                <i data-lucide="<%= params[:sort] == 'id_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'name_asc' ? 'name_desc' : 'name_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              사용자
+              <% if params[:sort]&.start_with?('name') %>
+                <i data-lucide="<%= params[:sort] == 'name_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">전화번호</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">역할</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">할당 파트너</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'status_asc' ? 'status_desc' : 'status_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              상태
+              <% if params[:sort]&.start_with?('status') %>
+                <i data-lucide="<%= params[:sort] == 'status_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'role_asc' ? 'role_desc' : 'role_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              역할
+              <% if params[:sort]&.start_with?('role') %>
+                <i data-lucide="<%= params[:sort] == 'role_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문 수</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가입일</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최근 로그인</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'created_asc' ? 'created_desc' : 'created_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              가입일
+              <% if params[:sort]&.start_with?('created') %>
+                <i data-lucide="<%= params[:sort] == 'created_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'last_sign_in_asc' ? 'last_sign_in_desc' : 'last_sign_in_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              최근 로그인
+              <% if params[:sort]&.start_with?('last_sign_in') %>
+                <i data-lucide="<%= params[:sort] == 'last_sign_in_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
           <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
         </tr>
       </thead>
@@ -110,9 +177,6 @@
               <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= role_colors[user.role] %>">
                 <%= user.role.upcase %>
               </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <%= user.assigned_partner&.name || "-" %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
               <%= user.orders.count %>

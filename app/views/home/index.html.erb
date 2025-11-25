@@ -1,172 +1,187 @@
-<%# app/views/home/index.html.erb %>
-
-<div class="bg-white">
-  <%# Hero Section %>
-  <section class="relative overflow-hidden bg-gradient-to-b from-blue-50 to-white">
-    <div class="max-w-7xl mx-auto px-6 py-16 sm:py-20 lg:px-8">
-      <div class="mx-auto max-w-3xl text-center">
-        <div class="inline-block mb-3">
-          <span class="inline-flex items-center gap-x-1.5 rounded-full bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-700">
-            <i data-lucide="circle" class="w-3 h-3 fill-blue-500"></i>
-            10,000개 이상의 웹사이트가 신뢰
-          </span>
-        </div>
-        
-        <h1 class="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          SSL로 웹사이트를 보호하세요
-        </h1>
-        
-        <p class="mt-4 text-lg leading-7 text-gray-600 max-w-2xl mx-auto">
-          비즈니스를 위한 전문 SSL 인증서. 빠른 발급, 합리적인 가격, 탁월한 지원.
-        </p>
-        
-        <div class="mt-8 flex items-center justify-center gap-x-4">
-          <a href="#pricing" class="rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition">
-            시작하기
-          </a>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <%# Features Section %>
-  <section class="py-16 sm:py-20" id="features">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center mb-12">
-        <h2 class="text-base font-semibold leading-7 text-blue-600">필요한 모든 것</h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          왜 저희를 선택해야 할까요?
-        </p>
-      </div>
-      
-      <div class="mx-auto max-w-2xl lg:max-w-none">
-        <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3">
-          <% [
-            { icon: 'zap', title: '빠른 발급', description: 'DV 인증서는 몇 분 내 발급. OV/EV는 1-3 영업일 내 발급.' },
-            { icon: 'shield', title: '업계 표준', description: 'SHA-2 알고리즘의 256비트 암호화. 모든 최신 브라우저와 호환.' },
-            { icon: 'headphones', title: '최고의 지원', description: '연중무휴 고객 서비스 제공. 설치 및 관리를 위한 전문가 가이드.' }
-          ].each do |feature| %>
-            <div class="flex flex-col">
-              <dt class="text-base font-semibold leading-7 text-gray-900">
-                <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
-                  <i data-lucide="<%= feature[:icon] %>" class="w-5 h-5 text-white"></i>
-                </div>
-                <%= feature[:title] %>
-              </dt>
-              <dd class="mt-1 flex flex-auto flex-col text-base leading-6 text-gray-600">
-                <p class="flex-auto"><%= feature[:description] %></p>
-              </dd>
-            </div>
-          <% end %>
-        </dl>
-      </div>
-    </div>
-  </section>
-
-  <%# Pricing Section %>
-  <section class="py-16 sm:py-20 bg-gradient-to-b from-blue-50 to-white" id="pricing">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-4xl text-center mb-12">
-        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">요금제</h2>
-        <p class="mt-3 text-lg leading-7 text-gray-600">
-          비즈니스에 적합한 플랜을 선택하세요
-        </p>
-      </div>
-      
-      <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-6 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-        <%# DV Plan %>
-        <div class="rounded-2xl p-6 ring-1 ring-blue-200 bg-white hover:ring-blue-300 transition">
-          <h3 class="text-lg font-semibold leading-8 text-gray-900">도메인 검증 (DV)</h3>
-          <p class="mt-3 text-sm leading-6 text-gray-600">개인 웹사이트 및 블로그용</p>
-          <p class="mt-5 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">₩15,000</span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">/년</span>
-          </p>
-          <%= link_to "주문하기", main_app.products_path(validation_type: 'DV'), class: "mt-5 block w-full rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition" %>
-          <ul role="list" class="mt-6 space-y-2.5 text-sm leading-6 text-gray-600">
-            <% ['도메인 소유권 확인', '10분 내 발급', '256비트 암호화', '99.9% 브라우저 호환', '30일 환불 보장'].each do |item| %>
-              <li class="flex gap-x-2.5 items-center">
-                <i data-lucide="check" class="w-4 h-4 flex-none text-blue-600"></i>
-                <%= item %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-
-        <%# OV Plan - Featured %>
-        <div class="rounded-2xl p-6 ring-2 ring-blue-600 bg-white shadow-lg transform scale-105">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold leading-8 text-gray-900">기업/조직 검증 (OV)</h3>
-            <span class="rounded-full bg-blue-600 px-2.5 py-0.5 text-xs font-semibold text-white">인기</span>
-          </div>
-          <p class="mt-3 text-sm leading-6 text-gray-600">비즈니스 및 조직용</p>
-          <p class="mt-5 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">₩89,000</span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">/년</span>
-          </p>
-          <%= link_to "주문하기", main_app.products_path(validation_type: 'OV'), class: "mt-5 block w-full rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition" %>
-          <ul role="list" class="mt-6 space-y-2.5 text-sm leading-6 text-gray-600">
-            <% ['조직 신원 확인', '1-3 영업일 내 발급', '256비트 암호화', '조직 정보 표시', '$125만 보증', '우선 지원'].each do |item| %>
-              <li class="flex gap-x-2.5 items-center">
-                <i data-lucide="check" class="w-4 h-4 flex-none text-blue-600"></i>
-                <%= item %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-
-        <%# EV Plan %>
-        <div class="rounded-2xl p-6 ring-1 ring-blue-200 bg-white hover:ring-blue-300 transition">
-          <h3 class="text-lg font-semibold leading-8 text-gray-900">확장 검증 (EV)</h3>
-          <p class="mt-3 text-sm leading-6 text-gray-600">이커머스 및 대기업용</p>
-          <p class="mt-5 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-gray-900">₩189,000</span>
-            <span class="text-sm font-semibold leading-6 text-gray-600">/년</span>
-          </p>
-          <%= link_to "주문하기", main_app.products_path(validation_type: 'EV'), class: "mt-5 block w-full rounded-lg bg-blue-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition" %>
-          <ul role="list" class="mt-6 space-y-2.5 text-sm leading-6 text-gray-600">
-            <% ['최고 수준의 인증', '녹색 주소 표시줄', '3-7 영업일 내 발급', '$150만 보증', '전담 계정 관리자'].each do |item| %>
-              <li class="flex gap-x-2.5 items-center">
-                <i data-lucide="check" class="w-4 h-4 flex-none text-blue-600"></i>
-                <%= item %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <%# CTA Section %>
-  <section class="relative isolate overflow-hidden bg-white py-16 sm:py-20">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center">
-        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          시작할 준비가 되셨나요?
-        </h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg leading-7 text-gray-600">
-          오늘 웹사이트를 보호하고 고객과의 신뢰를 구축하세요.
-        </p>
-        <div class="mt-8 flex items-center justify-center gap-x-4">
-          <%= link_to products_path, class: "inline-flex items-center gap-x-2 rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition" do %>
-            인증서 둘러보기
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<script>
-  // Lucide 아이콘 초기화
-  document.addEventListener('DOMContentLoaded', () => {
-    lucide.createIcons();
-  });
+<%# Hero Section %>
+<section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 overflow-hidden">
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
   
-  // Turbo 페이지 로드 시에도 아이콘 초기화
-  document.addEventListener('turbo:load', () => {
-    lucide.createIcons();
-  });
-</script>
+  <div class="relative max-w-7xl mx-auto px-6 py-24 sm:py-32 lg:px-8">
+    <div class="text-center">
+      <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8">
+        <i data-lucide="shield-check" class="w-4 h-4 text-blue-200"></i>
+        <span class="text-sm font-medium text-white">업계 최고 수준의 보안 인증</span>
+      </div>
+      
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold text-white tracking-tight">
+        신뢰할 수 있는
+        <br />
+        <span class="bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">SSL 인증서</span>
+      </h1>
+      
+      <p class="mt-6 text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto">
+        전문적인 SSL/TLS 인증서로 귀사의 웹사이트를 보호하세요.
+        <br class="hidden sm:block" />
+        빠른 발급, 합리적인 가격, 전문가 지원
+      </p>
+      
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <%= link_to "인증서 둘러보기", products_path, class: "w-full sm:w-auto px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5" %>
+        <%= link_to "가격 확인", "#pricing", class: "w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-lg font-semibold hover:bg-white/20 transition" %>
+      </div>
+      
+      <div class="mt-16 flex items-center justify-center gap-8 text-white/80 text-sm">
+        <div class="flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+          <span>즉시 발급</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield" class="w-5 h-5 text-green-400"></i>
+          <span>최대 256bit 암호화</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="headphones" class="w-5 h-5 text-green-400"></i>
+          <span>24/7 지원</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Features Section %>
+<section class="py-24 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-base font-semibold text-blue-600 uppercase tracking-wide">핵심 기능</h2>
+      <p class="mt-2 text-3xl sm:text-4xl font-bold text-gray-900">완벽한 보안 솔루션</p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8 lg:gap-12">
+      <% [
+        { 
+          icon: 'zap', 
+          title: '신속한 발급', 
+          description: 'DV 인증서는 10분 이내, OV/EV는 1-3 영업일 내 발급됩니다.',
+          color: 'yellow'
+        },
+        { 
+          icon: 'lock', 
+          title: '강력한 암호화', 
+          description: 'SHA-2 알고리즘, 2048비트 키 길이로 최고 수준의 보안을 제공합니다.',
+          color: 'blue'
+        },
+        { 
+          icon: 'users', 
+          title: '전문가 지원', 
+          description: '설치부터 갱신까지 전 과정에서 전문가의 도움을 받으실 수 있습니다.',
+          color: 'green'
+        }
+      ].each do |feature| %>
+        <div class="relative group">
+          <div class="absolute -inset-0.5 bg-gradient-to-r from-<%= feature[:color] %>-600 to-<%= feature[:color] %>-400 rounded-2xl blur opacity-0 group-hover:opacity-20 transition"></div>
+          <div class="relative bg-white p-8 rounded-2xl border border-gray-200 hover:border-<%= feature[:color] %>-200 transition h-full">
+            <div class="w-12 h-12 bg-<%= feature[:color] %>-100 rounded-xl flex items-center justify-center mb-4">
+              <i data-lucide="<%= feature[:icon] %>" class="w-6 h-6 text-<%= feature[:color] %>-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2"><%= feature[:title] %></h3>
+            <p class="text-gray-600 leading-relaxed"><%= feature[:description] %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%# Pricing Section %>
+<section id="pricing" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-base font-semibold text-blue-600 uppercase tracking-wide">요금제</h2>
+      <p class="mt-2 text-3xl sm:text-4xl font-bold text-gray-900">비즈니스에 맞는 플랜을 선택하세요</p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <%# DV Plan %>
+      <div class="relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-blue-300 transition">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">도메인 검증 (DV)</h3>
+        <p class="text-sm text-gray-600 mb-6">개인 웹사이트 및 블로그</p>
+        
+        <div class="mb-6">
+          <span class="text-5xl font-bold text-gray-900">₩15,000</span>
+          <span class="text-gray-600 ml-2">/년</span>
+        </div>
+        
+        <%= link_to "선택하기", products_path(validation_type: 'DV'), class: "block w-full py-3 px-6 bg-gray-900 text-white text-center rounded-lg font-semibold hover:bg-gray-800 transition mb-6" %>
+        
+        <ul class="space-y-3">
+          <% ['도메인 소유권만 확인', '5-10분 내 발급', '256비트 암호화', '무제한 서버 라이선스'].each do |item| %>
+            <li class="flex items-start gap-3">
+              <i data-lucide="check" class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"></i>
+              <span class="text-sm text-gray-700"><%= item %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      
+      <%# OV Plan - Featured %>
+      <div class="relative bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 shadow-2xl transform scale-105">
+        <div class="absolute top-0 right-0 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-2xl">
+          인기
+        </div>
+        
+        <h3 class="text-xl font-bold text-white mb-2">기업/조직 검증 (OV)</h3>
+        <p class="text-sm text-blue-100 mb-6">기업 웹사이트 및 이커머스</p>
+        
+        <div class="mb-6">
+          <span class="text-5xl font-bold text-white">₩120,000</span>
+          <span class="text-blue-100 ml-2">/년</span>
+        </div>
+        
+        <%= link_to "선택하기", products_path(validation_type: 'OV'), class: "block w-full py-3 px-6 bg-white text-blue-600 text-center rounded-lg font-semibold hover:bg-blue-50 transition mb-6" %>
+        
+        <ul class="space-y-3">
+          <% ['기업 신원 검증', '1-3 영업일 내 발급', '브라우저 주소창 보안 자물쇠', 'SEO 순위 향상'].each do |item| %>
+            <li class="flex items-start gap-3">
+              <i data-lucide="check" class="w-5 h-5 text-blue-200 flex-shrink-0 mt-0.5"></i>
+              <span class="text-sm text-white"><%= item %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      
+      <%# EV Plan %>
+      <div class="relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-blue-300 transition">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">확장 검증 (EV)</h3>
+        <p class="text-sm text-gray-600 mb-6">금융, 정부기관, 대기업</p>
+        
+        <div class="mb-6">
+          <span class="text-5xl font-bold text-gray-900">₩350,000</span>
+          <span class="text-gray-600 ml-2">/년</span>
+        </div>
+        
+        <%= link_to "선택하기", products_path(validation_type: 'EV'), class: "block w-full py-3 px-6 bg-gray-900 text-white text-center rounded-lg font-semibold hover:bg-gray-800 transition mb-6" %>
+        
+        <ul class="space-y-3">
+          <% ['엄격한 신원 검증', '주소창 회사명 표시', '최고 수준의 신뢰도', '최대 $1.5M 보증'].each do |item| %>
+            <li class="flex items-start gap-3">
+              <i data-lucide="check" class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"></i>
+              <span class="text-sm text-gray-700"><%= item %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# CTA Section %>
+<section class="py-16 bg-gray-900">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">
+      지금 바로 시작하세요
+    </h2>
+    <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+      몇 분 안에 SSL 인증서를 발급받고 웹사이트 보안을 강화하세요
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <%= link_to "인증서 신청", products_path, class: "px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition shadow-xl" %>
+      <%= link_to "문의하기", contact_path, class: "px-8 py-4 bg-white/10 text-white border border-white/30 rounded-lg font-semibold hover:bg-white/20 transition" %>
+    </div>
+  </div>
+</section>

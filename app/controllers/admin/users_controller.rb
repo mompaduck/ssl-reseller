@@ -3,33 +3,41 @@ module Admin
     before_action :require_user_management_permission, except: [:index, :show]
     
     def index
-      @users = User.all
-
+      @users = current_user.accessible_users.includes(:orders)
+      
       # Search
       if params[:q].present?
         query = "%#{params[:q]}%"
-        @users = @users.where("email LIKE ? OR name LIKE ? OR phone LIKE ?", query, query, query)
+        @users = @users.where(
+          "users.name LIKE ? OR users.email LIKE ? OR users.company_name LIKE ?",
+          query, query, query
+        )
       end
-
-      # Filters
+      
+      # Role Filter
       @users = @users.where(role: params[:role]) if params[:role].present?
+      
+      # Status Filter
       @users = @users.where(status: params[:status]) if params[:status].present?
-
+      
       # Sorting
-      case params[:sort]
-      when 'created_at_asc'
-        @users = @users.order(created_at: :asc)
-      when 'created_at_desc'
-        @users = @users.order(created_at: :desc)
-      when 'last_sign_in_asc'
-        @users = @users.order(current_sign_in_at: :asc)
-      when 'last_sign_in_desc'
-        @users = @users.order(current_sign_in_at: :desc)
-      when 'orders_count'
-        @users = @users.left_joins(:orders).group('users.id').order('COUNT(orders.id) DESC')
-      else
-        @users = @users.order(created_at: :desc)
-      end
+      @users = case params[:sort]
+               when 'id_asc' then @users.order(id: :asc)
+               when 'id_desc' then @users.order(id: :desc)
+               when 'name_asc' then @users.order(Arel.sql('LOWER(name) ASC'))
+               when 'name_desc' then @users.order(Arel.sql('LOWER(name) DESC'))
+               when 'email_asc' then @users.order(Arel.sql('LOWER(email) ASC'))
+               when 'email_desc' then @users.order(Arel.sql('LOWER(email) DESC'))
+               when 'created_asc' then @users.order(created_at: :asc)
+               when 'created_desc' then @users.order(created_at: :desc)
+               when 'last_sign_in_asc' then @users.order(Arel.sql('CASE WHEN current_sign_in_at IS NULL THEN 1 ELSE 0 END, current_sign_in_at ASC'))
+               when 'last_sign_in_desc' then @users.order(Arel.sql('CASE WHEN current_sign_in_at IS NULL THEN 1 ELSE 0 END, current_sign_in_at DESC'))
+               when 'status_asc' then @users.order(status: :asc)
+               when 'status_desc' then @users.order(status: :desc)
+               when 'role_asc' then @users.order(role: :asc)
+               when 'role_desc' then @users.order(role: :desc)
+               else @users.order(created_at: :desc)
+               end
 
       @users = @users.page(params[:page]).per(20)
     end

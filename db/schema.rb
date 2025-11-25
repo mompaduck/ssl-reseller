@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_063601) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_080703) do
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action"
     t.bigint "auditable_id", null: false
@@ -63,6 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_063601) do
     t.string "internal_order_id"
     t.datetime "issued_at"
     t.string "name"
+    t.string "order_type", default: "new", null: false
     t.string "partner_order_number"
     t.string "payment_method"
     t.string "phone"
@@ -73,6 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_063601) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "validation_method"
+    t.index ["order_type"], name: "index_orders_on_order_type"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
