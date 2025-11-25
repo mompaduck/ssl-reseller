@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_080703) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_083900) do
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action"
     t.bigint "auditable_id", null: false
@@ -136,6 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_080703) do
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"
+    t.datetime "deleted_at"
     t.string "department"
     t.string "email"
     t.string "encrypted_password"

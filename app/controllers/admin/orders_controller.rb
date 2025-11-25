@@ -47,7 +47,22 @@ module Admin
         @orders = @orders.joins(:payments).where(payments: { status: params[:payment_status] })
       end
       
-      @orders = @orders.order(created_at: :desc).page(params[:page]).per(20)
+      # Sorting
+      @orders = case params[:sort]
+                when 'order_id_asc' then @orders.order(Arel.sql('LOWER(internal_order_id) ASC'))
+                when 'order_id_desc' then @orders.order(Arel.sql('LOWER(internal_order_id) DESC'))
+                when 'domain_asc' then @orders.order(Arel.sql('LOWER(domain) ASC'))
+                when 'domain_desc' then @orders.order(Arel.sql('LOWER(domain) DESC'))
+                when 'status_asc' then @orders.order(status: :asc)
+                when 'status_desc' then @orders.order(status: :desc)
+                when 'price_asc' then @orders.order(total_price: :asc)
+                when 'price_desc' then @orders.order(total_price: :desc)
+                when 'created_asc' then @orders.order(created_at: :asc)
+                when 'created_desc' then @orders.order(created_at: :desc)
+                else @orders.order(created_at: :desc)
+                end
+      
+      @orders = @orders.page(params[:page]).per(20)
     end
 
     def show

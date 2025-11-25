@@ -125,14 +125,26 @@
         <div class="mt-6 pt-6 border-t border-gray-200">
           <h3 class="text-sm font-bold text-gray-900 mb-3">보안 관리</h3>
           <div class="flex flex-wrap gap-2">
-            <%= button_to "비밀번호 초기화", '#', method: :post, class: "px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium hover:bg-yellow-200 transition", data: { turbo_confirm: "비밀번호를 초기화하시겠습니까?" } %>
-            <% if @user.two_factor_enabled %>
-              <%= button_to "2FA 해제", '#', method: :post, class: "px-4 py-2 bg-orange-100 text-orange-800 rounded-lg text-sm font-medium hover:bg-orange-200 transition", data: { turbo_confirm: "2FA를 해제하시겠습니까?" } %>
+            <%= button_to "비밀번호 초기화", reset_password_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium hover:bg-yellow-200 transition", data: { turbo_confirm: "비밀번호 초기화 이메일을 발송하시겠습니까?" } %>
+            
+            <% if @user.confirmed_at.present? %>
+              <%= button_to "이메일 인증 취소", unconfirm_email_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-orange-100 text-orange-800 rounded-lg text-sm font-medium hover:bg-orange-200 transition", data: { turbo_confirm: "이메일 인증을 취소하시겠습니까?" } %>
+            <% else %>
+              <%= button_to "이메일 인증 승인", confirm_email_admin_user_path(@user), method: :post, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
             <% end %>
-            <% if @user.locked_at.present? %>
-              <%= button_to "계정 잠금 해제", '#', method: :post, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
+          </div>
+        </div>
+        
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <h3 class="text-sm font-bold text-gray-900 mb-3">계정 관리</h3>
+          <div class="flex flex-wrap gap-2">
+            <% if @user.status == 'active' %>
+              <%= button_to "계정 정지", suspend_admin_user_path(@user), method: :patch, class: "px-4 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-medium hover:bg-red-200 transition", data: { turbo_confirm: "이 계정을 정지하시겠습니까?" } %>
+            <% elsif @user.status == 'banned' %>
+              <%= button_to "계정 활성화", activate_admin_user_path(@user), method: :patch, class: "px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium hover:bg-green-200 transition" %>
             <% end %>
-            <%= button_to "로그인 실패 횟수 초기화", '#', method: :post, class: "px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-200 transition" %>
+            
+            <%= button_to "계정 삭제", soft_delete_admin_user_path(@user), method: :delete, class: "px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition", data: { turbo_confirm: "정말로 이 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다." } %>
           </div>
         </div>
       <% end %>

@@ -74,10 +74,16 @@ Rails.application.routes.draw do
       end
     end
     resources :audit_logs, only: [:index]
-    resources :users, only: [:index, :show] do
+    resources :users do
       member do
         patch :update_role
         patch :assign_partner
+        patch :suspend
+        patch :activate
+        delete :soft_delete
+        post :reset_password
+        post :confirm_email
+        post :unconfirm_email
       end
     end
   end

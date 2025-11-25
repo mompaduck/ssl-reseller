@@ -70,6 +70,75 @@ module Admin
         redirect_to admin_user_path(@user), alert: "파트너 할당 실패"
       end
     end
+    
+    def suspend
+      @user = User.find(params[:id])
+      
+      if @user.update(status: :banned)
+        AuditLogger.log(current_user, @user, 'suspend', "계정 정지", { status: 'banned' }, request.remote_ip)
+        redirect_to admin_user_path(@user), notice: "계정이 정지되었습니다."
+      else
+        redirect_to admin_user_path(@user), alert: "계정 정지 실패"
+      end
+    end
+    
+    def activate
+      @user = User.find(params[:id])
+      
+      if @user.update(status: :active)
+        AuditLogger.log(current_user, @user, 'activate', "계정 활성화", { status: 'active' }, request.remote_ip)
+        redirect_to admin_user_path(@user), notice: "계정이 활성화되었습니다."
+      else
+        redirect_to admin_user_path(@user), alert: "계정 활성화 실패"
+      end
+    end
+    
+    def soft_delete
+      @user = User.find(params[:id])
+      
+      if @user.update(deleted_at: Time.current, status: :banned)
+        AuditLogger.log(current_user, @user, 'soft_delete', "계정 삭제 (Soft Delete)", { deleted_at: Time.current }, request.remote_ip)
+        redirect_to admin_users_path, notice: "계정이 삭제되었습니다."
+      else
+        redirect_to admin_user_path(@user), alert: "계정 삭제 실패"
+      end
+    end
+    
+    def reset_password
+      @user = User.find(params[:id])
+      
+      # Generate password reset token
+      raw_token = @user.send(:set_reset_password_token)
+      
+      # Send password reset email
+      @user.send_reset_password_instructions
+      
+      AuditLogger.log(current_user, @user, 'reset_password', "비밀번호 초기화 이메일 발송", {}, request.remote_ip)
+      redirect_to admin_user_path(@user), notice: "비밀번호 초기화 이메일이 발송되었습니다."
+    end
+    
+    def confirm_email
+      @user = User.find(params[:id])
+      
+      if @user.confirmed_at.present?
+        redirect_to admin_user_path(@user), alert: "이미 이메일이 인증되었습니다."
+      else
+        @user.update(confirmed_at: Time.current)
+        AuditLogger.log(current_user, @user, 'confirm_email', "이메일 강제 인증", { confirmed_at: @user.confirmed_at }, request.remote_ip)
+        redirect_to admin_user_path(@user), notice: "이메일이 인증되었습니다."
+      end
+    end
+    
+    def unconfirm_email
+      @user = User.find(params[:id])
+      
+      if @user.update(confirmed_at: nil)
+        AuditLogger.log(current_user, @user, 'unconfirm_email', "이메일 인증 취소", {}, request.remote_ip)
+        redirect_to admin_user_path(@user), notice: "이메일 인증이 취소되었습니다."
+      else
+        redirect_to admin_user_path(@user), alert: "이메일 인증 취소 실패"
+      end
+    end
 
     private
 

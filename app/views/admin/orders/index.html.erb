@@ -131,12 +131,47 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문번호</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_orders_path(sort: params[:sort] == 'order_id_asc' ? 'order_id_desc' : 'order_id_asc', q: params[:q], status: params[:status], order_type: params[:order_type], period: params[:period], certificate_type: params[:certificate_type], dcv_method: params[:dcv_method], payment_status: params[:payment_status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              주문번호
+              <% if params[:sort]&.start_with?('order_id') %>
+                <i data-lucide="<%= params[:sort] == 'order_id_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">고객 정보</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상품 / 도메인</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">결제 금액</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문 일시</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_orders_path(sort: params[:sort] == 'domain_asc' ? 'domain_desc' : 'domain_asc', q: params[:q], status: params[:status], order_type: params[:order_type], period: params[:period], certificate_type: params[:certificate_type], dcv_method: params[:dcv_method], payment_status: params[:payment_status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              상품 / 도메인
+              <% if params[:sort]&.start_with?('domain') %>
+                <i data-lucide="<%= params[:sort] == 'domain_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_orders_path(sort: params[:sort] == 'status_asc' ? 'status_desc' : 'status_asc', q: params[:q], status: params[:status], order_type: params[:order_type], period: params[:period], certificate_type: params[:certificate_type], dcv_method: params[:dcv_method], payment_status: params[:payment_status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              상태
+              <% if params[:sort]&.start_with?('status') %>
+                <i data-lucide="<%= params[:sort] == 'status_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_orders_path(sort: params[:sort] == 'price_asc' ? 'price_desc' : 'price_asc', q: params[:q], status: params[:status], order_type: params[:order_type], period: params[:period], certificate_type: params[:certificate_type], dcv_method: params[:dcv_method], payment_status: params[:payment_status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              결제 금액
+              <% if params[:sort]&.start_with?('price') %>
+                <i data-lucide="<%= params[:sort] == 'price_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_orders_path(sort: params[:sort] == 'created_asc' ? 'created_desc' : 'created_asc', q: params[:q], status: params[:status], order_type: params[:order_type], period: params[:period], certificate_type: params[:certificate_type], dcv_method: params[:dcv_method], payment_status: params[:payment_status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              주문 일시
+              <% if params[:sort]&.start_with?('created') %>
+                <i data-lucide="<%= params[:sort] == 'created_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
           <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
         </tr>
       </thead>
