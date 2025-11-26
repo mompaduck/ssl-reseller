@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module Admin
   class UsersController < BaseController
     before_action :require_user_management_permission, except: [:index, :show]
@@ -46,6 +48,37 @@ module Admin
       @user = User.find(params[:id])
       @orders = @user.orders.order(created_at: :desc).limit(10)
       @certificates = @user.certificates.order(created_at: :desc).limit(10)
+    end
+
+    def edit
+      @user = User.find(params[:id])
+    end
+
+    def update
+      @user = User.find(params[:id])
+      
+      # Handle notification settings
+      if params[:user][:notification_settings].present?
+        # Convert checkbox values to boolean
+        settings = params[:user][:notification_settings].permit!.to_h
+        settings.transform_values! { |v| v == '1' }
+        params[:user][:notification_settings] = settings
+      end
+
+      # Store previous attributes for audit log
+      @user.assign_attributes(user_params)
+      changes = @user.changes_to_save
+
+      if @user.save
+        # Log changes
+        if changes.any?
+          audit_changes(@user, changes)
+        end
+        
+        redirect_to admin_user_path(@user), notice: "사용자 정보가 수정되었습니다."
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def update_role
@@ -141,6 +174,43 @@ module Admin
     end
 
     private
+
+    def user_params
+      params.require(:user).permit(
+        :name, :phone, :company_name, :country, :address, :status,
+        notification_settings: {}
+      )
+    end
+
+    def audit_changes(user, changes)
+      changes.each do |attribute, values|
+        next if attribute == 'updated_at'
+        
+        old_value, new_value = values
+        message = "#{attribute} 변경: #{old_value.inspect} -> #{new_value.inspect}"
+        
+        # Customize message for specific fields
+        case attribute
+        when 'status'
+          message = "계정 상태 변경: #{old_value} -> #{new_value}"
+        when 'notification_settings'
+          message = "알림 설정 변경"
+        end
+
+        AuditLogger.log(
+          current_user, 
+          user, 
+          'profile_update', 
+          message, 
+          { 
+            attribute: attribute, 
+            old_value: old_value, 
+            new_value: new_value 
+          }, 
+          request.remote_ip
+        )
+      end
+    end
 
     def require_user_management_permission
       unless current_user.can_manage_users?

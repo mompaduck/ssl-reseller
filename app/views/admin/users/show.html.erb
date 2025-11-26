@@ -68,6 +68,47 @@
       </dl>
     </div>
 
+    <!-- Notification Settings -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="bell" class="w-5 h-5 text-gray-400"></i>
+        알림 설정
+      </h2>
+      <dl class="grid grid-cols-1 gap-y-4">
+        <% settings = @user.notification_settings || {} %>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+          <dt class="text-sm font-medium text-gray-500">주문 생성 알림</dt>
+          <dd class="mt-1 text-sm">
+            <% if settings['email_order_created'] %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">ON</span>
+            <% else %>
+              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">OFF</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+          <dt class="text-sm font-medium text-gray-500">인증서 발급 알림</dt>
+          <dd class="mt-1 text-sm">
+            <% if settings['email_certificate_issued'] %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">ON</span>
+            <% else %>
+              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">OFF</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+          <dt class="text-sm font-medium text-gray-500">만료 예정 알림</dt>
+          <dd class="mt-1 text-sm">
+            <% if settings['email_certificate_expiring'] %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">ON</span>
+            <% else %>
+              <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">OFF</span>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
     <!-- All Orders & Certificates -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-4">
@@ -432,6 +473,11 @@
           
           <!-- Account Status Actions -->
           <div class="space-y-2">
+            <%= link_to edit_admin_user_path(@user), class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition" do %>
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+              <span>정보 수정</span>
+            <% end %>
+
             <% if @user.status == 'active' %>
               <%= button_to suspend_admin_user_path(@user), method: :patch, class: "w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition border border-red-200", data: { turbo_confirm: "이 계정을 정지하시겠습니까?" } do %>
                 <i data-lucide="user-x" class="w-4 h-4"></i>

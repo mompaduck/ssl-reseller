@@ -1,0 +1,138 @@
+<div class="mb-6 flex items-center justify-between">
+  <div class="flex items-center gap-4">
+    <%= link_to admin_user_path(@user), class: "p-2 rounded-lg hover:bg-gray-200 text-gray-500 transition" do %>
+      <i data-lucide="arrow-left" class="w-5 h-5"></i>
+    <% end %>
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">사용자 정보 수정</h1>
+      <p class="mt-1 text-sm text-gray-500"><%= @user.email %></p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-3xl mx-auto">
+  <%= form_with model: [:admin, @user], class: "space-y-6" do |f| %>
+    <% if @user.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              <%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Basic Information -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+        기본 정보
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :name, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+        
+        <div>
+          <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :phone, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+        
+        <div>
+          <%= f.label :company_name, "회사명", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :company_name, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+        
+        <div>
+          <%= f.label :country, "국가", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :country, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+        
+        <div class="md:col-span-2">
+          <%= f.label :address, "주소", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :address, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Status -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i>
+        계정 상태
+      </h2>
+      
+      <div>
+        <%= f.label :status, "상태", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.select :status, 
+            User.statuses.keys.map { |s| [s.humanize, s] }, 
+            {}, 
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+        <p class="mt-1 text-xs text-gray-500">
+          * 계정 상태를 변경하면 Audit Log에 기록됩니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <i data-lucide="bell" class="w-5 h-5 text-gray-400"></i>
+        알림 설정
+      </h2>
+      
+      <div class="space-y-4">
+        <%= f.fields_for :notification_settings, OpenStruct.new(@user.notification_settings || {}) do |ns| %>
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= ns.check_box :email_order_created, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= ns.label :email_order_created, "주문 생성 시 이메일 알림", class: "font-medium text-gray-700" %>
+              <p class="text-gray-500">새로운 주문이 생성되면 이메일로 알림을 받습니다.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= ns.check_box :email_certificate_issued, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= ns.label :email_certificate_issued, "인증서 발급 완료 시 이메일 알림", class: "font-medium text-gray-700" %>
+              <p class="text-gray-500">인증서가 발급되면 이메일로 알림을 받습니다.</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <%= ns.check_box :email_certificate_expiring, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+            </div>
+            <div class="ml-3 text-sm">
+              <%= ns.label :email_certificate_expiring, "인증서 만료 예정 시 이메일 알림", class: "font-medium text-gray-700" %>
+              <p class="text-gray-500">인증서 만료 30일, 7일 전에 이메일로 알림을 받습니다.</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3">
+      <%= link_to "취소", admin_user_path(@user), class: "px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition" %>
+      <%= f.submit "저장", class: "px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 shadow-sm transition" %>
+    </div>
+  <% end %>
+</div>
