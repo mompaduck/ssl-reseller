@@ -172,10 +172,10 @@
             <%# 가격 표시 %>
             <div class="bg-blue-600 p-6 text-white">
               <p class="text-sm font-medium text-blue-100 mb-2">시작 가격 (VAT 별도)</p>
-              <% if @product.price.present? %>
+              <% if @product.selling_price.present? %>
                 <div class="flex items-baseline">
                   <span class="text-4xl font-extrabold">
-                    <%= number_with_delimiter(@product.price.to_i) %>
+                    <%= number_with_delimiter(@product.final_price.to_i) %>
                   </span>
                   <span class="text-xl ml-2">원</span>
                 </div>

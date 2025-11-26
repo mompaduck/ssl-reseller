@@ -71,16 +71,23 @@ module Admin
           # Load SMTP settings from database
           smtp_settings = {
             address: Setting.get_string('smtp_host', 'smtp.gmail.com'),
-            port: Setting.get('smtp_port', 587),
+            port: Setting.get('smtp_port', 587).to_i,
             user_name: Setting.get_string('smtp_username', ''),
             password: Setting.get_string('smtp_password', ''),
             authentication: :plain,
-            enable_starttls_auto: Setting.get_boolean('smtp_use_tls', true)
+            enable_starttls_auto: Setting.get_boolean('smtp_use_tls', true),
+            openssl_verify_mode: 'none'  # SSL 인증서 검증 우회 (개발/테스트용)
           }
           
-          # Apply SMTP settings dynamically for this delivery
-          TestMailer.test_email(test_email_address).delivery_method_options = smtp_settings
+          # Temporarily configure ActionMailer with these settings
+          original_settings = ActionMailer::Base.smtp_settings.dup
+          ActionMailer::Base.smtp_settings = smtp_settings
+          
+          # Send test email
           TestMailer.test_email(test_email_address).deliver_now
+          
+          # Restore original settings
+          ActionMailer::Base.smtp_settings = original_settings
           
           # Log the test
           AuditLogger.log(
@@ -88,15 +95,15 @@ module Admin
             Setting.find_by(key: 'smtp_host') || Setting.new(key: 'smtp_host'),
             'test_email',
             "테스트 이메일 전송: #{test_email_address}",
-            { to: test_email_address },
+            { to: test_email_address, smtp_host: smtp_settings[:address], smtp_port: smtp_settings[:port] },
             request.remote_ip
           )
           
           redirect_to admin_settings_email_smtp_path, 
-            notice: "테스트 이메일이 #{test_email_address}(으)로 전송되었습니다. 수신함을 확인하세요."
+            notice: "✅ 테스트 이메일이 #{test_email_address}(으)로 전송되었습니다. 수신함을 확인하세요."
         rescue => e
           redirect_to admin_settings_email_smtp_path, 
-            alert: "테스트 이메일 전송 실패: #{e.message}"
+            alert: "❌ 테스트 이메일 전송 실패: #{e.message}"
         end
       end
     end

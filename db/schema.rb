@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_132807) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_26_000220) do
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action"
     t.bigint "auditable_id", null: false
@@ -141,6 +141,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_132807) do
   create_table "products", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "brand_site_url"
     t.string "category"
+    t.integer "cost_price", default: 0, null: false, comment: "Sectigo 원가"
     t.datetime "created_at", null: false
     t.text "description"
     t.integer "discount"
@@ -149,16 +150,23 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_132807) do
     t.integer "duration_months"
     t.text "features"
     t.boolean "is_active"
+    t.boolean "is_on_promotion", default: false, comment: "프로모션 활성화 여부"
     t.integer "liability_usd"
     t.string "logo_url"
+    t.decimal "margin_percentage", precision: 5, scale: 2, comment: "마진율 (%)"
     t.boolean "multi_year_support"
     t.string "name"
-    t.integer "price"
     t.string "product_code"
+    t.string "promo_code", comment: "프로모션 코드"
+    t.datetime "promo_valid_until", comment: "프로모션 종료일"
     t.string "provider"
+    t.integer "selling_price"
     t.datetime "updated_at", null: false
     t.integer "validation_type"
     t.string "warranty_url"
+    t.index ["cost_price"], name: "index_products_on_cost_price"
+    t.index ["is_on_promotion"], name: "index_products_on_is_on_promotion"
+    t.index ["promo_code"], name: "index_products_on_promo_code"
   end
 
   create_table "settings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

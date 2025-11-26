@@ -92,6 +92,14 @@ Rails.application.routes.draw do
       end
     end
     
+    # Products management
+    resources :products do
+      member do
+        post :toggle_active
+        post :clone
+      end
+    end
+    
     # Log routes
     resources :audit_logs, only: [:index]
     resources :order_logs, only: [:index]

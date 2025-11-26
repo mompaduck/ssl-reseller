@@ -90,8 +90,16 @@
             <% end %>
           </th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <%= link_to admin_users_path(sort: params[:sort] == 'email_asc' ? 'email_desc' : 'email_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
+              이메일
+              <% if params[:sort]&.start_with?('email') %>
+                <i data-lucide="<%= params[:sort] == 'email_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
+              <% end %>
+            <% end %>
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             <%= link_to admin_users_path(sort: params[:sort] == 'name_asc' ? 'name_desc' : 'name_asc', q: params[:q], role: params[:role], status: params[:status]), class: "flex items-center gap-1 hover:text-gray-700" do %>
-              사용자
+              이름
               <% if params[:sort]&.start_with?('name') %>
                 <i data-lucide="<%= params[:sort] == 'name_asc' ? 'chevron-up' : 'chevron-down' %>" class="w-4 h-4"></i>
               <% end %>
@@ -131,7 +139,6 @@
               <% end %>
             <% end %>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -140,18 +147,11 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
               #<%= user.id %>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
-                    <%= user.email.first(2).upcase %>
-                  </div>
-                </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900"><%= user.name || "-" %></div>
-                  <div class="text-sm text-gray-500"><%= user.email %></div>
-                </div>
-              </div>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <%= link_to user.email, admin_user_path(user), class: "text-blue-600 hover:text-blue-900 hover:underline" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <%= user.name || "-" %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <%= user.phone || "-" %>
@@ -186,9 +186,6 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <%= user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") || "없음" %>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <%= link_to "상세", admin_user_path(user), class: "text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors" %>
             </td>
           </tr>
         <% end %>

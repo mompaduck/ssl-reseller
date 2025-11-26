@@ -129,37 +129,6 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <!-- Recent Activities -->
-  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-        <i data-lucide="activity" class="w-5 h-5 text-gray-400"></i>
-        최근 작업 로그
-      </h2>
-      <%= link_to "전체보기", admin_audit_logs_path, class: "text-sm text-blue-600 hover:text-blue-700" %>
-    </div>
-    <div class="space-y-3">
-      <% if @recent_activities.any? %>
-        <% @recent_activities.each do |log| %>
-          <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
-            <div class="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-              <i data-lucide="<%= log.user ? 'user' : 'cpu' %>" class="w-4 h-4 text-gray-500"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm text-gray-900">
-                <span class="font-medium"><%= log.user&.name || "System" %></span>
-                <%= log.message %>
-              </p>
-              <p class="text-xs text-gray-500 mt-1"><%= time_ago_in_words(log.created_at) %> ago</p>
-            </div>
-          </div>
-        <% end %>
-      <% else %>
-        <p class="text-sm text-gray-500 text-center py-4">활동 내역이 없습니다.</p>
-      <% end %>
-    </div>
-  </div>
-
   <!-- Recent Orders -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
     <div class="flex items-center justify-between mb-4">
@@ -190,6 +159,37 @@
         <% end %>
       <% else %>
         <p class="text-sm text-gray-500 text-center py-4">주문 내역이 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Activities -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+        <i data-lucide="activity" class="w-5 h-5 text-gray-400"></i>
+        최근 작업 로그
+      </h2>
+      <%= link_to "전체보기", admin_audit_logs_path, class: "text-sm text-blue-600 hover:text-blue-700" %>
+    </div>
+    <div class="space-y-3">
+      <% if @recent_activities.any? %>
+        <% @recent_activities.each do |log| %>
+          <div class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0">
+            <div class="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+              <i data-lucide="<%= log.user ? 'user' : 'cpu' %>" class="w-4 h-4 text-gray-500"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-900">
+                <span class="font-medium"><%= log.user&.name || "System" %></span>
+                <%= log.message %>
+              </p>
+              <p class="text-xs text-gray-500 mt-1"><%= time_ago_in_words(log.created_at) %> ago</p>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">활동 내역이 없습니다.</p>
       <% end %>
     </div>
   </div>

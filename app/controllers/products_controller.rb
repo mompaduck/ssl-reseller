@@ -29,7 +29,7 @@ class ProductsController < ApplicationController
       @products = @products.where(domain_type: Product.domain_types[params[:domain_type]])
     end
 
-    @products = @products.order(provider: :asc, price: :asc)
+    @products = @products.order(provider: :asc, selling_price: :asc)
   end
 
   def show

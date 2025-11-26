@@ -28,6 +28,11 @@
             대시보드
           <% end %>
 
+          <%= link_to admin_products_path, class: "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors #{request.path.start_with?('/admin/products') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+            <i data-lucide="package" class="w-5 h-5"></i>
+            상품 관리
+          <% end %>
+
           <%= link_to admin_orders_path, class: "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors #{request.path.start_with?(admin_orders_path) ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
             <i data-lucide="shopping-cart" class="w-5 h-5"></i>
             주문 관리
@@ -37,55 +42,14 @@
             <i data-lucide="file-check" class="w-5 h-5"></i>
             인증서 관리
           <% end %>
-          
-          <%# Logs Dropdown Menu %>
-          <% logs_active = request.path.include?('_logs') %>
-          <div class="logs-dropdown">
-            <button onclick="toggleLogsMenu()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors w-full text-left <%= logs_active ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' %>">
-              <i data-lucide="file-text" class="w-5 h-5"></i>
-              <span class="flex-1">Logs</span>
-              <i data-lucide="chevron-down" class="w-4 h-4 logs-chevron transition-transform"></i>
-            </button>
-            
-            <div id="logsSubmenu" class="ml-8 mt-1 space-y-1 <%= logs_active ? '' : 'hidden' %>">
-              <%= link_to admin_audit_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_audit_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="shield-check" class="w-4 h-4"></i>
-                Audit Logs
-              <% end %>
-              
-              <%= link_to admin_order_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_order_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-                Order Logs
-              <% end %>
-              
-              <%= link_to admin_certificate_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_certificate_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="award" class="w-4 h-4"></i>
-                Certificate Logs
-              <% end %>
-              
-              <%= link_to admin_api_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_api_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="server" class="w-4 h-4"></i>
-                API Logs
-              <% end %>
-              
-              <%= link_to admin_notification_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_notification_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="bell" class="w-4 h-4"></i>
-                Notification Logs
-              <% end %>
-              
-              <%= link_to admin_system_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_system_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
-                <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                System Logs
-              <% end %>
-            </div>
-          </div>
-          
-          <div class="pt-6 mt-6 border-t border-gray-800">
-            <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">시스템</p>
-            <%= link_to admin_users_path, class: "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors #{request.path.start_with?('/admin/users') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+
+          <%= link_to admin_users_path, class: "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors #{request.path.start_with?('/admin/users') ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
             <i data-lucide="users" class="w-5 h-5"></i>
             사용자 관리
           <% end %>
+          
+          <div class="pt-6 mt-6 border-t border-gray-800">
+            <p class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">시스템</p>
             
             <%# Settings Dropdown Menu %>
             <% settings_active = request.path.include?('settings') %>
@@ -123,18 +87,55 @@
                 <% end %>
                 
                 <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
-                  <i data-lucide="package" class="w-4 h-4"></i>
-                  Product Settings
+                  <i data-lucide="database" class="w-4 h-4"></i>
+                  Backup & Restore
                 <% end %>
                 
                 <%= link_to admin_settings_logging_retention_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
-                  <i data-lucide="database" class="w-4 h-4"></i>
+                  <i data-lucide="clock" class="w-4 h-4"></i>
                   Logging Retention
                 <% end %>
+              </div>
+            </div>
+
+            <%# Logs Dropdown Menu %>
+            <% logs_active = request.path.include?('_logs') %>
+            <div class="logs-dropdown">
+              <button onclick="toggleLogsMenu()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors w-full text-left <%= logs_active ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' %>">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+                <span class="flex-1">Logs</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 logs-chevron transition-transform"></i>
+              </button>
+              
+              <div id="logsSubmenu" class="ml-8 mt-1 space-y-1 <%= logs_active ? '' : 'hidden' %>">
+                <%= link_to admin_audit_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_audit_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="shield-check" class="w-4 h-4"></i>
+                  Audit Logs
+                <% end %>
                 
-                <%= link_to '#', class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors text-gray-400 hover:bg-gray-800 hover:text-white" do %>
-                  <i data-lucide="wrench" class="w-4 h-4"></i>
-                  System Maintenance
+                <%= link_to admin_order_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_order_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                  Order Logs
+                <% end %>
+                
+                <%= link_to admin_certificate_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_certificate_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="award" class="w-4 h-4"></i>
+                  Certificate Logs
+                <% end %>
+                
+                <%= link_to admin_api_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_api_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="server" class="w-4 h-4"></i>
+                  API Logs
+                <% end %>
+                
+                <%= link_to admin_notification_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_notification_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="bell" class="w-4 h-4"></i>
+                  Notification Logs
+                <% end %>
+                
+                <%= link_to admin_system_logs_path, class: "flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors #{request.path == admin_system_logs_path ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}" do %>
+                  <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                  System Logs
                 <% end %>
               </div>
             </div>
@@ -171,6 +172,47 @@
         </header>
 
         <div class="flex-1 overflow-auto bg-gray-50 p-8">
+          <!-- Flash Messages -->
+          <% if notice.present? || alert.present? %>
+            <div class="mb-6 space-y-4">
+              <% if notice.present? %>
+                <div class="flash-message bg-green-50 border-l-4 border-green-400 p-4 rounded-lg shadow-sm animate-fade-in">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                      <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-green-800"><%= notice %></p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                      <button onclick="this.closest('.flash-message').remove()" class="text-green-400 hover:text-green-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <% if alert.present? %>
+                <div class="flash-message bg-red-50 border-l-4 border-red-400 p-4 rounded-lg shadow-sm animate-fade-in">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                      <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-red-800"><%= alert %></p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                      <button onclick="this.closest('.flash-message').remove()" class="text-red-400 hover:text-red-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
           <%= yield %>
         </div>
       </main>
@@ -179,10 +221,26 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
+        autoDismissFlashMessages();
       });
       document.addEventListener('turbo:load', () => {
         lucide.createIcons();
+        autoDismissFlashMessages();
       });
+      
+      // Flash 메시지 자동 닫기
+      function autoDismissFlashMessages() {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(message => {
+          setTimeout(() => {
+            message.style.transition = 'opacity 0.5s ease-out';
+            message.style.opacity = '0';
+            setTimeout(() => {
+              message.remove();
+            }, 500);
+          }, 5000); // 5초 후 자동으로 닫힘
+        });
+      }
       
       function toggleLogsMenu() {
         const submenu = document.getElementById('logsSubmenu');

@@ -1,0 +1,338 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  
+  <!-- 헤더 -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <%= @product.persisted? ? '상품 수정' : '새 상품 추가' %>
+        </h1>
+        <p class="mt-2 text-gray-600">SSL 인증서 상품 정보를 입력하세요</p>
+      </div>
+      <%= link_to admin_products_path, 
+          class: "inline-flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50" do %>
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        목록으로
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with model: [:admin, @product], local: true, class: "space-y-8" do |f| %>
+    
+    <!-- 오류 메시지 -->
+    <% if @product.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+        <div class="flex items-start">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-red-600 mt-0.5 mr-3"></i>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-red-800"><%= pluralize(@product.errors.count, "error") %> 발생</h3>
+            <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+              <% @product.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 기본 정보 -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <i data-lucide="info" class="w-5 h-5 mr-2 text-blue-600"></i>
+        기본 정보
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :name, "상품명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.text_field :name, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "Sectigo Positive SSL" %>
+        </div>
+
+        <div>
+          <%= f.label :product_code, "상품 코드", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="flex gap-2">
+            <%= f.text_field :product_code, id: "product_code", class: "flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "SECTIGO-DV-SD-1Y" %>
+            <button type="button" onclick="generateProductCode()" class="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition inline-flex items-center gap-2">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              자동생성
+            </button>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">형식: {CA}-{TYPE}-{SCOPE}-{YEARS} 예: SECTIGO-DV-SD-1Y</p>
+        </div>
+
+        <div>
+          <%= f.label :provider, "인증기관 (CA)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.select :provider, Product::PROVIDERS.map { |p| [p, p] }, {}, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+
+        <div>
+          <%= f.label :validation_type, "검증 타입", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.select :validation_type, [["DV (도메인 검증)", "dv"], ["OV (조직 검증)", "ov"], ["EV (확장 검증)", "ev"]], {}, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+
+        <div>
+          <%= f.label :domain_type, "도메인 타입", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.select :domain_type, [["Single Domain", "single"], ["Wildcard", "wildcard"], ["Multi Domain", "multi"]], {}, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+
+        <div>
+          <%= f.label :duration_months, "기간 (개월)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.number_field :duration_months, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "12" %>
+        </div>
+
+        <div>
+          <%= f.label :domain_count, "도메인 수", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.number_field :domain_count, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "1" %>
+        </div>
+
+        <div>
+          <%= f.label :liability_usd, "배상 책임 (USD)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.number_field :liability_usd, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "10000" %>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <%= f.label :description, "상품 설명", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_area :description, rows: 3, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+      </div>
+    </div>
+
+    <!-- 가격 정보 -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <i data-lucide="dollar-sign" class="w-5 h-5 mr-2 text-green-600"></i>
+        가격 정보
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <%= f.label :cost_price, "원가 (₩)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-gray-500">₩</span>
+            <%= f.number_field :cost_price, class: "w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "50000" %>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">Sectigo 구매 원가</p>
+        </div>
+
+        <div>
+          <%= f.label :selling_price, "판매가 (₩)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-gray-500">₩</span>
+            <%= f.number_field :selling_price, class: "w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "80000" %>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">고객 판매 가격</p>
+        </div>
+
+        <div>
+          <%= f.label :discount, "할인율 (%)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <div class="relative">
+            <%= f.number_field :discount, class: "w-full pr-8 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "10", min: 0, max: 100 %>
+            <span class="absolute right-3 top-2.5 text-gray-500">%</span>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">프로모션 할인율</p>
+        </div>
+      </div>
+
+      <!-- 실시간 가격 계산 표시 -->
+      <div id="priceCalculation" class="mt-6 p-4 bg-blue-50 rounded-lg" style="display: none;">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span class="text-gray-600">최종 가격:</span>
+            <span id="finalPrice" class="ml-2 font-semibold text-blue-600">₩0</span>
+          </div>
+          <div>
+            <span class="text-gray-600">순이익:</span>
+            <span id="profit" class="ml-2 font-semibold text-green-600">₩0</span>
+          </div>
+          <div>
+            <span class="text-gray-600">마진율:</span>
+            <span id="marginPercentage" class="ml-2 font-semibold">0%</span>
+          </div>
+          <div>
+            <span class="text-gray-600">이익률:</span>
+            <span id="profitPercentage" class="ml-2 font-semibold">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 프로모션 정보 -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <i data-lucide="tag" class="w-5 h-5 mr-2 text-purple-600"></i>
+        프로모션
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <%= f.label :promo_code, "프로모션 코드", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.text_field :promo_code, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "SUMMER2024" %>
+        </div>
+
+        <div>
+          <%= f.label :promo_valid_until, "프로모션 종료일", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= f.datetime_local_field :promo_valid_until, class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+
+        <div class="flex items-end">
+          <label class="inline-flex items-center cursor-pointer">
+            <%= f.check_box :is_on_promotion, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
+            <span class="ml-2 text-sm font-medium text-gray-700">프로모션 활성화</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상태 -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <i data-lucide="settings" class="w-5 h-5 mr-2 text-gray-600"></i>
+        상태 설정
+      </h2>
+      
+      <div class="flex items-center">
+        <label class="inline-flex items-center cursor-pointer">
+          <%= f.check_box :is_active, class: "w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" %>
+          <span class="ml-2 text-sm font-medium text-gray-700">상품 활성화 (고객 페이지 노출)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 제출 버튼 -->
+    <div class="flex items-center justify-end gap-4">
+      <%= link_to "취소", admin_products_path, class: "px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50" %>
+      <%= f.submit @product.persisted? ? '수정 완료' : '상품 추가', 
+          class: "px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5" %>
+    </div>
+
+  <% end %>
+
+</div>
+
+<script>
+  // 상품 코드 자동 생성 함수
+  function generateProductCode() {
+    // 각 필드 값 가져오기
+    const provider = document.getElementById('product_provider').value;
+    const validationType = document.getElementById('product_validation_type').value;
+    const domainType = document.getElementById('product_domain_type').value;
+    const durationMonths = document.getElementById('product_duration_months').value;
+
+    if (!provider || !validationType || !domainType || !durationMonths) {
+      alert('인증기관, 검증 타입, 도메인 타입, 기간을 모두 선택해주세요.');
+      return;
+    }
+
+    // CA 코드 생성 (공백 제거 및 대문자)
+    const ca = provider.toUpperCase().replace(/\s+/g, '');
+
+    // TYPE 코드
+    const typeMap = {
+      'dv': 'DV',
+      'ov': 'OV',
+      'ev': 'EV'
+    };
+    const type = typeMap[validationType];
+
+    // SCOPE 코드
+    const scopeMap = {
+      'single': 'SD',
+      'wildcard': 'WC',
+      'multi': 'MD'
+    };
+    const scope = scopeMap[domainType];
+
+    // YEARS 또는 DAYS 계산
+    const months = parseInt(durationMonths);
+    let period;
+    
+    if (months >= 12 && months % 12 === 0) {
+      // 12개월 이상이고 정확히 나누어떨어지면 년(Y)
+      period = Math.floor(months / 12) + 'Y';
+    } else if (months >= 1) {
+      // 12개월 미만이면 일수(D)로 표시 (1개월 = 30일)
+      const days = months * 30;
+      period = days + 'D';
+    } else {
+      period = '0D';
+    }
+
+    // 최종 코드 생성
+    const productCode = `${ca}-${type}-${scope}-${period}`;
+
+    // 코드 입력란에 설정
+    document.getElementById('product_code').value = productCode;
+
+    // 아이콘 새로고침
+    lucide.createIcons();
+  }
+
+  // 가격 자동 계산 함수
+  function calculatePricing() {
+    const costPrice = parseInt(document.getElementById('product_cost_price').value) || 0;
+    const sellingPrice = parseInt(document.getElementById('product_selling_price').value) || 0;
+    const discount = parseInt(document.getElementById('product_discount').value) || 0;
+
+    // 값이 하나라도 있으면 계산 결과 표시
+    if (costPrice > 0 || sellingPrice > 0) {
+      // 최종 가격 계산 (할인 적용)
+      const finalPrice = discount > 0 ? Math.floor(sellingPrice * (1 - discount / 100)) : sellingPrice;
+
+      // 순이익 계산
+      const profit = finalPrice - costPrice;
+
+      // 마진율 계산 ((판매가 - 원가) / 원가 * 100)
+      const marginPercentage = costPrice > 0 ? ((sellingPrice - costPrice) / costPrice * 100).toFixed(1) : 0;
+
+      // 이익률 계산 ((최종가 - 원가) / 원가 * 100)
+      const profitPercentage = costPrice > 0 ? ((profit / costPrice) * 100).toFixed(1) : 0;
+
+      // 결과 표시
+      document.getElementById('finalPrice').textContent = '₩' + finalPrice.toLocaleString();
+      document.getElementById('profit').textContent = '₩' + profit.toLocaleString();
+      document.getElementById('profit').className = profit >= 0 ? 'ml-2 font-semibold text-green-600' : 'ml-2 font-semibold text-red-600';
+      document.getElementById('marginPercentage').textContent = marginPercentage + '%';
+      document.getElementById('profitPercentage').textContent = profitPercentage + '%';
+
+      // 계산 결과 영역 표시
+      document.getElementById('priceCalculation').style.display = 'block';
+    } else {
+      // 값이 없으면 숨김
+      document.getElementById('priceCalculation').style.display = 'none';
+    }
+  }
+
+  // 페이지 로드 시 이벤트 리스너 추가
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    
+    // 가격 관련 필드에 이벤트 리스너 추가
+    const costPriceField = document.getElementById('product_cost_price');
+    const sellingPriceField = document.getElementById('product_selling_price');
+    const discountField = document.getElementById('product_discount');
+
+    if (costPriceField) costPriceField.addEventListener('input', calculatePricing);
+    if (sellingPriceField) sellingPriceField.addEventListener('input', calculatePricing);
+    if (discountField) discountField.addEventListener('input', calculatePricing);
+
+    // 초기 계산 (수정 페이지인 경우)
+    calculatePricing();
+  });
+  
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+    
+    // Turbo 로드 시에도 이벤트 리스너 추가
+    const costPriceField = document.getElementById('product_cost_price');
+    const sellingPriceField = document.getElementById('product_selling_price');
+    const discountField = document.getElementById('product_discount');
+
+    if (costPriceField) costPriceField.addEventListener('input', calculatePricing);
+    if (sellingPriceField) sellingPriceField.addEventListener('input', calculatePricing);
+    if (discountField) discountField.addEventListener('input', calculatePricing);
+
+    // 초기 계산
+    calculatePricing();
+  });
+</script>

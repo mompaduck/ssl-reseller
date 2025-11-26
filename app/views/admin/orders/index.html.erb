@@ -172,14 +172,13 @@
               <% end %>
             <% end %>
           </th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <% @orders.each do |order| %>
           <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              <%= order.internal_order_id || "##{order.id}" %>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <%= link_to order.internal_order_id || "##{order.id}", admin_order_path(order), class: "text-blue-600 hover:text-blue-900 hover:underline" %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center">
@@ -213,9 +212,6 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               <%= order.created_at.strftime("%Y-%m-%d %H:%M") %>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <%= link_to "상세보기", admin_order_path(order), class: "text-blue-600 hover:text-blue-900 font-semibold" %>
             </td>
           </tr>
         <% end %>
