@@ -12,7 +12,7 @@ class OrderLog < ApplicationRecord
   scope :search, ->(query) {
     if query.present?
       joins(:order).joins("LEFT JOIN users ON users.id = order_logs.user_id")
-        .where("order_logs.message LIKE ? OR orders.order_number LIKE ? OR users.name LIKE ?", 
+        .where("order_logs.message LIKE ? OR orders.internal_order_id LIKE ? OR users.name LIKE ?", 
                "%#{query}%", "%#{query}%", "%#{query}%")
     end
   }

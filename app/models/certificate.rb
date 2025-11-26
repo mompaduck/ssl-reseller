@@ -1,7 +1,8 @@
 class Certificate < ApplicationRecord
   belongs_to :order
   belongs_to :user
-  has_many :audit_logs, as: :auditable
+  has_many :audit_logs, as: :auditable, dependent: :destroy
+  has_many :certificate_logs, dependent: :destroy
 
   enum :status, {
     pending: 0,

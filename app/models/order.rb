@@ -5,25 +5,26 @@ class Order < ApplicationRecord
   has_many :audit_logs, as: :auditable, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :partner_api_logs, dependent: :destroy
+  has_many :order_logs, dependent: :destroy
 
   enum :status, {
     pending: 'pending',
     paid: 'paid',
-    issued: 'issued',
-    canceled: 'canceled',
-    refunded: 'refunded'
+    cancelled: 'cancelled',
+    refunded: 'refunded',
+    expired: 'expired'
   }, default: 'pending'
 
-  enum :order_type, {
-    new_order: 'new',
-    reissue: 'reissue',
-    renew: 'renew'
-  }, default: 'new', prefix: :order
+  enum :certificate_type, {
+    dv: 'dv',
+    ov: 'ov',
+    ev: 'ev'
+  }
 
   validates :certificate_type, presence: true
   validates :domain, presence: true
   validates :name, presence: true
-  validates :english_name, presence: true
+  validates :english_name, presence: true, if: :ov_or_ev_certificate?
   validates :company_name, presence: true
   validates :phone, presence: true
   validates :user_id, presence: true
@@ -68,5 +69,9 @@ class Order < ApplicationRecord
 
   def set_defaults
     self.status ||= :pending
+  end
+
+  def ov_or_ev_certificate?
+    ['ov', 'ev'].include?(certificate_type)
   end
 end

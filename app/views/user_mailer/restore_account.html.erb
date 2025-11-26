@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>계정 복구 안내</h1>
+    <p>안녕하세요, <%= @user.name %>님.</p>
+    <p>
+      계정 복구를 요청하셨습니다.<br>
+      아래 링크를 클릭하여 계정을 복구하고 다시 활성화하세요:
+    </p>
+    <p>
+      <%= link_to '계정 복구하기', finish_user_restoration_url(token: @token) %>
+    </p>
+    <p>
+      만약 본인이 요청하지 않았다면 이 메일을 무시하셔도 됩니다.
+    </p>
+    <p>감사합니다.</p>
+  </body>
+</html>

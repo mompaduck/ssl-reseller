@@ -70,6 +70,24 @@ export default class extends Controller {
             this.checkButtonTarget.classList.add("opacity-50", "cursor-not-allowed")
             this.checkButtonTarget.textContent = "확인완료"
           }
+        } else if (data.deleted) {
+          this.emailChecked = false
+          this.lastCheckedEmail = ""
+          
+          // 탈퇴한 계정인 경우 복구 링크 표시
+          if (this.hasMessageTarget) {
+            const restoreUrl = `/users/restore?email=${encodeURIComponent(email)}`
+            this.messageTarget.innerHTML = `
+              <span class="text-red-600 font-medium">이미 탈퇴한 계정입니다.</span>
+              <a href="${restoreUrl}" class="ml-2 text-blue-600 hover:text-blue-800 underline font-medium">계정 복구하기</a>
+            `
+            this.messageTarget.classList.remove("hidden")
+          }
+          
+          if (this.hasCheckButtonTarget) {
+            this.checkButtonTarget.disabled = false
+            this.checkButtonTarget.textContent = "중복확인"
+          }
         } else {
           this.emailChecked = false
           this.lastCheckedEmail = ""

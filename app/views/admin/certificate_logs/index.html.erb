@@ -23,7 +23,7 @@
                 <%= log.created_at.strftime("%Y-%m-%d %H:%M") %>
               </td>
               <td class="px-6 py-4 text-sm">
-                <%= link_to log.certificate.common_name, admin_certificate_path(log.certificate), class: "text-blue-600 hover:text-blue-900" %>
+                <%= link_to log.certificate.order.domain, admin_certificate_path(log.certificate), class: "text-blue-600 hover:text-blue-900" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= log.badge_color %>">

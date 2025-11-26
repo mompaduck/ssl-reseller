@@ -11,8 +11,8 @@ class CertificateLog < ApplicationRecord
   }
   scope :search, ->(query) {
     if query.present?
-      joins(:certificate).joins("LEFT JOIN users ON users.id = certificate_logs.user_id")
-        .where("certificate_logs.message LIKE ? OR certificates.common_name LIKE ? OR users.name LIKE ?", 
+      joins(certificate: :order).joins("LEFT JOIN users ON users.id = certificate_logs.user_id")
+        .where("certificate_logs.message LIKE ? OR orders.domain LIKE ? OR users.name LIKE ?", 
                "%#{query}%", "%#{query}%", "%#{query}%")
     end
   }
@@ -30,6 +30,7 @@ class CertificateLog < ApplicationRecord
     reissued
     expired
     expiring_soon
+    status_changed
   ].freeze
 
   # Badge color helper
@@ -45,6 +46,8 @@ class CertificateLog < ApplicationRecord
       'bg-blue-100 text-blue-800'
     when 'expiring_soon'
       'bg-orange-100 text-orange-800'
+    when 'status_changed'
+      'bg-purple-100 text-purple-800'
     else
       'bg-gray-100 text-gray-800'
     end

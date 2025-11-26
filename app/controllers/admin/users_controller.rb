@@ -61,7 +61,18 @@ module Admin
       if params[:user][:notification_settings].present?
         # Convert checkbox values to boolean
         settings = params[:user][:notification_settings].permit!.to_h
-        settings.transform_values! { |v| v == '1' }
+        
+        # Handle expiring_days_before conversion
+        if settings['expiring_days_before'].present?
+          # Convert "30,7" to [30, 7]
+          settings['expiring_days_before'] = settings['expiring_days_before'].split(',').map(&:strip).map(&:to_i)
+        end
+        
+        settings.each do |key, value|
+          next if key == 'expiring_days_before'
+          settings[key] = (value == '1')
+        end
+        
         params[:user][:notification_settings] = settings
       end
 
@@ -177,7 +188,7 @@ module Admin
 
     def user_params
       params.require(:user).permit(
-        :name, :phone, :company_name, :country, :address, :status,
+        :name, :english_name, :phone, :company_name, :country, :address, :status,
         notification_settings: {}
       )
     end

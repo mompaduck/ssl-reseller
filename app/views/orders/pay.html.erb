@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+  <div class="max-w-md w-full">
+    <!-- Card -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+      <!-- Icon -->
+      <div class="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 animate-pulse">
+        <i data-lucide="credit-card" class="w-10 h-10 text-white"></i>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">결제 시스템</h1>
+      <p class="text-xl text-blue-600 font-semibold mb-6">업데이트 중입니다</p>
+      
+      <!-- Description -->
+      <div class="bg-blue-50 rounded-xl p-6 mb-8">
+        <p class="text-gray-700 leading-relaxed mb-4">
+          현재 결제 시스템을 개선하고 있습니다.
+        </p>
+        <p class="text-sm text-gray-600">
+          빠른 시일 내에 안전하고 편리한 결제 서비스를 제공하겠습니다.
+        </p>
+      </div>
+      
+      <!-- Features Coming Soon -->
+      <div class="text-left mb-8 space-y-3">
+        <h3 class="text-sm font-bold text-gray-900 mb-3">곧 제공될 기능:</h3>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+          </div>
+          <span>신용카드 결제</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+          </div>
+          <span>계좌이체</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+          </div>
+          <span>간편결제 (카카오페이, 네이버페이 등)</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+          </div>
+          <span>실시간 결제 알림</span>
+        </div>
+      </div>
+      
+      <!-- Order Info -->
+      <% if @order %>
+        <div class="border-t border-gray-200 pt-6 mb-6">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">주문번호</span>
+            <span class="font-mono font-semibold text-gray-900"><%= @order.internal_order_id %></span>
+          </div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">도메인</span>
+            <span class="font-semibold text-gray-900"><%= @order.domain %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">결제 예정 금액</span>
+            <span class="text-2xl font-bold text-gray-900">₩<%= number_with_delimiter(@order.total_price) %></span>
+          </div>
+        </div>
+      <% end %>
+      
+      <!-- CTA Buttons -->
+      <div class="space-y-3">
+        <%= link_to orders_path, class: "block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition shadow-lg hover:shadow-xl" do %>
+          <div class="flex items-center justify-center gap-2">
+            <i data-lucide="list" class="w-5 h-5"></i>
+            <span>주문 목록으로 돌아가기</span>
+          </div>
+        <% end %>
+        
+        <%= link_to root_path, class: "block w-full px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition" do %>
+          <div class="flex items-center justify-center gap-2">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>홈으로 가기</span>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Support Info -->
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        <p class="text-xs text-gray-500">
+          문의사항이 있으시면 고객센터로 연락해주세요.
+        </p>
+        <a href="mailto:support@certgate.com" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+          support@certgate.com
+        </a>
+      </div>
+    </div>
+    
+    <!-- Loading Animation -->
+    <div class="mt-6 text-center">
+      <div class="inline-flex items-center gap-2 text-sm text-gray-600">
+        <div class="flex gap-1">
+          <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+          <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+          <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+        </div>
+        <span>시스템 준비 중</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+  });
+</script>

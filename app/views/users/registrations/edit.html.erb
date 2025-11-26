@@ -98,10 +98,71 @@
               },
               class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
         <p data-phone-validate-target="message" class="text-xs mt-2 hidden"></p>
-      </div>
+          </div>
 
+          <%# 영문 이름 %>
+          <div>
+            <%= f.label :english_name, "영문 이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :english_name, placeholder: "Hong Gildong",
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+            <p class="text-xs text-gray-500 mt-2">* OV/EV 인증서 주문 시 필수입니다</p>
+          </div>
 
+          <%# 국가 %>
+          <div>
+            <%= f.label :country, "국가", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :country, placeholder: "대한민국",
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+          </div>
 
+          <%# 주소 %>
+          <div>
+            <%= f.label :address, "주소", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.text_field :address, placeholder: "서울시 강남구...",
+                  class: "block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-gray-400 text-gray-900 bg-white py-3 px-4" %>
+          </div>
+
+          <%# 알림 설정 %>
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+              <i data-lucide="bell" class="w-4 h-4"></i>
+              알림 설정
+            </h3>
+            
+            <%= f.fields_for :notification_settings, OpenStruct.new(resource.notification_settings || {}) do |ns| %>
+              <div class="space-y-3">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= ns.check_box :email_order_created, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3">
+                    <%= ns.label :email_order_created, "주문 생성 시 이메일 알림", class: "text-sm font-medium text-gray-700" %>
+                    <p class="text-xs text-gray-500">새로운 주문이 생성되면 이메일로 알림을 받습니다.</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= ns.check_box :email_certificate_issued, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3">
+                    <%= ns.label :email_certificate_issued, "인증서 발급 완료 시 이메일 알림", class: "text-sm font-medium text-gray-700" %>
+                    <p class="text-xs text-gray-500">인증서가 성공적으로 발급되면 이메일로 알림을 받습니다.</p>
+                  </div>
+                </div>
+                
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <%= ns.check_box :email_certificate_expiring, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
+                  </div>
+                  <div class="ml-3">
+                    <%= ns.label :email_certificate_expiring, "인증서 만료 예정 시 이메일 알림", class: "text-sm font-medium text-gray-700" %>
+                    <p class="text-xs text-gray-500">인증서 만료 30일 전, 7일 전에 이메일로 알림을 받습니다.</p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
 
          
 

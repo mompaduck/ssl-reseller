@@ -1,4 +1,6 @@
 # app/controllers/users/registrations_controller.rb
+require 'ostruct'
+
 class Users::RegistrationsController < Devise::RegistrationsController
   prepend_before_action { request.env["devise.mapping"] = Devise.mappings[:user] }
   before_action :configure_sign_up_params, only: [:create]
@@ -6,8 +8,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def check_email
     email = params[:email].to_s.strip.downcase
-    exists = User.exists?(email: email)
-    render json: { exists: exists }
+    user = User.find_by(email: email)
+    
+    if user
+      render json: { exists: true, deleted: user.deleted? }
+    else
+      render json: { exists: false }
+    end
+  end
+
+  # Show delete account page
+  def delete
+    @resource = current_user
+    self.resource = @resource
+    render :delete
   end
 
   # Override sign_up to prevent auto-login after registration
@@ -16,22 +30,51 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # User must confirm email before login
   end
 
+  def create
+    email = sign_up_params[:email]
+    user = User.find_by(email: email)
+    
+    if user&.deleted?
+      redirect_to new_user_restoration_path(email: email)
+      return
+    end
+    
+    super
+  end
+
   # Override update to track changes
   def update
     self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
+    
+    # Handle notification settings
+    if params[:user][:notification_settings].present?
+      settings = params[:user][:notification_settings].permit!.to_h
+      
+      # Handle expiring_days_before conversion
+      if settings['expiring_days_before'].present?
+        settings['expiring_days_before'] = settings['expiring_days_before'].split(',').map(&:strip).map(&:to_i)
+      end
+      
+      settings.each do |key, value|
+        next if key == 'expiring_days_before'
+        settings[key] = (value == '1')
+      end
+      
+      params[:user][:notification_settings] = settings
+    end
     
     # Track what's being changed
     changed_fields = []
     is_password_change = params[:user][:password].present?
     
     # Detect profile changes
-    %w[name email company_name phone country].each do |field|
+    %w[name english_name email company_name phone country address].each do |field|
       if params[:user][field.to_sym].present? && params[:user][field.to_sym] != resource.send(field)
         changed_fields << field
       end
     end
 
-    prev_attributes = resource.attributes.slice('name', 'email', 'company_name', 'phone', 'country')
+    prev_attributes = resource.attributes.slice('name', 'english_name', 'email', 'company_name', 'phone', 'country', 'address')
     
     super do |resource|
       if resource.errors.empty?
@@ -67,6 +110,37 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  # Override destroy to implement soft delete
+  def destroy
+    @user = current_user
+    
+    # Verify password before deletion
+    unless @user.valid_password?(params[:user][:current_password])
+      redirect_to delete_user_registration_path, alert: "비밀번호가 일치하지 않습니다."
+      return
+    end
+    
+    # Soft delete: set deleted_at and ban status
+    if @user.update(deleted_at: Time.current, status: :banned)
+      # Log account deletion
+      AuditLogger.log(
+        @user,
+        @user,
+        'soft_delete',
+        "계정 삭제 (Soft Delete)",
+        { deleted_at: Time.current },
+        request.remote_ip
+      )
+      
+      # Sign out the user
+      sign_out(@user)
+      
+      redirect_to root_path, notice: "계정이 삭제되었습니다. 그동안 이용해 주셔서 감사합니다."
+    else
+      redirect_to delete_user_registration_path, alert: "계정 삭제에 실패했습니다."
+    end
+  end
+
   protected
 
   # Redirect to login page after signup with confirmation message
@@ -92,14 +166,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # Devise 허용할 파라미터 설정 – 회원가입
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :company_name, :phone, :country, :email, :password, :password_confirmation, :terms])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :english_name, :company_name, :phone, :country, :address, :email, :password, :password_confirmation, :terms])
   end
 
   # Devise 허용할 파라미터 설정 – 계정 수정
   def configure_account_update_params
     devise_parameter_sanitizer.permit(:account_update, keys: [
-      :name, :company_name, :phone, :country,
-      :email, :password, :password_confirmation, :current_password
+      :name, :english_name, :company_name, :phone, :country, :address,
+      :email, :password, :password_confirmation, :current_password,
+      notification_settings: {}
     ])
   end
 end

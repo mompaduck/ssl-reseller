@@ -71,9 +71,22 @@ module Admin
 
     def update_status
       @order = Order.find(params[:id])
+      old_status = @order.status
       
       if @order.update(status: params[:status])
-        AuditLogger.log(current_user, @order, 'status_change', "주문 상태 변경: #{params[:status]}", { old_status: @order.status_previously_was, new_status: @order.status }, request.remote_ip)
+        # Log status change in Order Log
+        OrderLog.create!(
+          order: @order,
+          user: current_user,
+          action: 'status_changed',
+          message: "주문 상태 변경: #{old_status} → #{params[:status]}",
+          metadata: {
+            old_status: old_status,
+            new_status: params[:status]
+          },
+          ip_address: request.remote_ip
+        )
+        
         redirect_to admin_order_path(@order), notice: "주문 상태가 #{params[:status]}(으)로 변경되었습니다."
       else
         redirect_to admin_order_path(@order), alert: "상태 변경 실패"

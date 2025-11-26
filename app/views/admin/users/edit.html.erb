@@ -48,6 +48,12 @@
         </div>
         
         <div>
+          <%= f.label :english_name, "영문 이름", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_field :english_name, placeholder: "John Doe", class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+          <p class="mt-1 text-xs text-gray-500">* OV/EV 인증서 주문 시 필수입니다.</p>
+        </div>
+        
+        <div>
           <%= f.label :phone, "전화번호", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= f.text_field :phone, class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
         </div>
@@ -97,36 +103,47 @@
       
       <div class="space-y-4">
         <%= f.fields_for :notification_settings, OpenStruct.new(@user.notification_settings || {}) do |ns| %>
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
+          <!-- Order Created -->
+          <div class="flex items-start p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition">
+            <div class="flex items-center h-5 mt-0.5">
               <%= ns.check_box :email_order_created, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
             </div>
-            <div class="ml-3 text-sm">
-              <%= ns.label :email_order_created, "주문 생성 시 이메일 알림", class: "font-medium text-gray-700" %>
-              <p class="text-gray-500">새로운 주문이 생성되면 이메일로 알림을 받습니다.</p>
+            <div class="ml-3 flex-1">
+              <%= ns.label :email_order_created, "주문 생성 시 이메일 알림", class: "font-medium text-gray-900 block" %>
+              <p class="text-sm text-gray-500 mt-1">새로운 주문이 생성되면 이메일로 알림을 받습니다.</p>
             </div>
           </div>
           
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
+          <!-- Certificate Issued -->
+          <div class="flex items-start p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition">
+            <div class="flex items-center h-5 mt-0.5">
               <%= ns.check_box :email_certificate_issued, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
             </div>
-            <div class="ml-3 text-sm">
-              <%= ns.label :email_certificate_issued, "인증서 발급 완료 시 이메일 알림", class: "font-medium text-gray-700" %>
-              <p class="text-gray-500">인증서가 발급되면 이메일로 알림을 받습니다.</p>
+            <div class="ml-3 flex-1">
+              <%= ns.label :email_certificate_issued, "인증서 발급 완료 시 이메일 알림", class: "font-medium text-gray-900 block" %>
+              <p class="text-sm text-gray-500 mt-1">인증서가 성공적으로 발급되면 이메일로 알림을 받습니다.</p>
             </div>
           </div>
           
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
+          <!-- Certificate Expiring -->
+          <div class="flex items-start p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition">
+            <div class="flex items-center h-5 mt-0.5">
               <%= ns.check_box :email_certificate_expiring, class: "focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" %>
             </div>
-            <div class="ml-3 text-sm">
-              <%= ns.label :email_certificate_expiring, "인증서 만료 예정 시 이메일 알림", class: "font-medium text-gray-700" %>
-              <p class="text-gray-500">인증서 만료 30일, 7일 전에 이메일로 알림을 받습니다.</p>
+            <div class="ml-3 flex-1">
+              <%= ns.label :email_certificate_expiring, "인증서 만료 예정 시 이메일 알림", class: "font-medium text-gray-900 block" %>
+              <p class="text-sm text-gray-500 mt-1">인증서 만료 30일 전, 7일 전에 이메일로 알림을 받습니다.</p>
+              <input type="hidden" name="user[notification_settings][expiring_days_before]" value="30,7">
             </div>
           </div>
         <% end %>
+        
+        <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+          <p class="text-xs text-gray-600">
+            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+            알림 설정 변경 시 Audit Log에 기록됩니다.
+          </p>
+        </div>
       </div>
     </div>
 

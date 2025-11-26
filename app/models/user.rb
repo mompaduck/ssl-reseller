@@ -8,8 +8,8 @@ class User < ApplicationRecord
 
   validates :terms, acceptance: true, on: :create, if: -> { provider.blank? }
 
-  has_many :orders, dependent: :destroy
-  has_many :certificates, dependent: :destroy
+  has_many :orders, dependent: :restrict_with_error
+  has_many :certificates, dependent: :restrict_with_error
   belongs_to :assigned_partner, class_name: 'User', optional: true
   has_many :assigned_users, class_name: 'User', foreign_key: :assigned_partner_id
   has_many :audit_logs, as: :auditable
@@ -32,5 +32,20 @@ class User < ApplicationRecord
 
     user.save
     user
+  end
+
+  # Check if user is soft deleted
+  def deleted?
+    deleted_at.present?
+  end
+
+  # Prevent deleted users from logging in
+  def active_for_authentication?
+    super && !deleted?
+  end
+
+  # Custom message for deleted accounts
+  def inactive_message
+    deleted? ? :deleted_account : super
   end
 end

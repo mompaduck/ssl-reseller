@@ -102,7 +102,7 @@ module Admin
       result = service.reissue(@certificate.order.partner_order_number, @certificate.order.csr)
       
       if result.success?
-        AuditLogger.log(current_user, @certificate, 'reissue', "재발급 요청 (Order ID: #{result.order_id})", {}, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'reissued', message: "재발급 요청 (Order ID: #{result.order_id})", metadata: {}, ip_address: request.remote_ip)
         redirect_to admin_certificate_path(@certificate), notice: "재발급 요청이 전송되었습니다."
       else
         redirect_to admin_certificate_path(@certificate), alert: "재발급 요청 실패"
@@ -116,7 +116,7 @@ module Admin
       
       if result.success?
         @certificate.canceled!
-        AuditLogger.log(current_user, @certificate, 'cancel', "주문 취소", {}, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'cancelled', message: "주문 취소", metadata: {}, ip_address: request.remote_ip)
         redirect_to admin_certificate_path(@certificate), notice: "주문이 취소되었습니다."
       else
         redirect_to admin_certificate_path(@certificate), alert: "주문 취소 실패"
@@ -129,7 +129,7 @@ module Admin
       result = service.resend_dcv(@certificate.order.partner_order_number)
       
       if result.success?
-        AuditLogger.log(current_user, @certificate, 'resend_dcv', "DCV 이메일 재전송", {}, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'dcv_sent', message: "DCV 이메일 재전송", metadata: {}, ip_address: request.remote_ip)
         redirect_to admin_certificate_path(@certificate), notice: "DCV 이메일이 재전송되었습니다."
       else
         redirect_to admin_certificate_path(@certificate), alert: "DCV 재전송 실패"
@@ -155,7 +155,7 @@ module Admin
         @certificate.update(status: new_status)
         
         if old_status != new_status
-           AuditLogger.log(current_user, @certificate, 'status_change', "상태 변경: #{old_status} -> #{new_status}", { old_status: old_status, new_status: new_status }, request.remote_ip)
+           CertificateLog.create!(certificate: @certificate, user: current_user, action: 'status_changed', message: "상태 변경: #{old_status} -> #{new_status}", metadata: { old_status: old_status, new_status: new_status }, ip_address: request.remote_ip)
         end
         
         redirect_to admin_certificate_path(@certificate), notice: "상태가 갱신되었습니다: #{result.status}"
@@ -168,7 +168,7 @@ module Admin
       @certificate = Certificate.find(params[:id])
       # In a real app, trigger a mailer here
       # UserMailer.expiration_reminder(@certificate).deliver_later
-      AuditLogger.log(current_user, @certificate, 'send_reminder', "만료 알림 메일 발송", {}, request.remote_ip)
+      CertificateLog.create!(certificate: @certificate, user: current_user, action: 'expiring_soon', message: "만료 알림 메일 발송", metadata: {}, ip_address: request.remote_ip)
       redirect_to admin_certificate_path(@certificate), notice: "만료 알림 메일이 발송되었습니다."
     end
 
@@ -178,7 +178,7 @@ module Admin
       result = service.check_dcv_status(@certificate.order.partner_order_number)
       
       if result.success?
-        AuditLogger.log(current_user, @certificate, 'refresh_dcv', "DCV 상태 새로고침", {}, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'dcv_completed', message: "DCV 상태 새로고침", metadata: {}, ip_address: request.remote_ip)
         redirect_to admin_certificate_path(@certificate), notice: "DCV 상태가 갱신되었습니다."
       else
         redirect_to admin_certificate_path(@certificate), alert: "DCV 상태 갱신 실패"
@@ -235,8 +235,9 @@ module Admin
           )
         end
         
-        AuditLogger.log(current_user, @certificate, 'change_dcv_method', 
-          "DCV 방식 변경: #{new_method}", { new_method: new_method }, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'dcv_sent',
+                      message: "DCV 방식 변경: #{old_method} -> #{new_method}",
+                      metadata: { old_method: old_method, new_method: new_method }, ip_address: request.remote_ip)
         
         redirect_to admin_certificate_path(@certificate), 
           notice: "DCV 방식이 #{new_method}(으)로 변경되었습니다."
@@ -257,7 +258,7 @@ module Admin
         type: "text/plain",
         disposition: "attachment"
       
-      AuditLogger.log(current_user, @certificate, 'download_dcv_file', "DCV 파일 다운로드", {}, request.remote_ip)
+      CertificateLog.create!(certificate: @certificate, user: current_user, action: 'downloaded', message: "DCV 파일 다운로드", metadata: {}, ip_address: request.remote_ip)
     end
 
     def force_issue
@@ -270,7 +271,7 @@ module Admin
       
       if result.success?
         @certificate.update(status: :issued, issued_at: Time.current)
-        AuditLogger.log(current_user, @certificate, 'force_issue', "강제 발급 요청 (관리자: #{current_user.name})", { reason: 'manual_override' }, request.remote_ip)
+        CertificateLog.create!(certificate: @certificate, user: current_user, action: 'issued', message: "강제 발급 요청 (관리자: #{current_user.name})", metadata: { reason: 'manual_override' }, ip_address: request.remote_ip)
         redirect_to admin_certificate_path(@certificate), notice: "강제 발급 요청이 처리되었습니다."
       else
         redirect_to admin_certificate_path(@certificate), alert: "강제 발급 요청 실패"

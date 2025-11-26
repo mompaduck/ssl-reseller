@@ -36,6 +36,11 @@ Rails.application.routes.draw do
     # 계정 삭제 페이지
     get 'users/delete', to: 'users/registrations#delete', as: :delete_user_registration
     
+    # Account Restoration
+    get 'users/restore', to: 'users/restorations#new', as: :new_user_restoration
+    post 'users/restore', to: 'users/restorations#create', as: :user_restoration
+    get 'users/restore/:token', to: 'users/restorations#update', as: :finish_user_restoration
+    
     # 회원탈퇴 완료 페이지
     get 'users/deleted', to: 'users/registrations#deleted', as: :deleted_user_registration
 
@@ -54,6 +59,7 @@ Rails.application.routes.draw do
   get 'my_orders', to: 'orders#my_orders', as: :my_orders
   
   resources :orders, only: [:new, :create, :show, :index] do
+    get 'pay', on: :member
     post 'pay', on: :member
   end
   resources :products, only: [:index, :show]

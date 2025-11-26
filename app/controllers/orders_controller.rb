@@ -10,7 +10,15 @@ class OrdersController < ApplicationController
     valid_types = ['dv', 'ov', 'ev']
     @certificate_type = valid_types.include?(cert_type) ? cert_type : 'dv'
     
-    @order = Order.new(certificate_type: @certificate_type)
+    # Pre-fill user information from current_user
+    @order = Order.new(
+      certificate_type: @certificate_type,
+      name: current_user.name,
+      english_name: current_user.english_name,
+      company_name: current_user.company_name,
+      phone: current_user.phone,
+      company_address: current_user.address
+    )
   end
 
   def create
@@ -24,8 +32,25 @@ class OrdersController < ApplicationController
     @order.product = Product.first # Fallback for now to avoid validation error
 
     if @order.save
+      # Log order creation in Order Log
+      OrderLog.create!(
+        order: @order,
+        user: current_user,
+        action: 'created',
+        message: "주문 생성: #{@order.internal_order_id} - #{@order.domain}",
+        metadata: {
+          order_id: @order.internal_order_id,
+          domain: @order.domain,
+          certificate_type: @order.certificate_type,
+          total_price: @order.total_price
+        },
+        ip_address: request.remote_ip
+      )
+      
       redirect_to @order, notice: "주문이 생성되었습니다. 결제를 진행해주세요."
     else
+      # Set @certificate_type for the view when validation fails
+      @certificate_type = @order.certificate_type || 'dv'
       flash.now[:alert] = "주문 생성 중 오류가 발생했습니다."
       render :new, status: :unprocessable_entity
     end
@@ -45,17 +70,42 @@ class OrdersController < ApplicationController
   end
 
   def pay
+    # GET request: show payment page
+    if request.get?
+      # Just render the payment page with order info
+      return
+    end
+    
+    # POST request: process payment
     # This is a simplified payment processing action.
     # In production, this would handle Stripe callbacks or confirm PaymentIntent.
+    
+    old_status = @order.status
     
     # Simulate successful payment
     if @order.update(status: :paid)
       # Create Payment record
-      @order.payments.create!(
+      payment = @order.payments.create!(
         amount: @order.total_price,
         payment_method: 'stripe',
         status: :succeeded,
         transaction_id: "tx_#{SecureRandom.hex(8)}"
+      )
+
+      # Log payment completion in Order Log
+      OrderLog.create!(
+        order: @order,
+        user: current_user,
+        action: 'payment_completed',
+        message: "결제 완료: ₩#{@order.total_price}",
+        metadata: {
+          old_status: old_status,
+          new_status: 'paid',
+          amount: @order.total_price,
+          payment_method: 'stripe',
+          transaction_id: payment.transaction_id
+        },
+        ip_address: request.remote_ip
       )
 
       # Trigger SSL Order
