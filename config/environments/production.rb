@@ -35,7 +35,8 @@ Rails.application.configure do
     localhost
   )
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-    config.force_ssl = true
+  # Default to true, but allow disabling via ENV for testing without SSL
+  config.force_ssl = ENV.fetch("RAILS_FORCE_SSL", "true") == "true"
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -114,26 +115,5 @@ Rails.application.configure do
   
   # Public file server 설정
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
-
-  # Email 설정
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.perform_deliveries = true
-
-  config.action_mailer.default_url_options = {
-    host: "certgate.duckdns.org",
-    protocol: "https"
-  }
-
-  config.action_mailer.delivery_method = :smtp
-
-  config.action_mailer.smtp_settings = {
-    address:              "smtp.gmail.com",
-    port:                 587,
-    domain:               "gmail.com",
-    user_name:            ENV["SMTP_USER"],
-    password:             ENV["SMTP_PASSWORD"],
-    authentication:       "plain",
-    enable_starttls_auto: true
-  }
 
 end
