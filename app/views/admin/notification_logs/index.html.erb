@@ -12,6 +12,8 @@
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">타입</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">수신자</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">제목</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">발신자</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">관련</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
         </tr>
       </thead>
@@ -20,15 +22,46 @@
           <% @notification_logs.each do |log| %>
             <tr class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <%= log.created_at.strftime("%Y-%m-%d %H:%M") %>
+                <%= log.sent_at&.strftime("%Y-%m-%d %H:%M") || log.created_at.strftime("%Y-%m-%d %H:%M") %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= log.type_badge_color %>">
                   <%= log.notification_type.upcase %>
                 </span>
               </td>
-              <td class="px-6 py-4 text-sm text-gray-900"><%= log.recipient %></td>
-              <td class="px-6 py-4 text-sm text-gray-900"><%= log.subject %></td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                <%= log.recipient %>
+                <% if log.user %>
+                  <div class="text-xs text-gray-500"><%= log.user.name %></div>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                <%= log.subject %>
+                <% if log.message_preview.present? %>
+                  <div class="text-xs text-gray-500 mt-1"><%= truncate(log.message_preview, length: 80) %></div>
+                <% end %>
+                <% if log.error_message.present? %>
+                  <div class="text-xs text-red-600 mt-1">❌ <%= truncate(log.error_message, length: 60) %></div>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if log.sender %>
+                  <%= log.sender.name || log.sender.email %>
+                <% else %>
+                  <span class="text-gray-400">System</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if log.related_ticket_id %>
+                  <%= link_to "Ticket ##{log.related_ticket.ticket_number}", admin_ticket_path(log.related_ticket), class: "text-blue-600 hover:text-blue-800" %>
+                <% elsif log.related_order_id %>
+                  <%= link_to "Order ##{log.related_order_id}", admin_order_path(log.related_order), class: "text-blue-600 hover:text-blue-800" %>
+                <% elsif log.related_certificate_id %>
+                  <%= link_to "Cert ##{log.related_certificate_id}", admin_certificate_path(log.related_certificate), class: "text-blue-600 hover:text-blue-800" %>
+                <% else %>
+                  <span class="text-gray-400">-</span>
+                <% end %>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full <%= log.status_badge_color %>">
                   <%= log.status.upcase %>
@@ -38,7 +71,7 @@
           <% end %>
         <% else %>
           <tr>
-            <td colspan="5" class="px-6 py-12 text-center text-gray-500">로그가 없습니다.</td>
+            <td colspan="7" class="px-6 py-12 text-center text-gray-500">로그가 없습니다.</td>
           </tr>
         <% end %>
       </tbody>

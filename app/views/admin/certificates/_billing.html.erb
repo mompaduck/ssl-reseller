@@ -56,10 +56,10 @@
           <span class="font-bold text-gray-900">₩<%= number_with_delimiter(@certificate.order.total_price) %></span>
         </div>
 
-        <% if @certificate.order.product&.price %>
+        <% if @certificate.order.product&.selling_price %>
           <div class="flex justify-between text-xs">
             <span>제품 단가</span>
-            <span class="text-gray-700">₩<%= number_with_delimiter(@certificate.order.product.price) %></span>
+            <span class="text-gray-700">₩<%= number_with_delimiter(@certificate.order.product.selling_price) %></span>
           </div>
         <% end %>
 

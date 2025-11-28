@@ -33,14 +33,25 @@ class Order < ApplicationRecord
   validates :quantity, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :total_price, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
+
   before_create :generate_order_number
   before_validation :set_defaults, on: :create
+  before_save :normalize_phone
+  
+  # Turbo Stream broadcasts
+  after_create_commit :broadcast_new_order
+  after_update_commit :broadcast_status_change, if: :saved_change_to_status?
 
   scope :recent, -> { order(created_at: :desc) }
   scope :for_user, ->(user) { where(user_id: user.id) }
   scope :active, -> { where(status: [:pending, :paid, :issued]) }
 
+
   private
+
+  def normalize_phone
+    self.phone = phone.gsub('-', '') if phone.present?
+  end
 
   def generate_order_number
     return if internal_order_id.present?
@@ -71,7 +82,66 @@ class Order < ApplicationRecord
     self.status ||= :pending
   end
 
+
   def ov_or_ev_certificate?
     ['ov', 'ev'].include?(certificate_type)
+  end
+  
+  def broadcast_new_order
+    Rails.logger.info "📢 Broadcasting new order #{id} to admin_orders stream"
+    # Broadcast to admin order list
+    broadcast_prepend_to(
+      "admin_orders",
+      target: "orders_table_body",
+      partial: "admin/orders/order_table_row",
+      locals: { order: self }
+    )
+    
+    # Update dashboard order summary card
+    broadcast_order_summary_card
+  end
+  
+  def broadcast_status_change
+    # Update order row in admin list
+    broadcast_replace_to(
+      "admin_orders",
+      target: "order_#{id}",
+      partial: "admin/orders/order_table_row",
+      locals: { order: self }
+    )
+    
+    # Update in user's order list if viewing
+    broadcast_replace_to(
+      "user_#{user_id}_orders",
+      target: "order_#{id}",
+      partial: "orders/order_row",
+      locals: { order: self }
+    )
+    
+    # Update dashboard order summary card
+    broadcast_order_summary_card
+  end
+  
+  def broadcast_order_summary_card
+    # Query order data directly
+    today_start = Time.current.beginning_of_day
+    today_orders_count = Order.where("created_at >= ?", today_start).count
+    paid_orders_count = Order.where("created_at >= ?", today_start).where(status: :paid).count
+    pending_orders_count = Order.where("created_at >= ?", today_start).where(status: :pending).count
+    cancelled_orders_count = Order.where("created_at >= ?", today_start).where(status: [:cancelled, :refunded]).count
+    today_revenue = Order.where("created_at >= ?", today_start).where(status: :paid).sum(:total_price)
+    
+    broadcast_replace_to(
+      "dashboard_updates",
+      target: "order_summary_card",
+      partial: "admin/dashboard/order_summary_card",
+      locals: {
+        today_orders_count: today_orders_count,
+        paid_orders_count: paid_orders_count,
+        pending_orders_count: pending_orders_count,
+        cancelled_orders_count: cancelled_orders_count,
+        today_revenue: today_revenue
+      }
+    )
   end
 end

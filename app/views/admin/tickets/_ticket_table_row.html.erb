@@ -1,0 +1,44 @@
+<tr id="<%= dom_id(ticket) %>" class="hover:bg-gray-50 transition-colors">
+  <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+    <%= link_to ticket.ticket_number, admin_ticket_path(ticket), class: "text-blue-600 hover:text-blue-900 hover:underline", data: { turbo_frame: "_top" } %>
+  </td>
+  <td class="px-6 py-4 text-sm">
+    <div class="font-medium text-gray-900 flex items-center gap-2">
+      <% if ticket.status == 'new' %>
+        <span class="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-red-100 bg-red-600 rounded">N</span>
+      <% end %>
+      <%= link_to truncate(ticket.subject, length: 50), admin_ticket_path(ticket), class: "hover:text-blue-600", data: { turbo_frame: "_top", turbo_prefetch: "false" } %>
+    </div>
+    <div class="text-gray-500 text-xs mt-1">
+      <%= ticket.user ? ticket.user.email : ticket.guest_email %>
+    </div>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+      <%= ticket_category_text(ticket.category) %>
+    </span>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <span class="<%= ticket_priority_class(ticket.priority) %> px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">
+      <%= ticket_priority_text(ticket.priority) %>
+    </span>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <span class="<%= ticket_status_class(ticket.status) %> px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">
+      <%= ticket_status_text(ticket.status) %>
+    </span>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    <% if ticket.assigned_to %>
+      <div class="flex items-center gap-2">
+        <i data-lucide="user" class="w-4 h-4"></i>
+        <%= ticket.assigned_to.name || ticket.assigned_to.email %>
+      </div>
+    <% else %>
+      <span class="text-gray-400">미할당</span>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    <%= time_ago_in_words(ticket.created_at) %> 전
+  </td>
+</tr>

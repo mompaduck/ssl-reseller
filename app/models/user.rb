@@ -7,12 +7,20 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   validates :terms, acceptance: true, on: :create, if: -> { provider.blank? }
+  
+  before_save :normalize_phone
 
   has_many :orders, dependent: :restrict_with_error
   has_many :certificates, dependent: :restrict_with_error
   belongs_to :assigned_partner, class_name: 'User', optional: true
   has_many :assigned_users, class_name: 'User', foreign_key: :assigned_partner_id
   has_many :audit_logs, as: :auditable
+  
+  # Ticket System Associations
+  has_many :tickets, dependent: :destroy
+  has_many :assigned_tickets, class_name: 'Ticket', foreign_key: :assigned_to_id
+  has_many :ticket_messages, dependent: :destroy
+  has_many :created_templates, class_name: 'TicketTemplate', foreign_key: :created_by_id
 
   enum :role, { user: 0, partner: 1, support: 2, admin: 3, super_admin: 4 }, default: :user
   enum :status, { active: 0, pending: 1, banned: 2 }, default: :active
@@ -47,5 +55,11 @@ class User < ApplicationRecord
   # Custom message for deleted accounts
   def inactive_message
     deleted? ? :deleted_account : super
+  end
+  
+  private
+  
+  def normalize_phone
+    self.phone = phone.gsub('-', '') if phone.present?
   end
 end

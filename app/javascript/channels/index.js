@@ -1,0 +1,2 @@
+// Load ActionCable
+import "./consumer"

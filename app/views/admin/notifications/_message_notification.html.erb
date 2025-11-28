@@ -1,0 +1,22 @@
+<div class="notification-item p-3 border-b hover:bg-gray-50 cursor-pointer">
+  <%= link_to admin_ticket_path(message.ticket), class: "block" do %>
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <div class="ml-3 flex-1">
+        <p class="text-sm font-medium text-gray-900">
+          새 메시지: <%= message.ticket.subject %>
+        </p>
+        <p class="text-sm text-gray-500 mt-1">
+          <%= truncate(message.content.to_plain_text, length: 80) %>
+        </p>
+        <p class="text-xs text-gray-400 mt-1">
+          <%= time_ago_in_words(message.created_at) %> ago
+        </p>
+      </div>
+    </div>
+  <% end %>
+</div>

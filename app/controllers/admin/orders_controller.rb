@@ -73,6 +73,12 @@ module Admin
       @order = Order.find(params[:id])
       old_status = @order.status
       
+      # Validate status parameter
+      unless Order.statuses.keys.include?(params[:status])
+        redirect_to admin_order_path(@order), alert: "유효하지 않은 상태입니다. 가능한 상태: #{Order.statuses.keys.join(', ')}"
+        return
+      end
+      
       if @order.update(status: params[:status])
         # Log status change in Order Log
         OrderLog.create!(

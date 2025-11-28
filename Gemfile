@@ -56,6 +56,8 @@ gem "slack-notifier"          # 장애 알림 (Slack)
 gem "simple_form"
 gem "kaminari"                # 페이지네이션
 gem "friendly_id"             # SEO-friendly URL 슬러그
+gem "aasm"                    # 상태 머신
+gem "pundit"                  # 권한 관리
 
 # ==========================================================
 # 🧪 개발 / 테스트
@@ -78,3 +80,5 @@ group :production do
   gem "pg", require: false # PostgreSQL 전환용 (미사용 시 무시됨)
 end
 gem "bcrypt", "~> 3.1"
+
+gem "jsonapi-serializer", "~> 2.2"

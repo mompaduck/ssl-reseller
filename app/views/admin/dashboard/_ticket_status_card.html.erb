@@ -1,0 +1,108 @@
+<%= turbo_frame_tag "ticket_status_card" do %>
+  <% 
+    # Use local variables if provided, otherwise fall back to instance variables
+    open_tickets_count ||= @open_tickets_count
+    pending_tickets_count ||= @pending_tickets_count
+    resolved_tickets_count ||= @resolved_tickets_count
+    unread_messages_count ||= @unread_messages_count
+    recent_tickets ||= @recent_tickets
+  %>
+  
+  <div class="h-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center relative">
+          <i data-lucide="message-circle" class="w-6 h-6 text-indigo-600"></i>
+          <!-- Notification Badge -->
+          <% if unread_messages_count && unread_messages_count > 0 %>
+            <span id="notification_badge" 
+                  class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+              <span id="notification_count"><%= unread_messages_count > 99 ? '99+' : unread_messages_count %></span>
+            </span>
+          <% else %>
+            <span id="notification_badge" 
+                  class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full hidden">
+              <span id="notification_count">0</span>
+            </span>
+          <% end %>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">1:1 문의 현황</h3>
+          <p class="text-sm text-gray-500">티켓 처리 상태
+            <% if unread_messages_count && unread_messages_count > 0 %>
+              <%= link_to admin_tickets_path(status: 'new'), data: { turbo_frame: "_top" }, class: "ml-2 text-red-600 font-semibold hover:text-red-700 hover:underline transition-colors" do %>
+                · 읽지 않은 메시지 <%= unread_messages_count %>개
+              <% end %>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Grid -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <!-- Open Tickets -->
+      <div class="text-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+        <i data-lucide="inbox" class="w-5 h-5 text-blue-600 mx-auto mb-2"></i>
+        <p class="text-xl font-bold text-blue-700"><%= open_tickets_count || 0 %></p>
+        <p class="text-xs text-blue-600 font-medium mt-1">열린 티켓</p>
+      </div>
+
+      <!-- Pending Response -->
+      <div class="text-center p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+        <i data-lucide="clock" class="w-5 h-5 text-yellow-600 mx-auto mb-2"></i>
+        <p class="text-xl font-bold text-yellow-700"><%= pending_tickets_count || 0 %></p>
+        <p class="text-xs text-yellow-600 font-medium mt-1">응답 대기</p>
+      </div>
+
+      <!-- Resolved -->
+      <div class="text-center p-3 bg-green-50 rounded-lg border border-green-100">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-600 mx-auto mb-2"></i>
+        <p class="text-xl font-bold text-green-700"><%= resolved_tickets_count || 0 %></p>
+        <p class="text-xs text-green-600 font-medium mt-1">해결</p>
+      </div>
+    </div>
+
+    <!-- 최근 문의 -->
+    <div class="mt-4 pt-4 border-t border-gray-100">
+      <h4 class="text-sm font-semibold text-gray-700 mb-3">최근 새 문의</h4>
+      <% if recent_tickets && recent_tickets.any? %>
+        <div class="space-y-2">
+          <% recent_tickets.first(5).each do |ticket| %>
+            <%= link_to admin_ticket_path(ticket), data: { turbo_frame: "_top" }, class: "block py-2 px-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors" do %>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-mono text-gray-500"><%= ticket.ticket_number %></span>
+                    <% if ticket.priority == 'urgent' || ticket.priority == 'high' %>
+                      <span class="px-1.5 py-0.5 text-xs font-semibold bg-red-100 text-red-700 rounded">긴급</span>
+                    <% end %>
+                  </div>
+                  <p class="text-sm text-gray-900 truncate font-medium"><%= ticket.subject %></p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    <%= ticket.user&.name || ticket.guest_name %>
+                  </p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full
+                    <%= ticket.status == 'new' ? 'bg-blue-100 text-blue-700' : 
+                        ticket.status == 'open' ? 'bg-yellow-100 text-yellow-700' : 
+                        ticket.status == 'pending' ? 'bg-orange-100 text-orange-700' : 
+                        'bg-gray-100 text-gray-700' %>">
+                    <%= ticket.status %>
+                  </span>
+                  <p class="text-xs text-gray-500 mt-1">
+                    <%= time_ago_in_words(ticket.created_at) %> 전
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">새로운 문의가 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

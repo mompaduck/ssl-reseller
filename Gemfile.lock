@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (5.5.2)
+      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.15)
       railties
     actioncable (8.1.1)
@@ -151,6 +153,8 @@ GEM
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
     json (2.16.0)
+    jsonapi-serializer (2.2.0)
+      activesupport (>= 4.2)
     jwt (3.1.2)
       base64
     kaminari (1.2.2)
@@ -271,6 +275,8 @@ GEM
     public_suffix (7.0.0)
     puma (7.1.0)
       nio4r (~> 2.0)
+    pundit (2.5.2)
+      activesupport (>= 3.0.0)
     racc (1.8.1)
     rack (3.2.4)
     rack-protection (4.2.1)
@@ -420,6 +426,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  aasm
   active_record_encryption
   attr_encrypted
   bcrypt (~> 3.1)
@@ -433,6 +440,7 @@ DEPENDENCIES
   groupdate
   httparty
   jsbundling-rails
+  jsonapi-serializer (~> 2.2)
   kaminari
   letter_opener
   listen
@@ -444,6 +452,7 @@ DEPENDENCIES
   prawn
   propshaft
   puma
+  pundit
   rails (~> 8.1.1)
   redis (~> 5.2)
   rspec-rails

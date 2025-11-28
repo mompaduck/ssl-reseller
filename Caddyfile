@@ -1,0 +1,43 @@
+# Caddyfile for SSL Reseller Platform
+# Production deployment configuration
+
+{
+    # Global options
+    admin off
+    persist_config off
+}
+
+# Main site
+:80 {
+    # Rails application (main site)
+    reverse_proxy localhost:3000 {
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+    
+    # Vue.js Ticket System
+    # In production, serve built Vue files from Rails public directory
+    # In development with Vue dev server, proxy to port 5173
+    handle_path /tickets/* {
+        # Development: uncomment this line
+        # reverse_proxy localhost:5173
+        
+        # Production: Vue app is built and served by Rails
+        reverse_proxy localhost:3000
+    }
+    
+    # API endpoints (already handled by Rails)
+    handle_path /api/* {
+        reverse_proxy localhost:3000
+    }
+    
+    # WebSocket (ActionCable)
+    handle_path /cable {
+        reverse_proxy localhost:3000
+    }
+    
+    # Logs
+    log {
+        output file /var/log/caddy/access.log
+    }
+}

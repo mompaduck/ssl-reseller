@@ -1,0 +1,44 @@
+<div id="message_<%= message.id %>" 
+     class="ticket-message <%= message.customer? ? 'customer-message' : 'support-message' %>"
+     data-controller="message-read"
+     data-message-read-message-id-value="<%= message.id %>"
+     data-message-read-ticket-id-value="<%= message.ticket_id %>"
+     data-message-read-target="message">
+  
+  <div class="message-header flex justify-between items-center mb-2">
+    <div class="message-info">
+      <span class="font-semibold"><%= message.user.name %></span>
+      <span class="text-sm text-gray-500 ml-2"><%= time_ago_in_words(message.created_at) %> ago</span>
+    </div>
+    
+    <div class="message-status">
+      <% if message.support? || message.internal_note? %>
+        <% if message.read_at.present? %>
+          <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded" 
+                data-message-read-target="indicator">
+            읽음
+          </span>
+        <% else %>
+          <span class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded unread" 
+                data-message-read-target="indicator">
+            안읽음
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  
+  <div class="message-content prose max-w-none">
+    <%= message.content %>
+  </div>
+  
+  <% if message.attachments.any? %>
+    <div class="message-attachments mt-3">
+      <% message.attachments.each do |attachment| %>
+        <div class="attachment-item">
+          <%= link_to attachment.filename, "#", class: "text-blue-600 hover:underline" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

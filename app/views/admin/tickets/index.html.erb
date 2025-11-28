@@ -1,0 +1,174 @@
+<%= turbo_stream_from "admin_tickets" %>
+
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">고객 문의 관리</h1>
+    <p class="mt-1 text-sm text-gray-500">모든 고객 문의를 관리합니다. (총 <%= Ticket.count %>건)</p>
+  </div>
+</div>
+
+<%# Search & Filter %>
+<div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+  <%= form_tag admin_tickets_path, method: :get, id: "filter-form" do %>
+    <%# Search Row %>
+    <div class="flex gap-3 mb-4">
+      <div class="flex-1 relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+        </div>
+        <%= text_field_tag :q, params[:q], 
+            placeholder: "티켓번호, 제목, 이메일 검색...", 
+            class: "pl-10 block w-full h-11 rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+      </div>
+      
+      <button type="submit" class="px-6 h-11 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 shadow-sm transition flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4"></i>
+        검색
+      </button>
+      
+      <%= link_to admin_tickets_path, class: "px-6 h-11 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 shadow-sm transition flex items-center gap-2" do %>
+        <i data-lucide="x" class="w-4 h-4"></i>
+        초기화
+      <% end %>
+    </div>
+    
+    <%# Filter Row %>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">상태</label>
+        <%= select_tag :status, 
+            options_for_select([
+              ['전체', ''],
+              ['신규', 'new'],
+              ['진행중', 'open'],
+              ['대기중', 'pending'],
+              ['해결됨', 'resolved'],
+              ['종료', 'closed']
+            ], params[:status]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">카테고리</label>
+        <%= select_tag :category,
+            options_for_select([
+              ['전체', ''],
+              ['일반 문의', 'general'],
+              ['기술 지원', 'technical'],
+              ['결제/환불', 'billing'],
+              ['인증 문제', 'validation'],
+              ['설치 지원', 'installation'],
+              ['기타', 'other']
+            ], params[:category]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">담당자</label>
+        <%= select_tag :assigned,
+            options_for_select([
+              ['전체', 'all'],
+              ['미할당', 'unassigned'],
+              ['내가 담당', 'me']
+            ], params[:assigned] || 'all'),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">정렬</label>
+        <%= select_tag :sort,
+            options_for_select([
+              ['최근 문의순', 'created_desc'],
+              ['오래된 순', 'created_asc'],
+              ['우선순위 높은 순', 'priority_desc']
+            ], params[:sort]),
+            class: "block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+            onchange: "this.form.submit()" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%# Statistics Cards %>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+  <% 
+    stats = {
+      new: { label: '신규', color: 'blue', count: Ticket.where(status: :new).count },
+      open: { label: '진행중', color: 'indigo', count: Ticket.where(status: :open).count },
+      pending: { label: '대기중', color: 'yellow', count: Ticket.where(status: :pending).count },
+      resolved: { label: '해결됨', color: 'green', count: Ticket.where(status: :resolved).count },
+      closed: { label: '종료', color: 'gray', count: Ticket.where(status: :closed).count }
+    }
+  %>
+  
+  <% stats.each do |status, data| %>
+    <%= link_to admin_tickets_path(status: status), class: "bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow" do %>
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600"><%= data[:label] %></p>
+          <p class="text-2xl font-bold text-gray-900 mt-1"><%= data[:count] %></p>
+        </div>
+        <div class="w-12 h-12 bg-<%= data[:color] %>-100 rounded-lg flex items-center justify-center">
+          <i data-lucide="ticket" class="w-6 h-6 text-<%= data[:color] %>-600"></i>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+<%# Tickets List Table %>
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            티켓 번호
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            제목 / 고객
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            카테고리
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            우선순위
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            상태
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            담당자
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            생성일
+          </th>
+        </tr>
+      </thead>
+      <tbody id="tickets_table_body" class="bg-white divide-y divide-gray-200">
+        <%= render partial: "admin/tickets/ticket_table_row", collection: @tickets, as: :ticket %>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+    <div class="text-sm text-gray-700">
+      총 <span class="font-medium"><%= @tickets.total_count %></span>건
+    </div>
+    <div>
+      <%= paginate @tickets %>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+  document.addEventListener('turbo:load', () => {
+    lucide.createIcons();
+  });
+</script>

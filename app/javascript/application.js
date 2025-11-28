@@ -36,7 +36,23 @@ application.register("password-form", PasswordFormController)
 import PhoneValidateController from "./controllers/phone_validate_controller.js"
 application.register("phone-validate", PhoneValidateController)
 
+
 import TermsEnableController from "./controllers/terms_enable_controller.js"
 application.register("terms-enable", TermsEnableController)
 
+import NotificationController from "./controllers/notification_controller.js"
+application.register("notification", NotificationController)
+
+import MessageReadController from "./controllers/message_read_controller.js"
+application.register("message-read", MessageReadController)
+
+import RealtimeDashboardController from "./controllers/realtime_dashboard_controller.js"
+application.register("realtime-dashboard", RealtimeDashboardController)
+
 export { application }
+
+// Import ActionCable channels
+import "./channels"
+
+import "trix"
+import "@rails/actiontext"

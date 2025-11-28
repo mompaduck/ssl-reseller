@@ -1,0 +1,81 @@
+<%= turbo_frame_tag "system_alerts_card" do %>
+  <div class="h-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+          <i data-lucide="alert-triangle" class="w-6 h-6 text-orange-600"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">시스템 알림</h3>
+          <p class="text-sm text-gray-500">API 오류 및 시스템 이벤트</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Grid -->
+    <div class="grid grid-cols-1 gap-3 mb-4">
+      <!-- Sectigo API Errors -->
+      <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="server" class="w-5 h-5 text-red-600"></i>
+            <span class="text-sm font-semibold text-red-900">Sectigo API 오류</span>
+          </div>
+          <span class="text-2xl font-bold text-red-700"><%= @api_errors_count %></span>
+        </div>
+        <p class="text-xs text-red-600">최근 30분 동안 발생한 API 오류</p>
+      </div>
+
+      <!-- Email Failures (Placeholder) -->
+      <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <i data-lucide="mail-x" class="w-5 h-5 text-yellow-600"></i>
+            <span class="text-sm font-semibold text-yellow-900">이메일 발송 실패</span>
+          </div>
+          <span class="text-2xl font-bold text-yellow-700"><%= @email_failures_count %></span>
+        </div>
+        <p class="text-xs text-yellow-600">최근 24시간 이메일 발송 실패</p>
+      </div>
+    </div>
+
+    <!-- Recent API Error Logs -->
+    <div class="mt-4 pt-4 border-t border-gray-100">
+      <h4 class="text-sm font-semibold text-gray-700 mb-3">최근 API 오류 로그 (30분)</h4>
+      <% if @recent_api_errors.any? %>
+        <div class="space-y-2 max-h-48 overflow-y-auto">
+          <% @recent_api_errors.first(5).each do |log| %>
+            <div class="py-2 px-3 bg-red-50 rounded-lg border border-red-100">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs font-mono text-red-800 break-all">
+                    Order #<%= log.order.internal_order_id %>
+                  </p>
+                  <p class="text-xs text-red-600 mt-1 line-clamp-2">
+                    <%= log.response_body&.truncate(100) || 'API Error' %>
+                  </p>
+                </div>
+                <span class="text-xs text-red-500 flex-shrink-0">
+                  <%= time_ago_in_words(log.created_at) %> 전
+                </span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">최근 API 오류가 없습니다.</p>
+      <% end %>
+    </div>
+
+    <!-- Info Notice -->
+    <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+      <div class="flex items-start gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+        <p class="text-xs text-blue-700">
+          시스템 알림 기능은 현재 개발 중입니다. 추가 기능이 곧 제공될 예정입니다.
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>

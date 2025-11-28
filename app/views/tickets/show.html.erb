@@ -1,0 +1,94 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to tickets_path, class: "text-blue-600 hover:underline inline-flex items-center" do %>
+      <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i>
+      목록으로 돌아가기
+    <% end %>
+  </div>
+  
+  <%# Ticket Header %>
+  <div class="bg-white shadow rounded-lg p-6 mb-6 border border-gray-200">
+    <div class="flex justify-between items-start mb-4">
+      <div class="flex-1">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2"><%= @ticket.subject %></h1>
+        <div class="flex gap-2 text-sm flex-wrap">
+          <span class="font-mono text-gray-500 bg-gray-50 px-2 py-1 rounded"><%= @ticket.ticket_number %></span>
+          <span class="px-2 py-1 rounded bg-gray-100 text-gray-700 font-medium">
+            <%= ticket_category_text(@ticket.category) %>
+          </span>
+          <span class="px-2 py-1 rounded <%= ticket_priority_class(@ticket.priority) %> font-medium">
+            <%= ticket_priority_text(@ticket.priority) %>
+          </span>
+          <% if @ticket.user %>
+            <span class="text-gray-600">
+              <i data-lucide="user" class="w-4 h-4 inline-block"></i>
+              <%= @ticket.user.email %>
+            </span>
+          <% else %>
+            <span class="text-gray-600">
+              <i data-lucide="mail" class="w-4 h-4 inline-block"></i>
+              <%= @ticket.guest_email %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+      <div class="text-right ml-4">
+        <span class="<%= ticket_status_class(@ticket.status) %> px-3 py-1 rounded-full text-sm font-medium uppercase">
+          <%= ticket_status_text(@ticket.status) %>
+        </span>
+        <p class="text-xs text-gray-500 mt-2">
+          <%= l(@ticket.created_at, format: :long) %>
+        </p>
+      </div>
+    </div>
+
+    <%# Initial Message %>
+    <div class="mt-4 pt-4 border-t border-gray-200">
+      <div class="prose max-w-none text-gray-700">
+        <%= @ticket.content %>
+      </div>
+    </div>
+  </div>
+
+  <%# Messages Thread %>
+  <% if @ticket.messages.any? %>
+    <div class="space-y-4 mb-8">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">대화 내역</h2>
+      <%= render partial: 'message_thread', locals: { messages: @ticket.messages } %>
+    </div>
+  <% end %>
+
+  <%# Reply Form (only for open tickets and authorized users) %>
+  <% if @ticket.status != 'closed' && (user_signed_in? && (@ticket.user_id == current_user.id || current_user.admin?)) %>
+    <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+      <h3 class="font-bold text-gray-900 mb-4">답변 작성</h3>
+      <%= form_with url: ticket_messages_path(@ticket), local: true, class: "space-y-4" do |f| %>
+        <div>
+          <%= f.label :content, "내용", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.text_area :content, 
+              rows: 4,
+              required: true,
+              placeholder: "답변 내용을 입력하세요",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div class="flex gap-3">
+          <%= f.submit "답변 전송", 
+              class: "px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition" %>
+        </div>
+      <% end %>
+    </div>
+  <% elsif @ticket.status == 'closed' %>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+      <i data-lucide="lock" class="w-12 h-12 text-gray-400 mx-auto mb-2"></i>
+      <p class="text-gray-600">이 문의는 종료되었습니다.</p>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

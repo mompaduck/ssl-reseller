@@ -10,7 +10,45 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_26_020945) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_28_110539) do
+  create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.text "body", size: :long
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "action"
     t.bigint "auditable_id", null: false
@@ -66,14 +104,29 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_020945) do
 
   create_table "notification_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "error_message"
+    t.string "ip_address", limit: 45
     t.text "message"
+    t.string "message_preview", limit: 200
     t.json "metadata"
     t.integer "notification_type"
     t.string "recipient"
+    t.bigint "related_certificate_id"
+    t.bigint "related_order_id"
+    t.bigint "related_ticket_id"
+    t.bigint "sender_id"
     t.datetime "sent_at"
     t.integer "status"
     t.string "subject"
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["notification_type", "created_at"], name: "index_notification_logs_on_notification_type_and_created_at"
+    t.index ["related_certificate_id"], name: "index_notification_logs_on_related_certificate_id"
+    t.index ["related_order_id"], name: "index_notification_logs_on_related_order_id"
+    t.index ["related_ticket_id"], name: "index_notification_logs_on_related_ticket_id"
+    t.index ["sender_id"], name: "index_notification_logs_on_sender_id"
+    t.index ["status", "sent_at"], name: "index_notification_logs_on_status_and_sent_at"
+    t.index ["user_id"], name: "index_notification_logs_on_user_id"
   end
 
   create_table "order_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -186,6 +239,80 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_020945) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ticket_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.integer "filesize", null: false, unsigned: true
+    t.string "mime_type", null: false
+    t.string "storage_path", limit: 500, null: false
+    t.bigint "ticket_message_id", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "virus_scan_at"
+    t.integer "virus_scan_status", default: 0
+    t.index ["ticket_message_id"], name: "index_ticket_attachments_on_ticket_message_id"
+  end
+
+  create_table "ticket_messages", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "is_read", default: false, null: false
+    t.integer "message_type", null: false
+    t.datetime "read_at"
+    t.bigint "ticket_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["ticket_id", "created_at"], name: "index_ticket_messages_on_ticket_id_and_created_at"
+    t.index ["ticket_id", "message_type"], name: "index_ticket_messages_on_ticket_id_and_message_type"
+    t.index ["ticket_id"], name: "index_ticket_messages_on_ticket_id"
+    t.index ["user_id"], name: "index_ticket_messages_on_user_id"
+  end
+
+  create_table "ticket_templates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "category", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.integer "usage_count", default: 0, null: false, unsigned: true
+    t.index ["category"], name: "index_ticket_templates_on_category"
+    t.index ["created_by_id"], name: "index_ticket_templates_on_created_by_id"
+    t.index ["usage_count"], name: "index_ticket_templates_on_usage_count", order: :desc
+  end
+
+  create_table "tickets", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "assigned_to_id"
+    t.integer "category", default: 5, null: false
+    t.bigint "certificate_id"
+    t.datetime "closed_at"
+    t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "first_response_at"
+    t.string "guest_email"
+    t.string "guest_name"
+    t.string "guest_phone"
+    t.bigint "order_id"
+    t.integer "priority", default: 0, null: false
+    t.text "satisfaction_comment"
+    t.integer "satisfaction_rating", limit: 1
+    t.string "status", default: "new", null: false
+    t.string "subject", null: false
+    t.string "ticket_number", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["assigned_to_id", "status"], name: "index_tickets_on_assigned_to_id_and_status"
+    t.index ["assigned_to_id"], name: "index_tickets_on_assigned_to_id"
+    t.index ["certificate_id"], name: "index_tickets_on_certificate_id"
+    t.index ["deleted_at"], name: "index_tickets_on_deleted_at"
+    t.index ["guest_email"], name: "index_tickets_on_guest_email"
+    t.index ["order_id"], name: "index_tickets_on_order_id"
+    t.index ["priority", "created_at"], name: "index_tickets_on_priority_and_created_at", order: :desc
+    t.index ["status", "created_at"], name: "index_tickets_on_status_and_created_at"
+    t.index ["subject"], name: "idx_subject", type: :fulltext
+    t.index ["ticket_number"], name: "index_tickets_on_ticket_number", unique: true
+    t.index ["user_id", "status"], name: "index_tickets_on_user_id_and_status"
+    t.index ["user_id"], name: "index_tickets_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "address"
     t.boolean "admin", default: false
@@ -227,17 +354,33 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_020945) do
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token"
     t.index ["email"], name: "index_users_on_email"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token"
+    t.index ["role"], name: "index_users_on_role"
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_logs", "users"
   add_foreign_key "certificate_logs", "certificates"
   add_foreign_key "certificate_logs", "users"
   add_foreign_key "certificates", "orders"
   add_foreign_key "certificates", "users"
+  add_foreign_key "notification_logs", "certificates", column: "related_certificate_id"
+  add_foreign_key "notification_logs", "orders", column: "related_order_id"
+  add_foreign_key "notification_logs", "tickets", column: "related_ticket_id"
+  add_foreign_key "notification_logs", "users"
+  add_foreign_key "notification_logs", "users", column: "sender_id"
   add_foreign_key "order_logs", "orders"
   add_foreign_key "order_logs", "users"
   add_foreign_key "orders", "products"
   add_foreign_key "orders", "users"
   add_foreign_key "partner_api_logs", "orders"
   add_foreign_key "payments", "orders"
+  add_foreign_key "ticket_attachments", "ticket_messages", on_delete: :cascade
+  add_foreign_key "ticket_messages", "tickets", on_delete: :cascade
+  add_foreign_key "ticket_messages", "users"
+  add_foreign_key "ticket_templates", "users", column: "created_by_id"
+  add_foreign_key "tickets", "certificates"
+  add_foreign_key "tickets", "orders"
+  add_foreign_key "tickets", "users"
+  add_foreign_key "tickets", "users", column: "assigned_to_id"
 end

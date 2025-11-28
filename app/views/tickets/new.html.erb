@@ -1,0 +1,122 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-2xl font-bold text-gray-900 mb-6">문의하기</h1>
+      
+      <%# Login Status Notice %>
+      <% unless user_signed_in? %>
+        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800">
+            💡 <strong>일반 문의</strong>는 로그인 없이 가능합니다.
+            <span class="block mt-1">주문/기술 지원은 로그인이 필요합니다.</span>
+          </p>
+        </div>
+      <% end %>
+
+      <%= form_with model: @ticket, url: tickets_path, local: true, class: "space-y-6" do |f| %>
+        <%# Guest Information (only for non-logged-in users) %>
+        <% unless user_signed_in? %>
+          <div class="space-y-4 p-4 bg-gray-50 rounded-lg">
+            <h3 class="font-semibold text-gray-700">연락처 정보</h3>
+            
+            <div>
+              <%= f.label :guest_name, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+                이름 <span class="text-red-500">*</span>
+              <% end %>
+              <%= f.text_field :guest_name, 
+                  required: true,
+                  placeholder: "홍길동",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+
+            <div>
+              <%= f.label :guest_email, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+                이메일 <span class="text-red-500">*</span>
+              <% end %>
+              <%= f.email_field :guest_email, 
+                  required: true,
+                  placeholder: "example@email.com",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+
+            <div>
+              <%= f.label :guest_phone, "전화번호 (선택)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= f.telephone_field :guest_phone, 
+                  placeholder: "010-1234-5678",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+          </div>
+        <% end %>
+
+        <%# Category %>
+        <div>
+          <%= f.label :category, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+            문의 유형 <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.select :category, 
+              options_for_select([
+                ["일반 문의", "general"],
+                ["기타", "other"],
+                ["기술 지원 #{user_signed_in? ? '' : '(로그인 필요)'}", "technical", { disabled: !user_signed_in? }],
+                ["결제/환불 #{user_signed_in? ? '' : '(로그인 필요)'}", "billing", { disabled: !user_signed_in? }],
+                ["인증 문제 #{user_signed_in? ? '' : '(로그인 필요)'}", "validation", { disabled: !user_signed_in? }],
+                ["설치 지원 #{user_signed_in? ? '' : '(로그인 필요)'}", "installation", { disabled: !user_signed_in? }]
+              ], @ticket.category),
+              { include_blank: "선택하세요" },
+              required: true,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          
+          <% unless user_signed_in? %>
+            <p class="mt-2 text-sm text-amber-600">
+              💡 기술 지원이 필요하신가요? 
+              <%= link_to "로그인하기", new_user_session_path, class: "underline font-medium" %>
+            </p>
+          <% end %>
+        </div>
+
+        <%# Subject %>
+        <div>
+          <%= f.label :subject, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+            제목 <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.text_field :subject, 
+              required: true,
+              placeholder: "문의 제목을 입력하세요",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <%# Content %>
+        <div>
+          <%= f.label :content, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+            내용 <span class="text-red-500">*</span>
+          <% end %>
+          <%= f.text_area :content, 
+              required: true,
+              rows: 6,
+              placeholder: "문의 내용을 자세히 입력해주세요",
+              class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <%# Error Display %>
+        <% if @ticket && @ticket.errors.any? %>
+          <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p class="text-sm text-red-800 font-semibold mb-2"><%= pluralize(@ticket.errors.count, "오류") %>가 발생했습니다:</p>
+            <ul class="list-disc list-inside text-sm text-red-800 space-y-1">
+              <% @ticket.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%# Submit Button %>
+        <div class="flex gap-3">
+          <%= f.submit "문의하기", 
+              class: "flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition" %>
+          <%= link_to "취소", :back, 
+              class: "px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

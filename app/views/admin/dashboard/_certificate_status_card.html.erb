@@ -1,0 +1,90 @@
+<%= turbo_frame_tag "certificate_status_card" do %>
+  <div class="h-full bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+          <i data-lucide="shield-check" class="w-6 h-6 text-purple-600"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">인증서 발급 상태</h3>
+          <p class="text-sm text-gray-500">실시간 발급 현황</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      <!-- Pending -->
+      <div class="p-3 bg-blue-50 rounded-lg border border-blue-100">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-blue-600 font-medium">대기</span>
+          <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+        </div>
+        <p class="text-xl font-bold text-blue-700 mt-1"><%= @pending_certificates_count %></p>
+      </div>
+
+      <!-- Issued -->
+      <div class="p-3 bg-green-50 rounded-lg border border-green-100">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-green-600 font-medium">발급완료</span>
+          <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+        </div>
+        <p class="text-xl font-bold text-green-700 mt-1"><%= @issued_certificates_count %></p>
+      </div>
+
+      <!-- DCV Failed -->
+      <div class="p-3 bg-red-50 rounded-lg border border-red-100">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-red-600 font-medium">DCV 실패</span>
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i>
+        </div>
+        <p class="text-xl font-bold text-red-700 mt-1"><%= @dcv_failed_count %></p>
+      </div>
+
+      <!-- Expired -->
+      <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-600 font-medium">만료</span>
+          <i data-lucide="x-circle" class="w-4 h-4 text-gray-600"></i>
+        </div>
+        <p class="text-xl font-bold text-gray-700 mt-1"><%= @expired_certificates_count %></p>
+      </div>
+    </div>
+
+    <!-- DCV 대기 중 알림 -->
+    <% if @dcv_failed_count > 0 %>
+      <div class="mb-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+        <div class="flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-orange-600"></i>
+          <div>
+            <p class="text-sm font-semibold text-orange-900">DCV 검증 실패 주의</p>
+            <p class="text-xs text-orange-700 mt-1"><%= @dcv_failed_count %>건의 인증서가 DCV 검증에 실패했습니다.</p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 오늘 발급된 인증서 -->
+    <div class="mt-4 pt-4 border-t border-gray-100">
+      <h4 class="text-sm font-semibold text-gray-700 mb-3">오늘 발급된 인증서</h4>
+      <% if @today_issued_certificates.any? %>
+        <div class="space-y-2">
+          <% @today_issued_certificates.first(5).each do |cert| %>
+            <div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div class="flex items-center gap-2 flex-1 min-w-0">
+                <i data-lucide="file-check" class="w-4 h-4 text-green-600 flex-shrink-0"></i>
+                <span class="text-sm text-gray-700 truncate"><%= cert.order.domain %></span>
+              </div>
+              <span class="text-xs text-gray-500 ml-2 flex-shrink-0">
+                <%= time_ago_in_words(cert.issued_at) %> 전
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-sm text-gray-500 text-center py-4">오늘 발급된 인증서가 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

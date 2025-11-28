@@ -1,0 +1,30 @@
+안녕하세요, <%= @customer_name %>님
+
+문의하신 티켓에 새로운 답변이 등록되었습니다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+티켓 정보
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+티켓 번호: <%= @ticket.ticket_number %>
+제목: <%= @ticket.subject %>
+카테고리: <%= @ticket.category.humanize %>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+답변 내용
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<%= @message.content.to_plain_text %>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+<% if @ticket.user %>
+티켓 확인하기: <%= ticket_url(@ticket) %>
+<% end %>
+
+추가 문의사항이 있으시면 티켓에 답변을 남겨주시거나 이메일로 회신해주세요.
+
+감사합니다.
+CertGate 지원팀
+
+---
+이 이메일은 자동으로 발송되었습니다.
+© <%= Time.current.year %> CertGate. All rights reserved.

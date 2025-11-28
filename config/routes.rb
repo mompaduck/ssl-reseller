@@ -14,6 +14,14 @@ Rails.application.routes.draw do
   get "support", to: "home#support", as: :support
   get "contact", to: "home#contact", as: :contact
   get "pricing", to: "pricing#index", as: :pricing
+  
+  # Ticket System - Rails Native
+  resources :tickets, only: [:index, :show, :new, :create] do
+    member do
+      patch :close
+    end
+    resources :messages, only: [:create], controller: 'ticket_messages'
+  end
 
   # FAQ
   get 'faq', to: 'pages#faq', as: 'faq'
@@ -65,6 +73,26 @@ Rails.application.routes.draw do
   resources :products, only: [:index, :show]
   resources :certificates, only: [:index]
 
+  # API Routes
+  namespace :api do
+    namespace :v1 do
+      resources :tickets, only: [:index, :show, :create, :update] do
+        member do
+          post :close
+        end
+        resources :messages, controller: 'ticket_messages', only: [:index, :create]
+      end
+      
+      namespace :admin do
+        resources :tickets, only: [:index] do
+          member do
+            patch :assign
+          end
+        end
+      end
+    end
+  end
+
   # 관리자 페이지
   namespace :admin do
     root "dashboard#index"
@@ -104,6 +132,26 @@ Rails.application.routes.draw do
         post :toggle_active
         post :clone
       end
+    end
+    
+    # Ticket management
+    resources :tickets, only: [:index, :show] do
+      member do
+        patch :assign
+        patch :update_status
+      end
+    end
+    
+    # Ticket messages
+    resources :ticket_messages, only: [] do
+      member do
+        patch :mark_as_read
+      end
+    end
+    
+    # Notifications
+    namespace :notifications do
+      post :mark_all_read
     end
     
     # Log routes

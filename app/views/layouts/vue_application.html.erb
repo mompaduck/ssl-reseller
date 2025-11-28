@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CertGate - 고객문의</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  
+  <meta name="current-user" content='<%= current_user.to_json(only: [:id, :email, :name, :role]) if user_signed_in? %>'>
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #app {
+      min-height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  
+  <script type="module">
+    // Vue dev server will inject the app here
+    // In production, you'll need to build the Vue app and serve it from Rails
+    window.location.href = 'http://localhost:5173/tickets/new';
+  </script>
+  
+  <noscript>
+    <div style="text-align: center; padding: 50px;">
+      <h1>JavaScript가 필요합니다</h1>
+      <p>이 페이지를 사용하려면 JavaScript를 활성화해 주세요.</p>
+    </div>
+  </noscript>
+</body>
+</html>

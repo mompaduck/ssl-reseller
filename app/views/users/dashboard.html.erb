@@ -48,6 +48,27 @@
           </div>
         </div>
       <% end %>
+
+      <%# 1:1 문의하기 %>
+      <%= link_to tickets_path, class: "block" do %>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 hover:border-blue-300 group">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-green-600 transition-colors">
+                  <i data-lucide="message-square" class="w-6 h-6 text-green-600 group-hover:text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900">1:1 문의하기</h2>
+              </div>
+              <p class="text-gray-600 mb-4">문의 내역을 확인하고 새로운 문의를 작성하세요</p>
+              <div class="flex items-center text-green-600 font-semibold group-hover:text-green-700">
+                <span>문의하기</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <%# 사용자 정보 요약 %>

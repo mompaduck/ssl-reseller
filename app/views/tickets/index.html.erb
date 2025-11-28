@@ -1,0 +1,65 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">내 문의 내역</h1>
+    <%= link_to new_ticket_path, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-semibold" do %>
+      <i data-lucide="plus" class="w-4 h-4 inline-block mr-1"></i>
+      새 문의
+    <% end %>
+  </div>
+
+  <% if @tickets.any? %>
+    <div class="space-y-4">
+      <% @tickets.each do |ticket| %>
+        <%= link_to ticket_path(ticket), class: "block" do %>
+          <div class="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-200">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-sm font-mono text-gray-500"><%= ticket.ticket_number %></span>
+                  <span class="<%= ticket_status_class(ticket.status) %> px-2 py-0.5 rounded text-xs font-medium uppercase">
+                    <%= ticket_status_text(ticket.status) %>
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                    <%= ticket_category_text(ticket.category) %>
+                  </span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-1"><%= ticket.subject %></h3>
+                <p class="text-sm text-gray-600 line-clamp-2">
+                  <%= truncate(ticket.content.to_plain_text, length: 150) %>
+                </p>
+              </div>
+              <div class="text-sm text-gray-500 ml-4">
+                <%= time_ago_in_words(ticket.updated_at) %> 전
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Pagination %>
+    <% if @tickets.respond_to?(:total_pages) && @tickets.total_pages > 1 %>
+      <div class="mt-8 flex justify-center">
+        <%= paginate @tickets, theme: 'twitter-bootstrap-4' %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-16">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+        <i data-lucide="inbox" class="w-8 h-8 text-gray-400"></i>
+      </div>
+      <p class="text-gray-500 text-lg mb-4">아직 문의 내역이 없습니다</p>
+      <%= link_to new_ticket_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold" do %>
+        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+        첫 문의하기
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // Initialize Lucide icons
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons();
+  }
+</script>

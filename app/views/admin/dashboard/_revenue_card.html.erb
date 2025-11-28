@@ -1,0 +1,53 @@
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+        <i data-lucide="dollar-sign" class="w-6 h-6 text-green-600"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900">매출 요약</h3>
+        <p class="text-sm text-gray-500">오늘 및 이번 달 매출</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Grid -->
+  <div class="grid grid-cols-2 gap-4">
+    <!-- Today's Revenue -->
+    <div class="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg text-white">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="calendar-days" class="w-5 h-5 opacity-80"></i>
+        <span class="text-sm font-medium opacity-90">오늘</span>
+      </div>
+      <p class="text-2xl font-bold">₩<%= number_with_delimiter(@today_revenue) %></p>
+      <p class="text-xs opacity-75 mt-2"><%= @today_orders_count %>건 주문</p>
+    </div>
+
+    <!-- This Month's Revenue -->
+    <div class="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg text-white">
+      <div class="flex items-center gap-2 mb-2">
+        <i data-lucide="calendar" class="w-5 h-5 opacity-80"></i>
+        <span class="text-sm font-medium opacity-90">이번 달</span>
+      </div>
+      <p class="text-2xl font-bold">₩<%= number_with_delimiter(@month_revenue) %></p>
+      <p class="text-xs opacity-75 mt-2"><%= @month_orders_count %>건 주문</p>
+    </div>
+  </div>
+
+  <!-- Additional Stats -->
+  <div class="grid grid-cols-2 gap-3 mt-4">
+    <div class="p-3 bg-gray-50 rounded-lg">
+      <p class="text-xs text-gray-500 mb-1">평균 주문 금액</p>
+      <p class="text-lg font-bold text-gray-900">
+        ₩<%= number_with_delimiter(@average_order_value) %>
+      </p>
+    </div>
+    <div class="p-3 bg-gray-50 rounded-lg">
+      <p class="text-xs text-gray-500 mb-1">예상 순이익 (30%)</p>
+      <p class="text-lg font-bold text-green-600">
+        ₩<%= number_with_delimiter(@estimated_profit) %>
+      </p>
+    </div>
+  </div>
+</div>
