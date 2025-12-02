@@ -166,7 +166,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # Devise 허용할 파라미터 설정 – 회원가입
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :english_name, :company_name, :phone, :country, :address, :email, :password, :password_confirmation, :terms])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:email, :password, :password_confirmation, :terms])
   end
 
   # Devise 허용할 파라미터 설정 – 계정 수정

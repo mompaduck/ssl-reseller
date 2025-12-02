@@ -37,8 +37,6 @@ import PhoneValidateController from "./controllers/phone_validate_controller.js"
 application.register("phone-validate", PhoneValidateController)
 
 
-import TermsEnableController from "./controllers/terms_enable_controller.js"
-application.register("terms-enable", TermsEnableController)
 
 import NotificationController from "./controllers/notification_controller.js"
 application.register("notification", NotificationController)
